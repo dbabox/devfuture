@@ -55,6 +55,18 @@ namespace TreeEditor.TableAdapter
 
         #region ITreeTableAdapter ≥…‘±
 
+        public string TextFieldName
+        {
+            get
+            {
+                return "FUNC_NAME";
+            }
+            set
+            {
+
+            }
+        }
+
         /// <summary>
         /// 
         /// </summary>

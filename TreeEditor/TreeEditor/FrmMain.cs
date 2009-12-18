@@ -35,13 +35,54 @@ namespace TreeEditor
 
         IList<ITvaNode> checkedNodes;
 
+        //private Dictionary<ITreeTableAdapter, string> treeAdapterDic = new Dictionary<ITreeTableAdapter, string>();
+
         public FrmMain()
         {
             InitializeComponent();
             SetupTree(_tree);
-            //tta = new TreeEditor.TableAdapter.EqtTreeTableAdapter();
-            tta = new TreeEditor.TableAdapter.MtmsXldgAdapter();
-            tnmModel = new TNMTreeModel(tta);            
+
+            //ITreeTableAdapter tta_1 = new TreeEditor.TableAdapter.EqtTreeTableAdapter();
+            //ITreeTableAdapter tta_2 = new TreeEditor.TableAdapter.MtmsXldgAdapter();
+            //ITreeTableAdapter tta_3 = new TreeEditor.TableAdapter.MtmsFunctionAdapter();
+
+            //treeAdapterDic.Add(tta_1, "EQT系统菜单");
+            //treeAdapterDic.Add(tta_2, "MTMS系统 2009训练大纲树");
+            //treeAdapterDic.Add(tta_3, "MTMS 系统菜单");
+
+            //BindingSource bs = new BindingSource(treeAdapterDic, null);
+            //comboBox1.DataSource = bs;
+            //comboBox1.DisplayMember = "Value";
+            //comboBox1.ValueMember = "Key";
+
+            string att = System.Configuration.ConfigurationManager.AppSettings["AdapterTableName"];
+            switch (att)
+            {
+                case "EQT.TFUNCTION":
+                    {
+                        tta = new TreeEditor.TableAdapter.EqtTreeTableAdapter();
+                        break;
+                    }
+                case "Mtms.MT_FUNCTION":
+                    {
+                        tta = new TreeEditor.TableAdapter.MtmsFunctionAdapter();
+                        break;
+                    }
+                case "Mtms.MT_XLDG":
+                    {
+                        tta = new TreeEditor.TableAdapter.MtmsXldgAdapter();
+                        break;
+                    }
+                default:
+                    {
+                        throw new Exception("致命错误！配置文件节必须配置AdapterTableName。其格式为：数据库名.表名");
+                    }
+            }
+
+
+
+
+            tnmModel = new TNMTreeModel(tta);  
             tnmModel.NodesRemoved += new EventHandler<TreeModelEventArgs>(tnmModel_NodesRemoved);
             tnmModel.NodesInserted += new EventHandler<TreeModelEventArgs>(tnmModel_NodesInserted);
             _tree.SelectionChanged += new EventHandler(_tree_SelectionChanged);
@@ -194,14 +235,7 @@ namespace TreeEditor
                     log.DebugFormat("拖拽到Level={0},NM={1},位置={2}", parent.Level, parent.Tag, _tree.DropPosition.Position);
 
                     int toIndex = dropOnNode.Index;
-                    //if (_tree.DropPosition.Position == NodePosition.Before)
-                    //{
-                    //    toIndex = dropOnNode.Index;
-                    //}
-                    //else
-                    //{
-                    //    toIndex = dropOnNode.Index;
-                    //}
+                   
                     if (parent.Level == 0)
                     {
                         for (int i = 0; i < nodes.Length; i++)
@@ -264,8 +298,6 @@ namespace TreeEditor
                 log.Debug("拖动进入区域:_tree_DragEnter:格式无效");
                 e.Effect = DragDropEffects.None;
             }
-
-
                      
         }
 
@@ -347,8 +379,7 @@ namespace TreeEditor
             try
             {
                 tnmModel.RefreshFromAdapter();
-                dgvTarget.DataSource = tnmModel.TreeTable;
-
+                dgvTarget.DataSource = tnmModel.TreeTable;                 
                 MessageBox.Show("从数据库加载树完成!", "提示", MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
 
             }
@@ -360,6 +391,11 @@ namespace TreeEditor
 
         private void BtnSyncToDb_Click(object sender, EventArgs e)
         {
+            if (MessageBox.Show("请确保已经备份了原始的数据库！\r\n您确认继续吗？", "提示", MessageBoxButtons.YesNo, MessageBoxIcon.Asterisk) == DialogResult.No)
+            {
+                return;
+            }
+            
             int rc= tnmModel.SyncViaAdapter(checkBoxForce.Checked);
             MessageBox.Show(String.Format("写树节点信息到数据库完成!\r\n共影响记录:{0}",rc),"提示",MessageBoxButtons.OK,MessageBoxIcon.Asterisk);
         }
@@ -377,11 +413,20 @@ namespace TreeEditor
                 "提示",MessageBoxButtons.OK,MessageBoxIcon.Information);
         }
 
+        string msg_force_sync = @"强制同步将先清空数据库源表，然后将当前树节点同步到数据库。这将产生影响：
+1、数据库中源表将全部被清空，如果您想恢复，只能从自动备份XML中恢复。
+2、您当前的删除节点操作将生效。
+3、最后存储的数据库表记录和当前的树结构数据将完全一致。
+4、数据库中的【悬空】节点将被清除。
+
+严重警告：仅当您确认强制同步是您需要的才进行强制同步。
+";
         private void checkBoxForce_CheckedChanged(object sender, EventArgs e)
         {
             if (checkBoxForce.Checked)
             {
-                MessageBox.Show("强制同步将先清空数据库源表，然后将当前树节点同步到数据库。\r\n这将导致您的删除操作生效！", "警告",
+
+                MessageBox.Show(msg_force_sync, "警告",
                     MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
             }
         }
@@ -395,7 +440,61 @@ namespace TreeEditor
                 MessageBoxButtons.OK, MessageBoxIcon.Information);
 
         }
+        #region 移动节点的按钮事件
+        private void BtnUp_Click(object sender, EventArgs e)
+        {
+            if (_tree.CurrentNode == null)
+            {
+                MessageBox.Show("请选择要上移的节点!", "提示", MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
+                return;
+            }
+            ITvaNode nm = _tree.CurrentNode.Tag as ITvaNode;
+            if (nm.TNA_Index == 0)
+            {
+                MessageBox.Show("本层内首节点无法在同层次内再上移！如果要转移层次，请拖拽！", "提示", MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
+                return;
+            }
+            int toIndex = nm.TNA_Index - 1;
+            if (_tree.CurrentNode.Level == 1)
+            {
+                tnmModel.MoveToRoot(nm, toIndex);
+            }
+            else
+            {
+                //上移1格
+                tnmModel.MoveNode(nm, _tree.CurrentNode.Parent.Tag as ITvaNode, toIndex);
+
+            }
+         
+        }
+
+        private void BtnDown_Click(object sender, EventArgs e)
+        {
+            //下移1格
+            if (_tree.CurrentNode == null)
+            {
+                MessageBox.Show("请选择要下移的节点!", "提示", MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
+                return;
+            }
+            if (_tree.CurrentNode.NextNode == null)
+            {
+                MessageBox.Show("末节点无法在本层内再下移！如果要转移层次，请拖拽！", "提示", MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
+                return;
+            }
+            ITvaNode nm = _tree.CurrentNode.Tag as ITvaNode;          
+            int toIndex = nm.TNA_Index + 1;
+            if (_tree.CurrentNode.Level == 1)
+            {
+                tnmModel.MoveToRoot(nm, toIndex);
+            }
+            else
+            {
+                tnmModel.MoveNode(nm, _tree.CurrentNode.Parent.Tag as ITvaNode, toIndex);
+            }
 
 
+        }
+
+        #endregion
     }
 }

@@ -1058,5 +1058,47 @@ namespace TreeEditor.Core
         }
 
         #endregion
+
+    
+        /// <summary>
+        /// 保存给定对象的更改.可能是添加，也可能是更新。
+        /// </summary>
+        /// <param name="list"></param>
+        /// <param name="force">如果force=true,则强制保存，先清空目标表，然后全部执行添加。此动作删除了所有旧的数据，请慎重！</param>
+        /// <returns></returns>
+        public int Save(IList<T> list, bool force)
+        {
+            int rc = 0;
+            using (DbConnection conn = db.CreateConnection())
+            {
+                conn.Open();
+                using (DbTransaction trans = conn.BeginTransaction())
+                {
+                    if (force)
+                    {
+                        DeleteByWhereClause(null, trans);
+                        if (log.IsWarnEnabled) log.WarnFormat("删除了所有{0}实体数据.", typeof(T));
+                    }
+
+                    for (int i = 0; i < list.Count; i++)
+                    {
+                        T mo = list[i];
+                        if ((!force) && IsExist(mo, trans))
+                        {
+                            rc += Update(mo, trans);
+                        }
+                        else
+                        {
+                            rc += Add(mo, trans);
+                        }
+
+                    }
+
+                    trans.Commit();
+                }
+                conn.Close();
+            }
+            return rc;
+        }
     }
 }
