@@ -29,10 +29,14 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FrmMain));
             this.dgvTarget = new System.Windows.Forms.DataGridView();
             this.BtnDtToDb = new System.Windows.Forms.Button();
             this._tree = new Aga.Controls.Tree.TreeViewAdv();
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.tsmiUP = new System.Windows.Forms.ToolStripMenuItem();
+            this.tsmiDown = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.delNodeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.delCheckedNodesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
@@ -56,17 +60,16 @@
             this.dgvTarget.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
                         | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
-            this.dgvTarget.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dgvTarget.Location = new System.Drawing.Point(3, 3);
             this.dgvTarget.Name = "dgvTarget";
             this.dgvTarget.RowTemplate.Height = 23;
-            this.dgvTarget.Size = new System.Drawing.Size(341, 340);
+            this.dgvTarget.Size = new System.Drawing.Size(368, 340);
             this.dgvTarget.TabIndex = 0;
             // 
             // BtnDtToDb
             // 
             this.BtnDtToDb.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.BtnDtToDb.Location = new System.Drawing.Point(350, 320);
+            this.BtnDtToDb.Location = new System.Drawing.Point(377, 320);
             this.BtnDtToDb.Name = "BtnDtToDb";
             this.BtnDtToDb.Size = new System.Drawing.Size(103, 23);
             this.BtnDtToDb.TabIndex = 1;
@@ -92,7 +95,7 @@
             this._tree.Name = "_tree";
             this._tree.SelectedNode = null;
             this._tree.SelectionMode = Aga.Controls.Tree.TreeSelectionMode.MultiSameParent;
-            this._tree.Size = new System.Drawing.Size(248, 346);
+            this._tree.Size = new System.Drawing.Size(221, 346);
             this._tree.TabIndex = 6;
             this._tree.Text = "树";
             this._tree.DragDrop += new System.Windows.Forms.DragEventHandler(this._tree_DragDrop);
@@ -102,12 +105,34 @@
             // contextMenuStrip1
             // 
             this.contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.tsmiUP,
+            this.tsmiDown,
+            this.toolStripSeparator2,
             this.delNodeToolStripMenuItem,
             this.delCheckedNodesToolStripMenuItem,
             this.toolStripSeparator1,
             this.unCheckAllNodesToolStripMenuItem});
             this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(179, 76);
+            this.contextMenuStrip1.Size = new System.Drawing.Size(179, 126);
+            // 
+            // tsmiUP
+            // 
+            this.tsmiUP.Name = "tsmiUP";
+            this.tsmiUP.Size = new System.Drawing.Size(178, 22);
+            this.tsmiUP.Text = "上移(&Up)";
+            this.tsmiUP.Click += new System.EventHandler(this.BtnUp_Click);
+            // 
+            // tsmiDown
+            // 
+            this.tsmiDown.Name = "tsmiDown";
+            this.tsmiDown.Size = new System.Drawing.Size(178, 22);
+            this.tsmiDown.Text = "下移(&Down)";
+            this.tsmiDown.Click += new System.EventHandler(this.BtnDown_Click);
+            // 
+            // toolStripSeparator2
+            // 
+            this.toolStripSeparator2.Name = "toolStripSeparator2";
+            this.toolStripSeparator2.Size = new System.Drawing.Size(175, 6);
             // 
             // delNodeToolStripMenuItem
             // 
@@ -156,13 +181,13 @@
             this.splitContainer1.Panel2.Controls.Add(this.dgvTarget);
             this.splitContainer1.Panel2.Controls.Add(this.BtnDtToDb);
             this.splitContainer1.Size = new System.Drawing.Size(708, 346);
-            this.splitContainer1.SplitterDistance = 248;
+            this.splitContainer1.SplitterDistance = 221;
             this.splitContainer1.TabIndex = 7;
             // 
             // BtnDt2Tree
             // 
             this.BtnDt2Tree.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.BtnDt2Tree.Location = new System.Drawing.Point(350, 61);
+            this.BtnDt2Tree.Location = new System.Drawing.Point(377, 61);
             this.BtnDt2Tree.Name = "BtnDt2Tree";
             this.BtnDt2Tree.Size = new System.Drawing.Size(103, 23);
             this.BtnDt2Tree.TabIndex = 5;
@@ -175,7 +200,7 @@
             this.checkBoxForce.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.checkBoxForce.AutoSize = true;
             this.checkBoxForce.ForeColor = System.Drawing.Color.Red;
-            this.checkBoxForce.Location = new System.Drawing.Point(350, 265);
+            this.checkBoxForce.Location = new System.Drawing.Point(377, 265);
             this.checkBoxForce.Name = "checkBoxForce";
             this.checkBoxForce.Size = new System.Drawing.Size(72, 16);
             this.checkBoxForce.TabIndex = 4;
@@ -186,7 +211,7 @@
             // BtnTree2Dt
             // 
             this.BtnTree2Dt.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.BtnTree2Dt.Location = new System.Drawing.Point(350, 32);
+            this.BtnTree2Dt.Location = new System.Drawing.Point(377, 32);
             this.BtnTree2Dt.Name = "BtnTree2Dt";
             this.BtnTree2Dt.Size = new System.Drawing.Size(103, 23);
             this.BtnTree2Dt.TabIndex = 3;
@@ -197,7 +222,7 @@
             // BtnDb2Tree
             // 
             this.BtnDb2Tree.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.BtnDb2Tree.Location = new System.Drawing.Point(350, 3);
+            this.BtnDb2Tree.Location = new System.Drawing.Point(377, 3);
             this.BtnDb2Tree.Name = "BtnDb2Tree";
             this.BtnDb2Tree.Size = new System.Drawing.Size(103, 23);
             this.BtnDb2Tree.TabIndex = 2;
@@ -222,6 +247,7 @@
             this.ClientSize = new System.Drawing.Size(708, 463);
             this.Controls.Add(this.textBoxLog);
             this.Controls.Add(this.splitContainer1);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "FrmMain";
             this.Text = "树编辑器";
             ((System.ComponentModel.ISupportInitialize)(this.dgvTarget)).EndInit();
@@ -251,6 +277,9 @@
         private System.Windows.Forms.CheckBox checkBoxForce;
         private System.Windows.Forms.Button BtnDt2Tree;
         private System.Windows.Forms.TextBox textBoxLog;
+        private System.Windows.Forms.ToolStripMenuItem tsmiUP;
+        private System.Windows.Forms.ToolStripMenuItem tsmiDown;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
     }
 }
 

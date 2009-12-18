@@ -28,11 +28,11 @@ namespace TreeEditor.Core
             set;
         }
 
-        //string TextFieldName
-        //{
-        //    get;
-        //    set;
-        //}
+        string TextFieldName
+        {
+            get;
+            set;
+        }
 
    
 

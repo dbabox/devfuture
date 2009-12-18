@@ -335,40 +335,7 @@ namespace Mtms.Dal
 
 		#endregion
 
-        /// <summary>
-        /// 保存所有节点改变
-        /// </summary>
-        /// <param name="list"></param>
-        /// <returns></returns>
-        public int Save(IList<MoXldg> list, bool force)
-        {
-            int rc = 0;
-            using (DbConnection conn = db.CreateConnection())
-            {
-                conn.Open();
-                using (DbTransaction trans = conn.BeginTransaction())
-                {
-                    if (force) DeleteByWhereClause(null, trans);
-
-                    for (int i = 0; i < list.Count; i++)
-                    {
-                        MoXldg mo = list[i];
-                        if (IsExist(mo, trans))
-                        {
-                            rc += Update(mo, trans);
-                        }
-                        else
-                        {
-                            rc += Add(mo, trans);
-                        }
-                    }
-
-                    trans.Commit();
-                }
-                conn.Close();
-            }
-            return rc;
-        }
+       
 
 		
 		

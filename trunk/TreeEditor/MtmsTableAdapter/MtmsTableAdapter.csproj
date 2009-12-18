@@ -50,8 +50,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DaFunction.auto.cs" />
     <Compile Include="DaXldg.auto.cs" />
+    <Compile Include="MoFunction.auto.cs" />
     <Compile Include="MoXldg.auto.cs" />
+    <Compile Include="MtmsFunctionAdapter.cs" />
     <Compile Include="MtmsXldgAdapter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

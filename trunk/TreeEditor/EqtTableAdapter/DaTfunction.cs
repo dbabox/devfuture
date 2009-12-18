@@ -332,41 +332,7 @@ namespace EQT.Dal
             return db.ExecuteNonQuery(CommandType.Text, sql);
         }
 
-        /// <summary>
-        /// 保存所有节点改变
-        /// </summary>
-        /// <param name="list"></param>
-        /// <returns></returns>
-        public int Save(IList<MoTfunction> list,bool force)
-        {
-            int rc = 0;
-            using (DbConnection conn = db.CreateConnection())
-            {
-                conn.Open();
-                using (DbTransaction trans = conn.BeginTransaction())
-                {
-                    if (force) DeleteByWhereClause(String.Empty,trans);
-
-                    for (int i = 0; i < list.Count; i++)
-                    {
-                        MoTfunction mo = list[i];
-                        if (IsExist(mo, trans))
-                        {
-                            rc+=Update(mo,trans);
-                        }
-                        else
-                        {
-                            rc += Add(mo, trans);
-                        }
-                    }
-                    
-                    trans.Commit();
-                }
-                conn.Close();
-            }
-            return rc;
-        }
-
+        
 
     }
 }

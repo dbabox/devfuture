@@ -18,7 +18,7 @@ namespace TreeEditor
     public class TNMTreeModel : TreeModelBase
     {
         static readonly ILog log = LogManager.GetCurrentClassLogger();
-
+     
         #region 从配置文件获取
         /// <summary>
         /// 根的逻辑ID格式
@@ -35,11 +35,16 @@ namespace TreeEditor
         /// <summary>
         /// 仅使用指定的单根ID
         /// </summary>
-        bool USE_SINGLE_ROOT_ID = true;
+        bool USE_SINGLE_ROOT_ID = false;
         /// <summary>
         /// 给定特定的单根ID
         /// </summary>
-        string SIGNLE_ROOT_ID = "2009";
+        string SIGNLE_ROOT_ID = String.Empty;
+
+        bool is_auto_backup = true;
+
+        string backup_path = System.IO.Path.Combine(Environment.CurrentDirectory, "backup");
+
         #endregion
 
 
@@ -94,6 +99,11 @@ namespace TreeEditor
                     USE_SINGLE_ROOT_ID = false;
                 }
             }
+
+            if (System.Configuration.ConfigurationManager.AppSettings["AutoBackup"] != null)
+            {
+                bool.TryParse(System.Configuration.ConfigurationManager.AppSettings["AutoBackup"], out is_auto_backup);
+            }
             #endregion
 
         }
@@ -121,7 +131,23 @@ namespace TreeEditor
             
             p2cDic.Clear();            
             treeDs = tta.GetTreeNodeDataTable();
+
+            #region //这里自动备份
+            if (is_auto_backup)
+            {
+                if (!System.IO.Directory.Exists(backup_path))
+                {
+                    System.IO.Directory.CreateDirectory(backup_path);
+                }
+                string backupFileName=System.IO.Path.Combine(backup_path, Guid.NewGuid().ToString("D") + ".xml");
+                treeDs.WriteXml(backupFileName, XmlWriteMode.WriteSchema);
+                log.InfoFormat("备份{0}到{1}", tta.GetType(), backupFileName);
+            }
+            #endregion
+
             treeTable = treeDs.Tables[0];
+            
+
             rootList = tta.GetRootNodes();
             for (int i = 0; i < rootList.Count; i++)
             {
@@ -139,9 +165,7 @@ namespace TreeEditor
         /// </summary>
         public int SyncViaAdapter(bool force)
         {
-            return tta.SyncToDb(tnmDic.Values,force);
-            //tta.SyncToDb(treeDs);
-            //treeTable.AcceptChanges();
+            return tta.SyncToDb(tnmDic.Values,force);       
         }
 
         /// <summary>

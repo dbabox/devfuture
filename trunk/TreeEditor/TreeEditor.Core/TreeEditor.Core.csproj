@@ -51,6 +51,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DaBase.cs" />
+    <Compile Include="DataTableTreeAdapter.cs" />
     <Compile Include="ITvaNode.cs" />
     <Compile Include="ITreeTableAdapter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
