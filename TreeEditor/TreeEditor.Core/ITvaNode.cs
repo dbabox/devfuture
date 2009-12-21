@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Data;
 
 namespace TreeEditor.Core
 {
@@ -89,6 +90,23 @@ namespace TreeEditor.Core
         {
             get;
             set;
-        } 
+        }
+
+        //TODO:20091217 添加DataRow到ITvaNode对象之间的转换接口
+        //TODO:Adapter类应该仅仅封装必要的数据访问功能。
+
+        //应该实现一个通用的DataRowTvaNode类，此类简单的wrapper一个DataRow成为一个ITvaNode
+        
+       
+        /// <summary>
+        /// 将Datarow的值赋值到Model。
+        /// </summary>
+        /// <param name="row"></param>
+        void Row2Model(DataRow row);
+        /// <summary>
+        /// 将Model的值赋值给DataRow。
+        /// </summary>
+        /// <param name="row"></param>
+        void Model2Row(DataRow row);
     }
 }

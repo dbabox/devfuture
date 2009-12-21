@@ -1,258 +1,132 @@
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Data;
+using System.Globalization;
+using System.Data.Common;
+using Microsoft.Practices.EnterpriseLibrary.Data;
+using System.Security.Permissions;
+using System.Runtime.Serialization;
+using System.Collections.ObjectModel;
+using Common.Logging;
+using System.Collections.Generic;
 
 namespace TreeEditor.Core
 {
-    public class DataTableTreeAdapter : ITreeTableAdapter
+    public class DataTableTreeAdapter 
     {
-        internal class DataRowTvaNode : ITvaNode
+        static readonly ILog log = LogManager.GetCurrentClassLogger();
+         
+        private Database db;
+        private TvaSchema schema;
+
+        public TvaSchema Schema
         {
-            private DataRow row;
-            private DataTableTreeAdapter dtta;
-            internal DataRowTvaNode(DataRow row_, DataTableTreeAdapter dtta_)
-            {
-                row = row_;
-                dtta = dtta_;
-            }
-
-
-            #region ITvaNode 成员
-
-            public string TNA_ID
-            {
-                get
-                {
-                    return (string)row[dtta.IdFieldName];
-                }
-                set
-                {
-                    row[dtta.IdFieldName] = value;
-                }
-            }
-
-            public string TNA_PID
-            {
-                get
-                {
-                    return  (string)row[dtta.ParentIdFieldName];
-                }
-                set
-                {
-                    row[dtta.ParentIdFieldName] = value;
-                }
-            }
-
-            public string TNA_Text
-            {
-                get
-                {
-                    return  (string)row[dtta.TextFieldName];
-                }
-                set
-                {
-                    row[dtta.TextFieldName] = value;
-                }
-            }
-
-            public string TNA_LogicId
-            {
-                get
-                {
-                    throw new Exception("The method or operation is not implemented.");
-                }
-                set
-                {
-                    throw new Exception("The method or operation is not implemented.");
-                }
-            }
-
-            public IList<ITvaNode> Owner
-            {
-                get
-                {
-                    throw new Exception("The method or operation is not implemented.");
-                }
-                set
-                {
-                    throw new Exception("The method or operation is not implemented.");
-                }
-            }
-
-            public int TNA_Level
-            {
-                get
-                {
-                    throw new Exception("The method or operation is not implemented.");
-                }
-                set
-                {
-                    throw new Exception("The method or operation is not implemented.");
-                }
-            }
-
-            public int TNA_Index
-            {
-                get { throw new Exception("The method or operation is not implemented."); }
-            }
-
-            public System.Drawing.Image Icon
-            {
-                get
-                {
-                    throw new Exception("The method or operation is not implemented.");
-                }
-                set
-                {
-                    throw new Exception("The method or operation is not implemented.");
-                }
-            }
-
-            public bool IsChecked
-            {
-                get
-                {
-                    throw new Exception("The method or operation is not implemented.");
-                }
-                set
-                {
-                    throw new Exception("The method or operation is not implemented.");
-                }
-            }
-
-            #endregion
-
-            #region ICloneable 成员
-
-            public object Clone()
-            {
-                //TODO:由dtta负责复制一个新行
-                throw new Exception("The method or operation is not implemented.");
-            }
-
-            #endregion
+            get { return schema; }
+            set { schema = value; }
         }
 
-        #region ITreeTableAdapter 成员
+     
 
-
-        private string getRootsWhereClause;
-
-        public string GetRootsWhereClause
+        public DataTableTreeAdapter(TvaSchema schema_)
         {
-            get { return getRootsWhereClause; }
-            set { getRootsWhereClause = value; }
-        }
+            schema = schema_;
 
-        private string idFieldName;
-        public string IdFieldName
-        {
-            get
-            {
-                return idFieldName;
-            }
-            set
-            {
-                idFieldName = value;
-            }
+            DbProviderFactory f = DbProviderFactories.GetFactory(schema.ProviderName);
+            db = new GenericDatabase(schema.ConnectionString, f); 
+            
         }
+        
 
-        private string parentIdFieldName;
-        public string ParentIdFieldName
-        {
-            get
-            {
-                return parentIdFieldName;
-            }
-            set
-            {
-                parentIdFieldName = value;
-            }
-        }
+        #region ITreeTableAdapter 成员 
 
-        private string textFieldName;
-        public string TextFieldName
-        {
-            get
-            {
-                return textFieldName;
-            }
-            set
-            {
-                textFieldName = value;
-            }
-        }
-
-        public void AddTvaNode2DataTable(ITvaNode node, System.Data.DataTable dt)
-        {
-            throw new Exception("The method or operation is not implemented.");
-        }
-
-        public ITvaNode Row2TvaNode(System.Data.DataRow row)
-        {
-            throw new Exception("The method or operation is not implemented.");
-        }
-
+        /// <summary>
+        ///  必须的函数。从源获取总数据量。默认实现是Select count(*) from xxx.
+        /// </summary>
+        /// <returns></returns>
         public int GetNodesTotalCount()
         {
-            throw new Exception("The method or operation is not implemented.");
+            return Convert.ToInt32(db.ExecuteScalar(CommandType.Text, schema.SQL_GetGetNodesTotalCount));
         }
 
         /// <summary>
-        /// 从DataTable中解析出所有根节点
+        /// 必须的函数，从数据源获取所有节点DataSet.
         /// </summary>
         /// <returns></returns>
-        public IList<ITvaNode> GetRootNodes()
-        {
-            throw new Exception("The method or operation is not implemented.");
-            
-        }
-
-        public IList<ITvaNode> GetTreeNodes()
-        {
-            throw new Exception("The method or operation is not implemented.");
-        }
-
         public System.Data.DataSet GetTreeNodeDataTable()
         {
-            throw new Exception("The method or operation is not implemented.");
+            return db.ExecuteDataSet(CommandType.Text, schema.SQL_GetTreeNodeDataTable);
         }
 
-        public int SyncTreeNodes2DataTable(Dictionary<string, ITvaNode> tvnDic, System.Data.DataTable dt)
+
+        /// <summary>
+        /// 必须的函数，将节点保存到数据库.
+        /// </summary>
+        /// <param name="treeNodeModelList"></param>
+        /// <param name="force"></param>
+        /// <returns></returns>
+        public int SyncToDb(IEnumerable<DataRowTvaNode> list, bool force)
         {
-            throw new Exception("The method or operation is not implemented.");
+            int rc = 0;
+            using (DbConnection conn = db.CreateConnection())
+            {
+                conn.Open();
+                using (DbTransaction trans = conn.BeginTransaction())
+                {                   
+                    if (force)
+                    {
+                        DbCommand cmd_del_source = db.GetSqlStringCommand(schema.SQL_ClearSourceTreeNodeTable);
+                        db.ExecuteNonQuery(cmd_del_source, trans);                         
+                        if (log.IsWarnEnabled) log.WarnFormat("删除了所有{0}实体数据.", schema.Tna_table_name);
+                    }
+                    DbCommand cmd_is_Exist = db.GetSqlStringCommand(schema.SQLCmd_IsExist);
+                    db.AddInParameter(cmd_is_Exist, schema.Tna_id_field_name, schema.IdFieldDbType);
+
+                    DbCommand cmd_update = db.GetSqlStringCommand(schema.SQLCmd_Update);
+                    db.DiscoverParameters(cmd_update);
+
+                    DbCommand cmd_add = db.GetSqlStringCommand(schema.SQLCmd_Add);
+                    db.DiscoverParameters(cmd_add);
+
+                    foreach (DataRowTvaNode tn in list)
+                    {
+                        if (!force)
+                        {
+                            db.SetParameterValue(cmd_is_Exist, schema.Tna_id_field_name, tn.TNA_ID);
+                            if (Convert.ToInt32(db.ExecuteScalar(cmd_is_Exist)) == 1)
+                            {
+                                //执行更新 
+                                foreach (DbParameter par in cmd_update.Parameters)
+                                {
+                                    db.SetParameterValue(cmd_update, par.ParameterName, tn.DataRow[par.ParameterName]);
+                                }
+                                rc += db.ExecuteNonQuery(cmd_update, trans);
+                                
+                            }
+                            else
+                            {
+                                log.ErrorFormat("TNA_ID={0}在数据库中不存在", tn.TNA_ID);
+                            }
+                        }
+                        else
+                        {
+                            //执行添加
+                            foreach (DbParameter par in cmd_add.Parameters)
+                            {
+                                db.SetParameterValue(cmd_add, par.ParameterName, tn.DataRow[par.ParameterName]);
+                            }
+                            rc += db.ExecuteNonQuery(cmd_add, trans);
+                        }
+                    }                  
+
+                    trans.Commit();
+                }
+                conn.Close();
+            }
+            return rc;
         }
 
-        public int SyncDataTable2TreeNodes(System.Data.DataTable dt, Dictionary<string, ITvaNode> tvnDic)
-        {
-            throw new Exception("The method or operation is not implemented.");
-        }
-
-        public int SyncToDb(IEnumerable<ITvaNode> treeNodeModelList, bool force)
-        {
-            throw new Exception("The method or operation is not implemented.");
-        }
-
-        public int SyncToDb(System.Data.DataSet tvaNodeTreeDs)
-        {
-            throw new Exception("The method or operation is not implemented.");
-        }
-
-        public IList<ITvaNode> GetNextChildTreeNodes(ITvaNode parent)
-        {
-            throw new Exception("The method or operation is not implemented.");
-        }
-
-        public IList<ITvaNode> GetCssChildTreeNodes(ITvaNode parent)
-        {
-            throw new Exception("The method or operation is not implemented.");
-        }
-
-        public bool IsHasChild(ITvaNode nm)
-        {
-            throw new Exception("The method or operation is not implemented.");
-        }
+         
+         
+        
 
         #endregion
 
