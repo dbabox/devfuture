@@ -36,11 +36,11 @@ namespace TreeEditor
         /// <summary>
         /// 仅使用指定的单根ID
         /// </summary>
-        bool USE_SINGLE_ROOT_ID = false;
+        bool USE_SINGLE_SPECIAL_ROOT_ID = false;
         /// <summary>
         /// 给定特定的单根ID
         /// </summary>
-        string SIGNLE_ROOT_ID = String.Empty;
+        string SPECIALED_SIGNLE_ROOT_ID = String.Empty;
 
         bool is_auto_backup = true;
 
@@ -80,11 +80,10 @@ namespace TreeEditor
 
         private bool isLoadNodesComplete = false;
 
-        public DataRowTreeModel()
+        public DataRowTreeModel(TvaSchema schema_)
         {
-            TvaSchema schema = new TvaSchema();
+            TvaSchema schema = schema_;
             tta = new DataTableTreeAdapter(schema);
-
             #region 配置信息
             if (!String.IsNullOrEmpty(System.Configuration.ConfigurationManager.AppSettings["LOGIC_ID_FMT_1"]))
             {
@@ -100,22 +99,22 @@ namespace TreeEditor
             }
             if (!String.IsNullOrEmpty(System.Configuration.ConfigurationManager.AppSettings["SIGNLE_ROOT_ID"]))
             {
-                SIGNLE_ROOT_ID = System.Configuration.ConfigurationManager.AppSettings["SIGNLE_ROOT_ID"];
+                SPECIALED_SIGNLE_ROOT_ID = System.Configuration.ConfigurationManager.AppSettings["SIGNLE_ROOT_ID"];
             }
             if (!String.IsNullOrEmpty(System.Configuration.ConfigurationManager.AppSettings["USE_SINGLE_ROOT_ID"]))
             {
                 string boolstr = System.Configuration.ConfigurationManager.AppSettings["USE_SINGLE_ROOT_ID"];
-                if (bool.TryParse(boolstr, out USE_SINGLE_ROOT_ID) == false)
+                if (bool.TryParse(boolstr, out USE_SINGLE_SPECIAL_ROOT_ID) == false)
                 {
                     int intvalue = 0;
                     if (Int32.TryParse(boolstr, out intvalue) == true)
                     {
-                        USE_SINGLE_ROOT_ID = intvalue != 0;
+                        USE_SINGLE_SPECIAL_ROOT_ID = intvalue != 0;
                     }
                 }
                 else
                 {
-                    USE_SINGLE_ROOT_ID = false;
+                    USE_SINGLE_SPECIAL_ROOT_ID = false;
                 }
             }
 
@@ -124,6 +123,11 @@ namespace TreeEditor
                 bool.TryParse(System.Configuration.ConfigurationManager.AppSettings["AutoBackup"], out is_auto_backup);
             }
             #endregion
+        }
+
+        public DataRowTreeModel():this(new TvaSchema())
+        {
+             
         }
 
        
@@ -568,9 +572,9 @@ namespace TreeEditor
         {
             if (rootList.Contains(node))//如果根中包含
             {
-                if (rootList.Count == 1 && USE_SINGLE_ROOT_ID)
+                if (rootList.Count == 1 && USE_SINGLE_SPECIAL_ROOT_ID)
                 {
-                    return SIGNLE_ROOT_ID;
+                    return SPECIALED_SIGNLE_ROOT_ID;
                 }
                 return String.Format(LOGIC_ID_FMT_1, node.TNA_Index + 1, ROOT_LOGIC_ID_PREFIX);
             }
@@ -593,9 +597,9 @@ namespace TreeEditor
         }
         private string GetRoolLogicId(int index)
         {
-            if (rootList.Count == 1 && USE_SINGLE_ROOT_ID)
+            if (rootList.Count == 1 && USE_SINGLE_SPECIAL_ROOT_ID)
             {
-                return SIGNLE_ROOT_ID;
+                return SPECIALED_SIGNLE_ROOT_ID;
             }
             return String.Format(LOGIC_ID_FMT_1, index + 1, ROOT_LOGIC_ID_PREFIX);
         }

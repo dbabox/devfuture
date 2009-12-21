@@ -25,13 +25,15 @@ namespace TreeEditor.Core
         }
 
      
+        
 
         public DataTableTreeAdapter(TvaSchema schema_)
         {
             schema = schema_;
 
             DbProviderFactory f = DbProviderFactories.GetFactory(schema.ProviderName);
-            db = new GenericDatabase(schema.ConnectionString, f); 
+            db = new GenericDatabase(schema.ConnectionString, f);
+            schema.AutoGenerateCmd(db);
             
         }
         
@@ -44,7 +46,7 @@ namespace TreeEditor.Core
         /// <returns></returns>
         public int GetNodesTotalCount()
         {
-            return Convert.ToInt32(db.ExecuteScalar(CommandType.Text, schema.SQL_GetGetNodesTotalCount));
+            return Convert.ToInt32(db.ExecuteScalar( schema.CmdGetGetNodesTotalCount));
         }
 
         /// <summary>
@@ -53,7 +55,7 @@ namespace TreeEditor.Core
         /// <returns></returns>
         public System.Data.DataSet GetTreeNodeDataTable()
         {
-            return db.ExecuteDataSet(CommandType.Text, schema.SQL_GetTreeNodeDataTable);
+            return db.ExecuteDataSet(schema.CmdGetTreeNodeDataTable);
         }
 
 
@@ -70,36 +72,38 @@ namespace TreeEditor.Core
             {
                 conn.Open();
                 using (DbTransaction trans = conn.BeginTransaction())
-                {                   
+                {
                     if (force)
-                    {
-                        DbCommand cmd_del_source = db.GetSqlStringCommand(schema.SQL_ClearSourceTreeNodeTable);
-                        db.ExecuteNonQuery(cmd_del_source, trans);                         
+                    {                        
+                        db.ExecuteNonQuery(schema.CmdClearSourceTreeNodeTable, trans);
                         if (log.IsWarnEnabled) log.WarnFormat("删除了所有{0}实体数据.", schema.Tna_table_name);
                     }
-                    DbCommand cmd_is_Exist = db.GetSqlStringCommand(schema.SQLCmd_IsExist);
-                    db.AddInParameter(cmd_is_Exist, schema.Tna_id_field_name, schema.IdFieldDbType);
-
-                    DbCommand cmd_update = db.GetSqlStringCommand(schema.SQLCmd_Update);
-                    db.DiscoverParameters(cmd_update);
-
-                    DbCommand cmd_add = db.GetSqlStringCommand(schema.SQLCmd_Add);
-                    db.DiscoverParameters(cmd_add);
-
+                    
                     foreach (DataRowTvaNode tn in list)
                     {
                         if (!force)
                         {
-                            db.SetParameterValue(cmd_is_Exist, schema.Tna_id_field_name, tn.TNA_ID);
-                            if (Convert.ToInt32(db.ExecuteScalar(cmd_is_Exist)) == 1)
+                            db.SetParameterValue(schema.CmdIsExist, schema.Tna_id_field_name, tn.TNA_ID);
+                            if (Convert.ToInt32(db.ExecuteScalar(schema.CmdIsExist, trans)) == 1)
                             {
                                 //执行更新 
-                                foreach (DbParameter par in cmd_update.Parameters)
+                                foreach (DbParameter par in schema.CmdUpdate.Parameters)
                                 {
-                                    db.SetParameterValue(cmd_update, par.ParameterName, tn.DataRow[par.ParameterName]);
+                                    if (String.Compare(par.ParameterName, "new" + schema.Tna_id_field_name, true) == 0)
+                                    {
+                                        db.SetParameterValue(schema.CmdUpdate , par.ParameterName, tn.DataRow[schema.Tna_id_field_name]);
+                                    }
+                                    else if (String.Compare(par.ParameterName, schema.Tna_id_field_name, true) == 0)
+                                    {
+                                        db.SetParameterValue(schema.CmdUpdate, par.ParameterName, tn.Original_tna_id);
+                                    }
+                                    else
+                                    {
+                                        db.SetParameterValue(schema.CmdUpdate, par.ParameterName, tn.DataRow[par.ParameterName]);
+                                    }
                                 }
-                                rc += db.ExecuteNonQuery(cmd_update, trans);
-                                
+                                rc += db.ExecuteNonQuery(schema.CmdUpdate, trans);
+
                             }
                             else
                             {
@@ -109,13 +113,13 @@ namespace TreeEditor.Core
                         else
                         {
                             //执行添加
-                            foreach (DbParameter par in cmd_add.Parameters)
+                            foreach (DbParameter par in schema.CmdAdd.Parameters)
                             {
-                                db.SetParameterValue(cmd_add, par.ParameterName, tn.DataRow[par.ParameterName]);
+                                db.SetParameterValue(schema.CmdAdd, par.ParameterName, tn.DataRow[par.ParameterName]);
                             }
-                            rc += db.ExecuteNonQuery(cmd_add, trans);
+                            rc += db.ExecuteNonQuery(schema.CmdAdd, trans);
                         }
-                    }                  
+                    }
 
                     trans.Commit();
                 }

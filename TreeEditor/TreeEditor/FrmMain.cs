@@ -21,6 +21,7 @@ using TreeEditor.Core;
 using Aga.Controls.Tree;
 using Aga.Controls.Tree.NodeControls;
 using Common.Logging;
+using System.Data.Common;
 
 namespace TreeEditor
 {
@@ -38,52 +39,12 @@ namespace TreeEditor
 
         //private Dictionary<ITreeTableAdapter, string> treeAdapterDic = new Dictionary<ITreeTableAdapter, string>();
 
-        public FrmMain()
+        public FrmMain(TvaSchema s)
         {
             InitializeComponent();
             SetupTree(_tree);
 
-            //ITreeTableAdapter tta_1 = new TreeEditor.TableAdapter.EqtTreeTableAdapter();
-            //ITreeTableAdapter tta_2 = new TreeEditor.TableAdapter.MtmsXldgAdapter();
-            //ITreeTableAdapter tta_3 = new TreeEditor.TableAdapter.MtmsFunctionAdapter();
-
-            //treeAdapterDic.Add(tta_1, "EQT系统菜单");
-            //treeAdapterDic.Add(tta_2, "MTMS系统 2009训练大纲树");
-            //treeAdapterDic.Add(tta_3, "MTMS 系统菜单");
-
-            //BindingSource bs = new BindingSource(treeAdapterDic, null);
-            //comboBox1.DataSource = bs;
-            //comboBox1.DisplayMember = "Value";
-            //comboBox1.ValueMember = "Key";
-
-            //string att = System.Configuration.ConfigurationManager.AppSettings["AdapterTableName"];
-            //switch (att)
-            //{
-            //    case "EQT.TFUNCTION":
-            //        {
-            //            tta = new TreeEditor.TableAdapter.EqtTreeTableAdapter();
-            //            break;
-            //        }
-            //    case "Mtms.MT_FUNCTION":
-            //        {
-            //            tta = new TreeEditor.TableAdapter.MtmsFunctionAdapter();
-            //            break;
-            //        }
-            //    case "Mtms.MT_XLDG":
-            //        {
-            //            tta = new TreeEditor.TableAdapter.MtmsXldgAdapter();
-            //            break;
-            //        }
-            //    default:
-            //        {
-            //            throw new Exception("致命错误！配置文件节必须配置AdapterTableName。其格式为：数据库名.表名");
-            //        }
-            //}
-
-
-
-
-            tnmModel = new DataRowTreeModel();         
+            tnmModel = new DataRowTreeModel(s);         
             tnmModel.NodesRemoved += new EventHandler<TreeModelEventArgs>(tnmModel_NodesRemoved);
             tnmModel.NodesInserted += new EventHandler<TreeModelEventArgs>(tnmModel_NodesInserted);
             _tree.SelectionChanged += new EventHandler(_tree_SelectionChanged);
@@ -378,7 +339,7 @@ namespace TreeEditor
                 MessageBox.Show("从数据库加载树完成!", "提示", MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
 
             }
-            catch (DalException ex)
+            catch (DbException ex)
             {
                 MessageBox.Show("数据库异常" + ex.InnerException.Message, "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }

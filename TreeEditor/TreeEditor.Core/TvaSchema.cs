@@ -2,6 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Data;
+using Microsoft.Practices.EnterpriseLibrary.Data;
+using System.Data.Common;
+using Common.Logging;
+
 
 namespace TreeEditor.Core
 {
@@ -10,6 +14,23 @@ namespace TreeEditor.Core
     /// </summary>
     public class TvaSchema
     {
+
+        private static Dictionary<String, String> providerDic = new Dictionary<string, string>();
+
+        public static Dictionary<String, String> ProviderDic
+        {
+            get { return TvaSchema.providerDic; }
+            
+        }
+
+        static TvaSchema()
+        {
+            providerDic.Add("SQL Server", "System.Data.SqlClient");
+            providerDic.Add("Oracle", "Oracle.DataAccess.Client");
+        }
+
+        static readonly ILog log = LogManager.GetCurrentClassLogger();
+
         private string tna_id_field_name="FUNC_ID";
         /// <summary>
         /// ID字段的名称
@@ -80,7 +101,6 @@ namespace TreeEditor.Core
         }
 
         private string sql_GetGetNodesTotalCount;
-
         /// <summary>
         /// 获取总节点数,默认是 select count(*) from xxx.
         /// </summary>
@@ -137,7 +157,15 @@ namespace TreeEditor.Core
             set { sql_ClearSourceTreeNodeTable = value; }
         }
 
-         
+        private  char parPrefix = ':';
+        private char ParameterPrefix
+        {
+            get
+            {                
+                if (providerName == "System.Data.SqlClient") parPrefix = '@';
+                return parPrefix;
+            }
+        }
 
         private string sqlcmd_IsExist;
         public string SQLCmd_IsExist
@@ -148,10 +176,9 @@ namespace TreeEditor.Core
                 {
                     if (String.IsNullOrEmpty(tna_table_name)) throw new ArgumentNullException("tna_table_name");
                     if (String.IsNullOrEmpty(providerName)) throw new ArgumentNullException("providerName");
-                    char parPrefix = ':';
-                    if (providerName == "System.Data.SqlClient") parPrefix = '@';
+                   
                     sqlcmd_IsExist = String.Format("SELECT COUNT(*) FROM {0} WHERE {1}={2}{1} ", tna_table_name,
-                        tna_id_field_name,parPrefix);
+                        tna_id_field_name, ParameterPrefix);
                 }
                 return sqlcmd_IsExist;
             }
@@ -161,7 +188,9 @@ namespace TreeEditor.Core
             }
         }
 
-        private string sqlCmd_Update = "UPDATE TFUNCTION SET FUNC_NAME=@FuncName, FUNC_CLASS=@FuncClass, FUNC_SIGN=@FuncSign, REM=@Rem, ORDER_NUM=@OrderNum, PARENT_FUNC=@ParentFunc WHERE FUNC_ID=@FuncId";
+
+        #region 可从数据库元数据获得
+        private string sqlCmd_Update ;
         /// <summary>
         /// 参数化的SQL命令，更新一行数据.
         /// 应从外部配置，未来考虑从数据库查询得到。
@@ -173,7 +202,7 @@ namespace TreeEditor.Core
             set { sqlCmd_Update = value; }
         }
 
-        private string sqlCmd_Add = "INSERT INTO TFUNCTION ( TFUNCTION.FUNC_ID ,TFUNCTION.FUNC_NAME ,FUNC_CLASS ,FUNC_SIGN ,TFUNCTION.REM ,ORDER_NUM ,PARENT_FUNC   ) VALUES (@FuncId,@FuncName,@FuncClass,@FuncSign,@Rem,@OrderNum,@ParentFunc)";
+        private string sqlCmd_Add ;
         /// <summary>
         /// 添加一条记录所用的SQL。
         /// 应从外部配置，未来可实现直接从数据库元数据构造。
@@ -185,15 +214,14 @@ namespace TreeEditor.Core
             set { sqlCmd_Add = value; }
         }
 
-
+        #endregion
 
 
         private DbType idFieldDbType=DbType.String;
 
         public DbType IdFieldDbType
         {
-            get { return idFieldDbType; }
-            set { idFieldDbType = value; }
+            get { return idFieldDbType; }            
         } 
 
         private string rowFilter_GetRootNodes;
@@ -213,6 +241,147 @@ namespace TreeEditor.Core
             set { rowFilter_GetRootNodes = value; }
         }
 
+        private DbType TypeMap(string type)
+        {
+            switch (type)
+            {
+                case "varchar": return DbType.String;
+                case "nvarchar": return DbType.String;
+                case "int": return DbType.Int32;
+                case "integer": return DbType.Int32;
+                default: return DbType.String;
+            }
+
+        }
+
+        #region 所有的SQL命令 DbCommand 对象
+        private DbCommand cmdIsExist;
+
+        public DbCommand CmdIsExist
+        {
+            get { return cmdIsExist; }
+            
+        }
+
+        private DbCommand cmdGetTreeNodeDataTable;
+
+        public DbCommand CmdGetTreeNodeDataTable
+        {
+            get { return cmdGetTreeNodeDataTable; }           
+        }
+
+        private DbCommand cmdGetGetNodesTotalCount;
+
+        public DbCommand CmdGetGetNodesTotalCount
+        {
+            get { return cmdGetGetNodesTotalCount; }            
+        }
+
+        private DbCommand cmdAdd;
+
+        public DbCommand CmdAdd
+        {
+            get { return cmdAdd; }            
+        }
+        private DbCommand cmdUpdate;
+
+        public DbCommand CmdUpdate
+        {
+            get { return cmdUpdate; }
+            
+        }
+
+        private DbCommand cmdClearSourceTreeNodeTable;
+
+        public DbCommand CmdClearSourceTreeNodeTable
+        {
+            get { return cmdClearSourceTreeNodeTable; }
+
+        }
+        #endregion
+
+        public void AutoGenerateCmd(Database db)
+        {
+            if (cmdAdd != null) cmdAdd.Dispose();
+            if(cmdUpdate!=null) cmdUpdate.Dispose();
+
+            using (DbCommand cmd = db.GetSqlStringCommand(this.SQL_GetTreeNodeDataTable))
+            {
+                using (IDataReader rd = db.ExecuteReader(cmd))
+                { 
+                    DataTable dt = rd.GetSchemaTable();
+                    #region SQL命令
+                    StringBuilder sbUpdate = new StringBuilder();
+                    sbUpdate.AppendFormat("Update {0} SET", Tna_table_name);
+                    StringBuilder sbAdd = new StringBuilder();
+                    StringBuilder sbValues = new StringBuilder();
+                    
+                    sbAdd.AppendFormat("INSERT INTO {0} ( ", Tna_table_name);
+                    string colName = null;
+                    for (int i = 0; i < dt.Rows.Count; i++)
+                    {
+                        colName = dt.Rows[i]["ColumnName"].ToString();
+                        log.DebugFormat("{0}:列名：{1},类型:{2}", i, colName, dt.Rows[i]["DataType"]);
+                        if (String.Compare(colName, Tna_id_field_name, true) != 0)
+                        {
+                            sbUpdate.AppendFormat(" {0}={1}{0},", colName, ParameterPrefix, colName);                          
+                        }
+                        else
+                        {
+                            sbUpdate.AppendFormat(" {0}={1}new{0},", colName, ParameterPrefix, colName); //主键也可以更新                           
+                        }
+
+                        sbAdd.AppendFormat("{0},", colName);
+                        sbValues.AppendFormat("{0}{1},", ParameterPrefix, colName);
+                       
+                    }
+                    sbUpdate.Remove(sbUpdate.Length - 1, 1);
+                    sbAdd.Remove(sbAdd.Length - 1, 1);
+                    sbValues.Remove(sbValues.Length - 1, 1);
+
+                    sbUpdate.AppendFormat(" WHERE {0}={1}{0}", Tna_id_field_name, ParameterPrefix);
+                    sbAdd.AppendFormat(" ) Values( {0} ) ",sbValues.ToString());
+
+                    sqlCmd_Add = sbAdd.ToString();
+                    sqlCmd_Update = sbUpdate.ToString();
+                    log.DebugFormat("更新sql：{0}", sqlCmd_Add);
+                    log.DebugFormat("Add sql：{0}", sqlCmd_Update);
+                    #endregion
+                    cmdAdd = db.GetSqlStringCommand(sqlCmd_Add);
+                    cmdUpdate = db.GetSqlStringCommand(sqlCmd_Update);
+
+                    string typename=null;
+                    for (int i = 0; i < dt.Rows.Count; i++)
+                    {
+                        colName = dt.Rows[i]["ColumnName"].ToString();
+                        typename=dt.Rows[i]["DataTypeName"].ToString();
+                        log.DebugFormat("{0}:列名：{1},类型:{2}", i, colName,typename );
+                        if (String.Compare(colName, Tna_id_field_name, true) != 0)
+                        {                            
+                            db.AddInParameter(cmdUpdate, colName, TypeMap(typename));
+                        }
+                        else
+                        {                           
+                            db.AddInParameter(cmdUpdate, "new" + colName, TypeMap(typename));
+                            db.AddInParameter(cmdUpdate,colName, TypeMap(typename));
+
+                            idFieldDbType = TypeMap(typename);
+                        }                      
+                        db.AddInParameter(cmdAdd, colName, TypeMap(typename));
+
+                    }
+                    rd.Close();
+                }
+               
+            }
+
+            cmdIsExist = db.GetSqlStringCommand(SQLCmd_IsExist);
+            cmdGetTreeNodeDataTable = db.GetSqlStringCommand(SQL_GetTreeNodeDataTable);
+            cmdGetGetNodesTotalCount = db.GetSqlStringCommand(SQL_GetGetNodesTotalCount);
+            cmdClearSourceTreeNodeTable = db.GetSqlStringCommand(SQL_ClearSourceTreeNodeTable);
+            db.AddInParameter(cmdIsExist, Tna_id_field_name, IdFieldDbType); 
+        }
+        
         
 
 

@@ -65,11 +65,21 @@
     <Compile Include="FrmMain.Designer.cs">
       <DependentUpon>FrmMain.cs</DependentUpon>
     </Compile>
+    <Compile Include="FrmSchema.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FrmSchema.Designer.cs">
+      <DependentUpon>FrmSchema.cs</DependentUpon>
+    </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="FrmMain.resx">
       <SubType>Designer</SubType>
       <DependentUpon>FrmMain.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FrmSchema.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>FrmSchema.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -96,17 +106,8 @@
     </Compile>
     <Compile Include="Dev.Future.Logging.Log4Net\RichTextBoxAppender.cs" />
     <Compile Include="Dev.Future.Logging.Log4Net\TextBoxAppender.cs" />
-    <Compile Include="TNMTreeModel.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\EqtTableAdapter\EqtTableAdapter.csproj">
-      <Project>{55AB61FA-A525-478D-BD29-E3721DCF8715}</Project>
-      <Name>EqtTableAdapter</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\MtmsTableAdapter\MtmsTableAdapter.csproj">
-      <Project>{6489EE1A-2279-4C95-9EC5-911381E54970}</Project>
-      <Name>MtmsTableAdapter</Name>
-    </ProjectReference>
     <ProjectReference Include="..\TreeEditor.Core\TreeEditor.Core.csproj">
       <Project>{CE364C1C-649D-4D9F-94B2-20ED3D7CB985}</Project>
       <Name>TreeEditor.Core</Name>

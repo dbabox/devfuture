@@ -50,13 +50,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DaBase.cs" />
     <Compile Include="DataRowTvaNode.cs" />
     <Compile Include="DataTableTreeAdapter.cs" />
-    <Compile Include="ITvaNode.cs" />
-    <Compile Include="ITreeTableAdapter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="TreeTableAdapter.cs" />
     <Compile Include="TvaSchema.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
