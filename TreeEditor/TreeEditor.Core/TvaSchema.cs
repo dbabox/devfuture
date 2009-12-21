@@ -12,7 +12,7 @@ namespace TreeEditor.Core
     /// <summary>
     /// 行信息：ID，PID，Text列的列名。
     /// </summary>
-    public class TvaSchema
+    public class TvaSchema:IDisposable
     {
 
         private static Dictionary<String, String> providerDic = new Dictionary<string, string>();
@@ -381,10 +381,24 @@ namespace TreeEditor.Core
             cmdClearSourceTreeNodeTable = db.GetSqlStringCommand(SQL_ClearSourceTreeNodeTable);
             db.AddInParameter(cmdIsExist, Tna_id_field_name, IdFieldDbType); 
         }
-        
-        
 
 
+
+
+
+        #region IDisposable 成员
+
+        public void Dispose()
+        {
+            if (cmdIsExist != null)
+            {
+                cmdIsExist.Dispose();
+                cmdIsExist = null;
+            }
+            //TODO:其他几个命令需要释放
+        }
+
+        #endregion
     }
 
 }

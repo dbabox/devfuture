@@ -444,5 +444,11 @@ namespace TreeEditor
         }
 
         #endregion
+
+        private void FrmMain_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            //TODO:非常不友好，暂时这么干
+            tnmModel.Tta.Schema.Dispose();
+        }
     }
 }
