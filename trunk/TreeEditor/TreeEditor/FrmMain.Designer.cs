@@ -44,7 +44,6 @@
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.BtnDt2Tree = new System.Windows.Forms.Button();
             this.checkBoxForce = new System.Windows.Forms.CheckBox();
-            this.BtnTree2Dt = new System.Windows.Forms.Button();
             this.BtnDb2Tree = new System.Windows.Forms.Button();
             this.textBoxLog = new System.Windows.Forms.TextBox();
             ((System.ComponentModel.ISupportInitialize)(this.dgvTarget)).BeginInit();
@@ -176,7 +175,6 @@
             // 
             this.splitContainer1.Panel2.Controls.Add(this.BtnDt2Tree);
             this.splitContainer1.Panel2.Controls.Add(this.checkBoxForce);
-            this.splitContainer1.Panel2.Controls.Add(this.BtnTree2Dt);
             this.splitContainer1.Panel2.Controls.Add(this.BtnDb2Tree);
             this.splitContainer1.Panel2.Controls.Add(this.dgvTarget);
             this.splitContainer1.Panel2.Controls.Add(this.BtnDtToDb);
@@ -187,7 +185,7 @@
             // BtnDt2Tree
             // 
             this.BtnDt2Tree.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.BtnDt2Tree.Location = new System.Drawing.Point(377, 61);
+            this.BtnDt2Tree.Location = new System.Drawing.Point(377, 32);
             this.BtnDt2Tree.Name = "BtnDt2Tree";
             this.BtnDt2Tree.Size = new System.Drawing.Size(103, 23);
             this.BtnDt2Tree.TabIndex = 5;
@@ -207,17 +205,6 @@
             this.checkBoxForce.Text = "强制同步";
             this.checkBoxForce.UseVisualStyleBackColor = true;
             this.checkBoxForce.CheckedChanged += new System.EventHandler(this.checkBoxForce_CheckedChanged);
-            // 
-            // BtnTree2Dt
-            // 
-            this.BtnTree2Dt.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.BtnTree2Dt.Location = new System.Drawing.Point(377, 32);
-            this.BtnTree2Dt.Name = "BtnTree2Dt";
-            this.BtnTree2Dt.Size = new System.Drawing.Size(103, 23);
-            this.BtnTree2Dt.TabIndex = 3;
-            this.BtnTree2Dt.Text = "树同步到表格";
-            this.BtnTree2Dt.UseVisualStyleBackColor = true;
-            this.BtnTree2Dt.Click += new System.EventHandler(this.BtnTree2Dt_Click);
             // 
             // BtnDb2Tree
             // 
@@ -273,7 +260,6 @@
         private System.Windows.Forms.ToolStripMenuItem unCheckAllNodesToolStripMenuItem;
         private System.Windows.Forms.Button BtnDb2Tree;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
-        private System.Windows.Forms.Button BtnTree2Dt;
         private System.Windows.Forms.CheckBox checkBoxForce;
         private System.Windows.Forms.Button BtnDt2Tree;
         private System.Windows.Forms.TextBox textBoxLog;

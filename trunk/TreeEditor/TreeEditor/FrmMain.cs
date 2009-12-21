@@ -28,12 +28,13 @@ namespace TreeEditor
     {
          
         static readonly ILog log = LogManager.GetCurrentClassLogger();
+        const string TEMP_UNKNOW_NODE_PID = "#UNKNOW_PID#";
         const string NODE_INFO_FMT = "ID={0}\r\nText={1}\r\nLogicID={2}\r\nIndex={3}\r\nPID={4}\r\nIsChecked={5}\r\n实体信息:{6}";
 
-        ITreeTableAdapter tta;
-        TNMTreeModel tnmModel;
-
-        IList<ITvaNode> checkedNodes;
+        //ITreeTableAdapter tta;
+        //TNMTreeModel tnmModel;
+        DataRowTreeModel tnmModel;
+        IList<DataRowTvaNode> checkedNodes;
 
         //private Dictionary<ITreeTableAdapter, string> treeAdapterDic = new Dictionary<ITreeTableAdapter, string>();
 
@@ -55,34 +56,34 @@ namespace TreeEditor
             //comboBox1.DisplayMember = "Value";
             //comboBox1.ValueMember = "Key";
 
-            string att = System.Configuration.ConfigurationManager.AppSettings["AdapterTableName"];
-            switch (att)
-            {
-                case "EQT.TFUNCTION":
-                    {
-                        tta = new TreeEditor.TableAdapter.EqtTreeTableAdapter();
-                        break;
-                    }
-                case "Mtms.MT_FUNCTION":
-                    {
-                        tta = new TreeEditor.TableAdapter.MtmsFunctionAdapter();
-                        break;
-                    }
-                case "Mtms.MT_XLDG":
-                    {
-                        tta = new TreeEditor.TableAdapter.MtmsXldgAdapter();
-                        break;
-                    }
-                default:
-                    {
-                        throw new Exception("致命错误！配置文件节必须配置AdapterTableName。其格式为：数据库名.表名");
-                    }
-            }
+            //string att = System.Configuration.ConfigurationManager.AppSettings["AdapterTableName"];
+            //switch (att)
+            //{
+            //    case "EQT.TFUNCTION":
+            //        {
+            //            tta = new TreeEditor.TableAdapter.EqtTreeTableAdapter();
+            //            break;
+            //        }
+            //    case "Mtms.MT_FUNCTION":
+            //        {
+            //            tta = new TreeEditor.TableAdapter.MtmsFunctionAdapter();
+            //            break;
+            //        }
+            //    case "Mtms.MT_XLDG":
+            //        {
+            //            tta = new TreeEditor.TableAdapter.MtmsXldgAdapter();
+            //            break;
+            //        }
+            //    default:
+            //        {
+            //            throw new Exception("致命错误！配置文件节必须配置AdapterTableName。其格式为：数据库名.表名");
+            //        }
+            //}
 
 
 
 
-            tnmModel = new TNMTreeModel(tta);  
+            tnmModel = new DataRowTreeModel();         
             tnmModel.NodesRemoved += new EventHandler<TreeModelEventArgs>(tnmModel_NodesRemoved);
             tnmModel.NodesInserted += new EventHandler<TreeModelEventArgs>(tnmModel_NodesInserted);
             _tree.SelectionChanged += new EventHandler(_tree_SelectionChanged);
@@ -97,14 +98,14 @@ namespace TreeEditor
                         }
                     };
 
-            checkedNodes = new List<ITvaNode>();
+            checkedNodes = new List<DataRowTvaNode>();
         }
 
         void _tree_SelectionChanged(object sender, EventArgs e)
         {
             if (_tree.CurrentNode != null)
             {
-                ITvaNode tn= _tree.CurrentNode.Tag as ITvaNode;
+                DataRowTvaNode tn= _tree.CurrentNode.Tag as DataRowTvaNode;
                 if (tn != null)
                 {
                     textBoxLog.Text = String.Format(NODE_INFO_FMT,
@@ -114,29 +115,22 @@ namespace TreeEditor
         }
 
         void tnmModel_NodesInserted(object sender, TreeModelEventArgs e)
-        {             
-            DataTable dt = dgvTarget.DataSource as DataTable;
-            foreach (ITvaNode node in e.Children)
-            {               
-                tta.AddTvaNode2DataTable(node, dt);
-            }
+        {
+            //foreach (DataRowTvaNode node in e.Children)
+            //{
+            //    node.TNA_PID = TEMP_UNKNOW_NODE_PID;
+            //    //tnmModel.TreeTable.Rows.Add(node.DataRow);
+            //}
         }
 
         void tnmModel_NodesRemoved(object sender, TreeModelEventArgs e)
         {
-            //同步到DT
-            DataTable dt = dgvTarget.DataSource as DataTable;
-            foreach (ITvaNode node in e.Children)
-            {
-                DataRow[] rows = dt.Select(String.Format("{0}='{1}'", tta.IdFieldName, node.TNA_ID));
-                if (rows != null && rows.Length > 0)
-                {
-                    for (int i = 0; i < rows.Length; i++)
-                    {
-                        dt.Rows.Remove(rows[i]);
-                    }
-                }
-            }
+            //同步到DT            
+            //foreach (DataRowTvaNode node in e.Children)
+            //{
+            //    node.TNA_PID = TEMP_UNKNOW_NODE_PID;
+            //    tnmModel.TreeTable.Rows.Remove(node.DataRow);
+            //}
         }
  
 
@@ -174,7 +168,7 @@ namespace TreeEditor
         void cb_CheckStateChanged(object sender, TreePathEventArgs e)
         {
             //选中或非选中
-            ITvaNode node = e.Path.LastNode as ITvaNode;
+            DataRowTvaNode node = e.Path.LastNode as DataRowTvaNode;
             if (node.IsChecked)
             {
                 checkedNodes.Add(node);
@@ -203,7 +197,7 @@ namespace TreeEditor
                 //被拖拽的节点
                 TreeNodeAdv[] nodes = (TreeNodeAdv[])e.Data.GetData(typeof(TreeNodeAdv[]));
                 TreeNodeAdv dropOnNode = _tree.DropPosition.Node;
-                ITvaNode dropOnNodeNM = _tree.DropPosition.Node.Tag as ITvaNode;
+                DataRowTvaNode dropOnNodeNM = _tree.DropPosition.Node.Tag as DataRowTvaNode;
                 if (log.IsDebugEnabled)
                 {
                     log.DebugFormat("以下节点被拖拽到此节点{0}上:", dropOnNodeNM);
@@ -221,7 +215,7 @@ namespace TreeEditor
                     log.DebugFormat("放置在节点内:{0}", _tree.DropPosition.Node.Tag);                    
                     foreach (TreeNodeAdv n in nodes)
                     {
-                        ITvaNode nm = n.Tag as ITvaNode;
+                        DataRowTvaNode nm = n.Tag as DataRowTvaNode;
                         if (nm.TNA_PID != dropOnNodeNM.TNA_ID && nm.TNA_ID != dropOnNodeNM.TNA_ID)
                         {
                             tnmModel.MoveNode(nm, dropOnNodeNM, dropOnNode.Children.Count);
@@ -240,7 +234,7 @@ namespace TreeEditor
                     {
                         for (int i = 0; i < nodes.Length; i++)
                         {
-                            ITvaNode node = nodes[i].Tag as ITvaNode;
+                            DataRowTvaNode node = nodes[i].Tag as DataRowTvaNode;
                             if (node!=dropOnNodeNM && node.TNA_ID != dropOnNodeNM.TNA_ID)
                             {
                                 tnmModel.MoveToRoot(node, toIndex);
@@ -251,10 +245,10 @@ namespace TreeEditor
                     {
                         for (int i = 0; i < nodes.Length; i++)
                         {
-                            ITvaNode node = nodes[i].Tag as ITvaNode;
+                            DataRowTvaNode node = nodes[i].Tag as DataRowTvaNode;
                             if (node != dropOnNodeNM && node.TNA_ID != dropOnNodeNM.TNA_ID)
                             {
-                                tnmModel.MoveNode(node, parent.Tag as ITvaNode, toIndex);
+                                tnmModel.MoveNode(node, parent.Tag as DataRowTvaNode, toIndex);
                             }
                         }
                     }
@@ -319,11 +313,11 @@ namespace TreeEditor
                 _tree.BeginUpdate();
                 if (_tree.CurrentNode.IsLeaf)
                 {
-                    tnmModel.RemoveLeafNode(_tree.CurrentNode.Tag as ITvaNode);
+                    tnmModel.RemoveLeafNode(_tree.CurrentNode.Tag as DataRowTvaNode);
                 }
                 else
                 {
-                    tnmModel.RemoveNode(_tree.CurrentNode.Tag as ITvaNode);
+                    tnmModel.RemoveNode(_tree.CurrentNode.Tag as DataRowTvaNode);
                 }
 
                 _tree.EndUpdate();
@@ -348,21 +342,22 @@ namespace TreeEditor
                        MessageBoxButtons.YesNo, MessageBoxIcon.Question,MessageBoxDefaultButton.Button2) == DialogResult.No)
                 {
                     return;
-                }
+                }               
 
                 //先获取已经选定的节点           
-                foreach (ITvaNode n in checkedNodes)
+                foreach (DataRowTvaNode n in checkedNodes)
                 {
                     tnmModel.RemoveNode(n);
-                    checkedNodes.Clear();
+                   
                 }
+                checkedNodes.Clear();
             }
 
         }
 
         private void unCheckAllNodesToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            foreach (ITvaNode n in checkedNodes)
+            foreach (DataRowTvaNode n in checkedNodes)
             {
                 n.IsChecked = false;                
             }
@@ -371,15 +366,15 @@ namespace TreeEditor
         }
 
         private void btnSync2Tree_Click(object sender, EventArgs e)
-        {
-            if (!object.ReferenceEquals(_tree.Model, tnmModel))
-            {
-                _tree.Model = tnmModel;
-            }
+        {          
             try
             {
                 tnmModel.RefreshFromAdapter();
-                dgvTarget.DataSource = tnmModel.TreeTable;                 
+                if (!object.ReferenceEquals(_tree.Model, tnmModel))
+                {
+                    _tree.Model = tnmModel;
+                }
+                dgvTarget.DataSource = tnmModel.TreeTable;
                 MessageBox.Show("从数据库加载树完成!", "提示", MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
 
             }
@@ -395,23 +390,12 @@ namespace TreeEditor
             {
                 return;
             }
-            
-            int rc= tnmModel.SyncViaAdapter(checkBoxForce.Checked);
+
+            int rc = tnmModel.SyncToDb(checkBoxForce.Checked);
             MessageBox.Show(String.Format("写树节点信息到数据库完成!\r\n共影响记录:{0}",rc),"提示",MessageBoxButtons.OK,MessageBoxIcon.Asterisk);
         }
 
-        /// <summary>
-        /// 树节点同步到DataTable
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void BtnTree2Dt_Click(object sender, EventArgs e)
-        {
-            int rc=tnmModel.SyncTreeNodes2DataTable();
-            dgvTarget.Update();
-            MessageBox.Show(String.Format("同步完成!{0}", rc == 0 ? String.Empty : String.Format("\r\n表格中有{0}条记录未能与树中节点同步，说明表格中存在[悬空]节点.\r\n具体错误见日志。",rc)),
-                "提示",MessageBoxButtons.OK,MessageBoxIcon.Information);
-        }
+      
 
         string msg_force_sync = @"强制同步将先清空数据库源表，然后将当前树节点同步到数据库。这将产生影响：
 1、数据库中源表将全部被清空，如果您想恢复，只能从自动备份XML中恢复。
@@ -433,10 +417,13 @@ namespace TreeEditor
 
         private void BtnDt2Tree_Click(object sender, EventArgs e)
         {
-            int rc=tnmModel.SyncDataTable2TreeNodesDic();
-
+            _tree.BeginUpdate();
+            int rc = tnmModel.SyncDataTable2TreeNodes();           
+            _tree.EndUpdate();
             MessageBox.Show(String.Format("表格中的数据同步到树完成!{0}",
-                rc == 0 ? String.Empty : String.Format("\r\n表格中有{0}条记录树中无对应节点，说明表格中存在[悬空]节点.\r\n具体信息见错误日志.", rc)), "提示",
+                rc==dgvTarget.RowCount?String.Empty:
+                String.Format("\r\n表格中有{0}条记录，树中有{1}个节点，说明表格中存在[悬空]节点.\r\n具体信息见错误日志.",dgvTarget.RowCount,
+                rc)), "提示",
                 MessageBoxButtons.OK, MessageBoxIcon.Information);
 
         }
@@ -448,7 +435,7 @@ namespace TreeEditor
                 MessageBox.Show("请选择要上移的节点!", "提示", MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
                 return;
             }
-            ITvaNode nm = _tree.CurrentNode.Tag as ITvaNode;
+            DataRowTvaNode nm = _tree.CurrentNode.Tag as DataRowTvaNode;
             if (nm.TNA_Index == 0)
             {
                 MessageBox.Show("本层内首节点无法在同层次内再上移！如果要转移层次，请拖拽！", "提示", MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
@@ -462,7 +449,7 @@ namespace TreeEditor
             else
             {
                 //上移1格
-                tnmModel.MoveNode(nm, _tree.CurrentNode.Parent.Tag as ITvaNode, toIndex);
+                tnmModel.MoveNode(nm, _tree.CurrentNode.Parent.Tag as DataRowTvaNode, toIndex);
 
             }
          
@@ -481,7 +468,7 @@ namespace TreeEditor
                 MessageBox.Show("末节点无法在本层内再下移！如果要转移层次，请拖拽！", "提示", MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
                 return;
             }
-            ITvaNode nm = _tree.CurrentNode.Tag as ITvaNode;          
+            DataRowTvaNode nm = _tree.CurrentNode.Tag as DataRowTvaNode;          
             int toIndex = nm.TNA_Index + 1;
             if (_tree.CurrentNode.Level == 1)
             {
@@ -489,7 +476,7 @@ namespace TreeEditor
             }
             else
             {
-                tnmModel.MoveNode(nm, _tree.CurrentNode.Parent.Tag as ITvaNode, toIndex);
+                tnmModel.MoveNode(nm, _tree.CurrentNode.Parent.Tag as DataRowTvaNode, toIndex);
             }
 
 

@@ -72,7 +72,7 @@ namespace TreeEditor.Core
 
     #endregion
 
-    public abstract class DaBase<T>
+    public abstract class DaBase<T> where T :class, ITvaNode,new()
     {
 
         protected static readonly ILog log = LogManager.GetCurrentClassLogger();
