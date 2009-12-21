@@ -21,6 +21,7 @@ namespace TreeEditor.Core
             row = row_;
             rowSchema = rowSchema_;
             SyncDataRow2TvnNode();
+            original_tna_id = tna_id;//仅在构造函数中赋值
         }
 
         public void SyncDataRow2TvnNode()
@@ -33,9 +34,22 @@ namespace TreeEditor.Core
 
         #region ITvaNode 成员
 
+
+        private readonly string original_tna_id;
+        /// <summary>
+        /// 原始的ID
+        /// </summary>
+        public string Original_tna_id
+        {
+            get {               
+                return original_tna_id; 
+            }
+            
+        }
+
         /// <summary>
         /// tna_id不直接使用 return row[rowSchema.Tna_id_field_name].ToString()的原因在于当Row被删除
-        /// 时，此调用将出现错误。
+        /// 时，此调用将出现错误。2009-12-20
         /// </summary>
         private string tna_id;
         public string TNA_ID
