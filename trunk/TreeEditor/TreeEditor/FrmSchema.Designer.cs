@@ -130,7 +130,7 @@
             this.textBoxPID.Size = new System.Drawing.Size(100, 21);
             this.textBoxPID.TabIndex = 5;
             this.textBoxPID.Text = "PARENT_FUNC";
-            this.textBoxPID.TextChanged += new System.EventHandler(this.textBox4_TextChanged);
+           
             // 
             // label6
             // 
