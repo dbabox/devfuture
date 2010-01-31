@@ -1,0 +1,1 @@
+<%@ WebService Language="C#" CodeBehind="Pmps.asmx.cs" Class="PmpsWebService.PmpsService" %>
