@@ -40,7 +40,7 @@ namespace DevFuture.Common
 
         public static object InvokeWebService(string url, string classname, string methodname, object[] args)
         {
-            string @namespace = "EnterpriseServerBase.WebService.DynamicWebCalling";
+            string @namespace = "Pmps.Common";
             if ((classname == null) || (classname == ""))
             {
                 classname = WebServiceHelper.GetWsClassName(url);
