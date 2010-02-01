@@ -1,9 +1,8 @@
 ﻿/* April 8, 2009  
- * 本工具类实现对Web服务的动态调用。
+ * 本工具类通过动态编译，实现对Web服务的动态调用，。
  * 
- * TODO:
- * 增加对编译依赖的参数引入；
- * 增加对Web服务对象的cache；
+ * 
+ * 当前版本不支持WSE。若要支持WSE，由于服务器端返回的XML发生了改变，需要引用WSE相关的库来编译。
  * 
  * 
  * */
@@ -23,26 +22,42 @@ namespace DevFuture.Common
 {
     class WebServiceInvoker
     {
+        /// <summary>
+        /// 有效的类型，用于列举服务对象上的方法,内部使用。
+        /// </summary>
         Dictionary<string, Type> availableTypes;
 
         /// <summary>
-        /// Text description of the available services within this web service.
+        /// 有效的服务对象
+        /// </summary>
+        private List<string> services;
+        /// <summary>
+        /// 有效的服务对象.
         /// </summary>
         public List<string> AvailableServices
         {
             get{ return this.services; }
         }
-
+        /// <summary>
+        /// Web服务的Uri
+        /// </summary>
         private Uri webServiceUri;
         /// <summary>
         /// Web服务编译后程序集缓存名称
         /// </summary>
         private readonly string wsCacheAsmName;
+        /// <summary>
+        /// 编译后的程序集
+        /// </summary>
+        private Assembly webServiceAssembly;
+
+        private Dictionary<string, object> cachedServiceInstance;
+     
 
         public WebServiceInvoker(string url):this(new Uri(url))
         {
+          
         }
-
 
         /// <summary>
         /// Creates the service invoker using the specified web service.
@@ -65,6 +80,8 @@ namespace DevFuture.Common
                 String.Format("ws{0}.dll", webServiceUri.GetHashCode()));
             #endregion
 
+            cachedServiceInstance = new Dictionary<string, object>();
+                       
             // create an assembly from the web service description
             this.webServiceAssembly = BuildAssemblyFromWSDL(webServiceUri);
 
@@ -78,6 +95,9 @@ namespace DevFuture.Common
                 availableTypes.Add(type.FullName, type);
             }
         }
+
+
+
 
         /// <summary>
         /// Gets a list of all methods available for the specified service.
@@ -103,6 +123,9 @@ namespace DevFuture.Common
             }
         }
 
+
+        #region 调用子
+
         /// <summary>
         /// 调用指定的方法，返回定制对象。定制对象必须是简单.NET对象。(Pure .NET Object)。
         /// 即：必须具有默认构造函数；必须只包含属性。
@@ -115,10 +138,23 @@ namespace DevFuture.Common
         /// <returns>The return value from the web service method.</returns>
         public T InvokeMethodReturnCustomObject<T>(string serviceName, string methodName, params object[] args ) where T:new()
         {
-            //TODO:缓存服务对象
-            // create an instance of the specified service
-            // and invoke the method
-            object serviceObj = this.webServiceAssembly.CreateInstance(serviceName);
+            object serviceObj = null;
+            lock (cachedServiceInstance)
+            {
+                if (cachedServiceInstance.ContainsKey(serviceName))
+                {
+                    serviceObj = cachedServiceInstance[serviceName];
+                }
+                else
+                {
+                    //TODO:缓存服务对象
+                    // create an instance of the specified service
+                    // and invoke the method
+                    serviceObj = this.webServiceAssembly.CreateInstance(serviceName);
+                    cachedServiceInstance.Add(serviceName, serviceObj);
+                }
+            }
+
             Type serviceObjectType = serviceObj.GetType();
 
             object rcObj= serviceObjectType.InvokeMember(methodName, BindingFlags.InvokeMethod, null, serviceObj, args);
@@ -134,6 +170,56 @@ namespace DevFuture.Common
             return realObj;  
         }
 
+        /// <summary>
+        /// 调用带有SOAP Header的web服务方法。
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="soapHeaderName"></param>
+        /// <param name="header"></param>
+        /// <param name="serviceName"></param>
+        /// <param name="methodName"></param>
+        /// <param name="args"></param>
+        /// <returns></returns>
+        public T InvokeMethodReturnCustomObject<T>(string soapHeaderName,object header,
+            string serviceName, string methodName, params object[] args) where T : new()
+        {
+            object serviceObj = null;
+            lock (cachedServiceInstance)
+            {
+                if (cachedServiceInstance.ContainsKey(serviceName))
+                {
+                    serviceObj = cachedServiceInstance[serviceName];
+                }
+                else
+                {
+                    //TODO:缓存服务对象
+                    // create an instance of the specified service
+                    // and invoke the method
+                    serviceObj = this.webServiceAssembly.CreateInstance(serviceName);
+                    cachedServiceInstance.Add(serviceName, serviceObj);
+                }
+            }    
+
+            Type serviceObjectType = serviceObj.GetType();
+
+            //若有SOAP Header，在这里设置
+            //注意：Web服务客户端必须具有soapHeaderName名字的public属性。
+            serviceObjectType.GetProperty(soapHeaderName).SetValue(serviceObj, header, null);
+
+            object rcObj = serviceObjectType.InvokeMember(methodName, BindingFlags.InvokeMethod, null, serviceObj, args);
+            Type rcType = rcObj.GetType();
+
+            //这里使用反射赋值           
+            Type realType = typeof(T);
+            T realObj = new T();
+            foreach (PropertyInfo pi in realType.GetProperties())
+            {
+                pi.SetValue(realObj, rcType.GetProperty(pi.Name).GetValue(rcObj, null), null);
+            }
+            return realObj;
+        }
+
+
 
         /// <summary>
         /// 调用指定的方法，返回.NET原生对象（即：System/System.Data等重定义的对象）。
@@ -146,16 +232,70 @@ namespace DevFuture.Common
         /// <returns></returns>
         public T InvokeMethodReturnNativeObject<T>(string serviceName, string methodName, params object[] args)
         {
-            // create an instance of the specified service
-            // and invoke the method
-            object obj = this.webServiceAssembly.CreateInstance(serviceName); //应考虑缓存此对象
+            object serviceObj = null;
+            lock (cachedServiceInstance)
+            {
+                if (cachedServiceInstance.ContainsKey(serviceName))
+                {
+                    serviceObj = cachedServiceInstance[serviceName];
+                }
+                else
+                {
+                    //TODO:缓存服务对象
+                    // create an instance of the specified service
+                    // and invoke the method
+                    serviceObj = this.webServiceAssembly.CreateInstance(serviceName);
+                    cachedServiceInstance.Add(serviceName, serviceObj);
+                }
+            }    
 
-            Type type = obj.GetType();
+            Type serviceObjectType = serviceObj.GetType();
 
-            return (T)type.InvokeMember(methodName, BindingFlags.InvokeMethod, null, obj, args);
+            return (T)serviceObjectType.InvokeMember(methodName, BindingFlags.InvokeMethod, null, serviceObj, args);
             
         }
 
+        /// <summary>
+        /// 调用带有特定SOAP Header的web服务方法。
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="soapHeaderName"></param>
+        /// <param name="header"></param>
+        /// <param name="serviceName"></param>
+        /// <param name="methodName"></param>
+        /// <param name="args"></param>
+        /// <returns></returns>
+        public T InvokeMethodReturnNativeObject<T>(string soapHeaderName, object header, 
+            string serviceName, string methodName, params object[] args)
+        {
+            object serviceObj = null;
+            lock (cachedServiceInstance)
+            {
+                if (cachedServiceInstance.ContainsKey(serviceName))
+                {
+                    serviceObj = cachedServiceInstance[serviceName];
+                }
+                else
+                {
+                    //TODO:缓存服务对象
+                    // create an instance of the specified service
+                    // and invoke the method
+                    serviceObj = this.webServiceAssembly.CreateInstance(serviceName);
+                    cachedServiceInstance.Add(serviceName, serviceObj);
+                }
+            }
+
+            Type serviceObjectType = serviceObj.GetType();
+            //若有SOAP Header，在这里设置
+            //注意：Web服务客户端必须具有soapHeaderName名字的public属性。
+            serviceObjectType.GetProperty(soapHeaderName).SetValue(serviceObj, header, null);
+
+            return (T)serviceObjectType.InvokeMember(methodName, BindingFlags.InvokeMethod, null, serviceObj, args);
+
+        }
+        #endregion
+
+        #region 编译
         /// <summary>
         /// Builds the web service description importer, which allows us to generate a proxy class based on the 
         /// content of the WSDL described by the XmlTextReader.
@@ -259,8 +399,7 @@ namespace DevFuture.Common
                 return CompileAssembly(descriptionImporter);
             }
         }
-
-        private Assembly webServiceAssembly;
-        private List<string> services;
+        #endregion
+        
     }
 }
