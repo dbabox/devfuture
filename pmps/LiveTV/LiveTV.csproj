@@ -133,6 +133,12 @@
     <Content Include="TV.ico">
     </Content>
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Pmps.Common\Pmps.Common.csproj">
+      <Project>{9182D66F-129B-4CC0-9A56-20A9BF01E7D1}</Project>
+      <Name>Pmps.Common</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

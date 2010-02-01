@@ -13,6 +13,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PmpsWebService", "PmpsWebSe
 		Release.AspNetCompiler.Debug = "False"
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Pmps.Common", "Pmps.Common\Pmps.Common.csproj", "{9182D66F-129B-4CC0-9A56-20A9BF01E7D1}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SubversionScc) = preSolution
 		Svn-Managed = True
@@ -31,6 +37,10 @@ Global
 		{6159D5C2-2FAC-4F18-B5D9-C59018868D77}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6159D5C2-2FAC-4F18-B5D9-C59018868D77}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6159D5C2-2FAC-4F18-B5D9-C59018868D77}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9182D66F-129B-4CC0-9A56-20A9BF01E7D1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9182D66F-129B-4CC0-9A56-20A9BF01E7D1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9182D66F-129B-4CC0-9A56-20A9BF01E7D1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9182D66F-129B-4CC0-9A56-20A9BF01E7D1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -223,9 +223,12 @@ namespace LiveTV
             //²âÊÔWeb·þÎñ
             string url = "http://localhost:4155/Pmps.asmx";
             DevFuture.Common.WebServiceInvoker wsi = new DevFuture.Common.WebServiceInvoker(new Uri(url));
-            Int32 result = wsi.InvokeMethod<Int32>("PmpsService", "GetRandom", null);
-            //object result = WebServiceHelper.InvokeWebService(url, "PmpsService", "HelloWorld", null);
-            MessageBox.Show(result.ToString());
+            Pmps.Common.MoUser result = wsi.InvokeMethodReturnCustomObject<Pmps.Common.MoUser>("Pmps.Common.PmpsService", "GetUser", null);
+            //object result = DevFuture.Common.WebServiceHelper.InvokeWebService(url, "PmpsService", "GetUser", null);
+            //Pmps.Common.MoUser m = (Pmps.Common.MoUser)result;
+            MessageBox.Show(result.UserName);
+            //Pmps.Common.MoUser mo = wsi.InvokeMethod<Pmps.Common.MoUser>("Pmps.Common.PmpsService", "GetUser", null);
+            //MessageBox.Show(mo.UserName);
             //MessageBox.Show(CLK.ClientLicence.SCA_GetLocalCACode());
 
             cfg = new MMSServerCFG();             
