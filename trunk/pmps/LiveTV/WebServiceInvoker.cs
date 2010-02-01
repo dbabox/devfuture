@@ -33,14 +33,37 @@ namespace DevFuture.Common
             get{ return this.services; }
         }
 
+        private Uri webServiceUri;
+        /// <summary>
+        /// Web服务编译后程序集缓存名称
+        /// </summary>
+        private readonly string wsCacheAsmName;
+
+        public WebServiceInvoker(string url):this(new Uri(url))
+        {
+        }
+
+
         /// <summary>
         /// Creates the service invoker using the specified web service.
         /// </summary>
         /// <param name="webServiceUri"></param>
-        public WebServiceInvoker(Uri webServiceUri)
+        public WebServiceInvoker(Uri webServiceUri_)
         {
             this.services = new List<string>(); // available services
             this.availableTypes = new Dictionary<string, Type>(); // available types
+
+            webServiceUri = webServiceUri_;
+
+            #region 缓存设置
+            string wscachedir = System.IO.Path.Combine(Environment.CurrentDirectory, @"wscache");
+            if (System.IO.Directory.Exists(wscachedir) == false)
+            {
+                System.IO.Directory.CreateDirectory(wscachedir);
+            }
+            wsCacheAsmName = System.IO.Path.Combine(wscachedir,
+                String.Format("ws{0}.dll", webServiceUri.GetHashCode()));
+            #endregion
 
             // create an assembly from the web service description
             this.webServiceAssembly = BuildAssemblyFromWSDL(webServiceUri);
@@ -90,25 +113,23 @@ namespace DevFuture.Common
         /// <param name="methodName">The name of the method to call.</param>
         /// <param name="args">The arguments to the method.</param>
         /// <returns>The return value from the web service method.</returns>
-        public T InvokeMethodReturnCustomObject<T>( string serviceName, string methodName, params object[] args ) where T:new()
+        public T InvokeMethodReturnCustomObject<T>(string serviceName, string methodName, params object[] args ) where T:new()
         {
+            //TODO:缓存服务对象
             // create an instance of the specified service
             // and invoke the method
-            object obj = this.webServiceAssembly.CreateInstance(serviceName);
+            object serviceObj = this.webServiceAssembly.CreateInstance(serviceName);
+            Type serviceObjectType = serviceObj.GetType();
 
-            Type type = obj.GetType();
+            object rcObj= serviceObjectType.InvokeMember(methodName, BindingFlags.InvokeMethod, null, serviceObj, args);
+            Type rcType = rcObj.GetType();
 
-            object rc= type.InvokeMember(methodName, BindingFlags.InvokeMethod, null, obj, args);
-            Type rcType = rc.GetType();
-
-
-            //这里使用反射赋值
-           
+            //这里使用反射赋值           
             Type realType = typeof(T);
             T realObj = new T();
             foreach (PropertyInfo pi in realType.GetProperties())
             {
-                pi.SetValue(realObj, rcType.GetProperty(pi.Name).GetValue(rc, null), null);
+                pi.SetValue(realObj, rcType.GetProperty(pi.Name).GetValue(rcObj, null), null);
             }
             return realObj;  
         }
@@ -168,7 +189,7 @@ namespace DevFuture.Common
         private Assembly CompileAssembly(ServiceDescriptionImporter descriptionImporter)
         {
             // a namespace and compile unit are needed by importer
-            CodeNamespace codeNamespace = new CodeNamespace("Pmps.Common");
+            CodeNamespace codeNamespace = new CodeNamespace();
             CodeCompileUnit codeUnit = new CodeCompileUnit();
 
             codeUnit.Namespaces.Add(codeNamespace);
@@ -190,6 +211,8 @@ namespace DevFuture.Common
                 };
 
                 CompilerParameters parameters = new CompilerParameters(references);
+                parameters.GenerateExecutable = false;
+                parameters.OutputAssembly = wsCacheAsmName;
 
                 // compile into assembly
                 CompilerResults results = compiler.CompileAssemblyFromDom(parameters, codeUnit);
@@ -221,11 +244,20 @@ namespace DevFuture.Common
             if (String.IsNullOrEmpty(webServiceUri.ToString()))
                 throw new Exception("Web Service Not Found");
 
-            XmlTextReader xmlreader = new XmlTextReader(webServiceUri.ToString() + "?wsdl");
+            
+            if (System.IO.File.Exists(wsCacheAsmName))
+            {
+                Console.WriteLine("从缓存文件加载.");
+                return Assembly.LoadFrom(wsCacheAsmName);
+            }
+            else
+            {
+                XmlTextReader xmlreader = new XmlTextReader(webServiceUri.ToString() + "?wsdl");
 
-            ServiceDescriptionImporter descriptionImporter = BuildServiceDescriptionImporter(xmlreader);
+                ServiceDescriptionImporter descriptionImporter = BuildServiceDescriptionImporter(xmlreader);
 
-            return CompileAssembly(descriptionImporter);
+                return CompileAssembly(descriptionImporter);
+            }
         }
 
         private Assembly webServiceAssembly;

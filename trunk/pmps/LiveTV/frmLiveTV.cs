@@ -223,7 +223,7 @@ namespace LiveTV
             //²âÊÔWeb·þÎñ
             string url = "http://localhost:4155/Pmps.asmx";
             DevFuture.Common.WebServiceInvoker wsi = new DevFuture.Common.WebServiceInvoker(new Uri(url));
-            Pmps.Common.MoUser result = wsi.InvokeMethodReturnCustomObject<Pmps.Common.MoUser>("Pmps.Common.PmpsService", "GetUser", null);
+            Pmps.Common.MoUser result = wsi.InvokeMethodReturnCustomObject<Pmps.Common.MoUser>("PmpsService", "GetUser", null);
             //object result = DevFuture.Common.WebServiceHelper.InvokeWebService(url, "PmpsService", "GetUser", null);
             //Pmps.Common.MoUser m = (Pmps.Common.MoUser)result;
             MessageBox.Show(result.UserName);
