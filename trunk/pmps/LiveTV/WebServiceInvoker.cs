@@ -1,5 +1,7 @@
 ﻿/* April 8, 2009  
- * 本工具类通过动态编译，实现对Web服务的动态调用，。
+ * 本工具类通过动态编译，实现对Web服务的动态调用。
+ * 
+ * 支持服务对象缓存，支持编译后程序集持久化，支持PONO对象自动转换。
  * 
  * 
  * 当前版本不支持WSE。若要支持WSE，由于服务器端返回的XML发生了改变，需要引用WSE相关的库来编译。
@@ -138,36 +140,22 @@ namespace DevFuture.Common
         /// <returns>The return value from the web service method.</returns>
         public T InvokeMethodReturnCustomObject<T>(string serviceName, string methodName, params object[] args ) where T:new()
         {
-            object serviceObj = null;
-            lock (cachedServiceInstance)
-            {
-                if (cachedServiceInstance.ContainsKey(serviceName))
-                {
-                    serviceObj = cachedServiceInstance[serviceName];
-                }
-                else
-                {
-                    //TODO:缓存服务对象
-                    // create an instance of the specified service
-                    // and invoke the method
-                    serviceObj = this.webServiceAssembly.CreateInstance(serviceName);
-                    cachedServiceInstance.Add(serviceName, serviceObj);
-                }
-            }
+            object serviceObj = GetCachedServiceObject(serviceName);
 
             Type serviceObjectType = serviceObj.GetType();
 
             object rcObj= serviceObjectType.InvokeMember(methodName, BindingFlags.InvokeMethod, null, serviceObj, args);
-            Type rcType = rcObj.GetType();
+            //Type rcType = rcObj.GetType();
 
-            //这里使用反射赋值           
-            Type realType = typeof(T);
-            T realObj = new T();
-            foreach (PropertyInfo pi in realType.GetProperties())
-            {
-                pi.SetValue(realObj, rcType.GetProperty(pi.Name).GetValue(rcObj, null), null);
-            }
-            return realObj;  
+            ////这里使用反射赋值           
+            //Type realType = typeof(T);
+            //T realObj = new T();
+            //foreach (PropertyInfo pi in realType.GetProperties())
+            //{
+            //    pi.SetValue(realObj, rcType.GetProperty(pi.Name).GetValue(rcObj, null), null);
+            //}
+            //return realObj;  
+            return TranslatePONO<T>(ref rcObj);
         }
 
         /// <summary>
@@ -180,8 +168,34 @@ namespace DevFuture.Common
         /// <param name="methodName"></param>
         /// <param name="args"></param>
         /// <returns></returns>
-        public T InvokeMethodReturnCustomObject<T>(string soapHeaderName,object header,
+        public T InvokeMethodReturnCustomObject<T>(string soapHeaderPropertyName, 
+            System.Web.Services.Protocols.SoapHeader header,
             string serviceName, string methodName, params object[] args) where T : new()
+        {
+
+            object serviceObj = GetCachedServiceObject(serviceName);
+
+            Type serviceObjectType = serviceObj.GetType();
+
+            //若有SOAP Header，在这里设置
+            //注意：Web服务客户端必须具有soapHeaderName名字的public属性。
+            serviceObjectType.GetProperty(soapHeaderPropertyName).SetValue(serviceObj, header, null);
+
+            object rcObj = serviceObjectType.InvokeMember(methodName, BindingFlags.InvokeMethod, null, serviceObj, args);
+            //Type rcType = rcObj.GetType();//它实际是Web服务的一种Export Type
+
+            ////这里使用反射赋值           
+            //Type realType = typeof(T);
+            //T realObj = new T();
+            //foreach (PropertyInfo pi in realType.GetProperties())
+            //{
+            //    pi.SetValue(realObj, rcType.GetProperty(pi.Name).GetValue(rcObj, null), null);
+            //}
+            //return realObj;
+            return TranslatePONO<T>(ref rcObj);
+        }
+
+        private object GetCachedServiceObject(string serviceName)
         {
             object serviceObj = null;
             lock (cachedServiceInstance)
@@ -198,27 +212,28 @@ namespace DevFuture.Common
                     serviceObj = this.webServiceAssembly.CreateInstance(serviceName);
                     cachedServiceInstance.Add(serviceName, serviceObj);
                 }
-            }    
+            }
+            return serviceObj;
 
-            Type serviceObjectType = serviceObj.GetType();
+        }
 
-            //若有SOAP Header，在这里设置
-            //注意：Web服务客户端必须具有soapHeaderName名字的public属性。
-            serviceObjectType.GetProperty(soapHeaderName).SetValue(serviceObj, header, null);
-
-            object rcObj = serviceObjectType.InvokeMember(methodName, BindingFlags.InvokeMethod, null, serviceObj, args);
-            Type rcType = rcObj.GetType();
-
-            //这里使用反射赋值           
-            Type realType = typeof(T);
+        /// <summary>
+        /// 转换简单.NET对象。(Plain Old .NET Object)
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="fromObj"></param>
+        /// <returns></returns>
+        private static T TranslatePONO<T>(ref object fromObj) where T : new()
+        {
+            Type fromType = fromObj.GetType();
+            Type toType = typeof(T);
             T realObj = new T();
-            foreach (PropertyInfo pi in realType.GetProperties())
+            foreach (PropertyInfo pi in toType.GetProperties())
             {
-                pi.SetValue(realObj, rcType.GetProperty(pi.Name).GetValue(rcObj, null), null);
+                pi.SetValue(realObj, fromType.GetProperty(pi.Name).GetValue(fromObj, null), null);
             }
             return realObj;
         }
-
 
 
         /// <summary>
@@ -232,22 +247,7 @@ namespace DevFuture.Common
         /// <returns></returns>
         public T InvokeMethodReturnNativeObject<T>(string serviceName, string methodName, params object[] args)
         {
-            object serviceObj = null;
-            lock (cachedServiceInstance)
-            {
-                if (cachedServiceInstance.ContainsKey(serviceName))
-                {
-                    serviceObj = cachedServiceInstance[serviceName];
-                }
-                else
-                {
-                    //TODO:缓存服务对象
-                    // create an instance of the specified service
-                    // and invoke the method
-                    serviceObj = this.webServiceAssembly.CreateInstance(serviceName);
-                    cachedServiceInstance.Add(serviceName, serviceObj);
-                }
-            }    
+            object serviceObj = GetCachedServiceObject(serviceName);
 
             Type serviceObjectType = serviceObj.GetType();
 
@@ -265,30 +265,15 @@ namespace DevFuture.Common
         /// <param name="methodName"></param>
         /// <param name="args"></param>
         /// <returns></returns>
-        public T InvokeMethodReturnNativeObject<T>(string soapHeaderName, object header, 
+        public T InvokeMethodReturnNativeObject<T>(string soapHeaderPropertyName, 
+            System.Web.Services.Protocols.SoapHeader header, 
             string serviceName, string methodName, params object[] args)
         {
-            object serviceObj = null;
-            lock (cachedServiceInstance)
-            {
-                if (cachedServiceInstance.ContainsKey(serviceName))
-                {
-                    serviceObj = cachedServiceInstance[serviceName];
-                }
-                else
-                {
-                    //TODO:缓存服务对象
-                    // create an instance of the specified service
-                    // and invoke the method
-                    serviceObj = this.webServiceAssembly.CreateInstance(serviceName);
-                    cachedServiceInstance.Add(serviceName, serviceObj);
-                }
-            }
-
+            object serviceObj = GetCachedServiceObject(serviceName);
             Type serviceObjectType = serviceObj.GetType();
             //若有SOAP Header，在这里设置
             //注意：Web服务客户端必须具有soapHeaderName名字的public属性。
-            serviceObjectType.GetProperty(soapHeaderName).SetValue(serviceObj, header, null);
+            serviceObjectType.GetProperty(soapHeaderPropertyName).SetValue(serviceObj, header, null);
 
             return (T)serviceObjectType.InvokeMember(methodName, BindingFlags.InvokeMethod, null, serviceObj, args);
 
