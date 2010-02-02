@@ -65,6 +65,7 @@ namespace PmpsWebService
 
         [WebMethod]     
         [XmlInclude(typeof(Pmps.Common.MoUser))] //在SOAP中指定应该返回的实际类型
+        [SoapHeader("myHeader", Direction = SoapHeaderDirection.In)]
         public Pmps.Common.MoUser GetUser()
         {
             Pmps.Common.MoUser m = new Pmps.Common.MoUser();

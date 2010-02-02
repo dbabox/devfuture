@@ -168,72 +168,19 @@ namespace DevFuture.Common
         /// <param name="args"></param>
         /// <returns></returns>
         public T InvokeMethodReturnCustomObject<T>(string soapHeaderPropertyName, 
-            System.Web.Services.Protocols.SoapHeader header,
-            string serviceName, string methodName, params object[] args) where T : new()
+            object header, string serviceName, string methodName, params object[] args) where T : new()
         {
 
             object serviceObj = GetCachedServiceObject(serviceName);
-
             Type serviceObjectType = serviceObj.GetType();
-
-            //若有SOAP Header，在这里设置
-            //注意：Web服务客户端必须具有soapHeaderName名字的public属性。
-            serviceObjectType.GetProperty(soapHeaderPropertyName).SetValue(serviceObj, header, null);
-
+            SetSoapHeaderValue(ref serviceObj, ref serviceObjectType, soapHeaderPropertyName, header);
             object rcObj = serviceObjectType.InvokeMember(methodName, BindingFlags.InvokeMethod, null, serviceObj, args);
-            //Type rcType = rcObj.GetType();//它实际是Web服务的一种Export Type
-
-            ////这里使用反射赋值           
-            //Type realType = typeof(T);
-            //T realObj = new T();
-            //foreach (PropertyInfo pi in realType.GetProperties())
-            //{
-            //    pi.SetValue(realObj, rcType.GetProperty(pi.Name).GetValue(rcObj, null), null);
-            //}
-            //return realObj;
+            //Type rcType = rcObj.GetType();//它实际是Web服务的一种Export Type           
             return TranslatePONO<T>(ref rcObj);
         }
 
-        private object GetCachedServiceObject(string serviceName)
-        {
-            object serviceObj = null;
-            lock (cachedServiceInstance)
-            {
-                if (cachedServiceInstance.ContainsKey(serviceName))
-                {
-                    serviceObj = cachedServiceInstance[serviceName];
-                }
-                else
-                {
-                    //TODO:缓存服务对象
-                    // create an instance of the specified service
-                    // and invoke the method
-                    serviceObj = this.webServiceAssembly.CreateInstance(serviceName);
-                    cachedServiceInstance.Add(serviceName, serviceObj);
-                }
-            }
-            return serviceObj;
-
-        }
-
-        /// <summary>
-        /// 转换简单.NET对象。(Plain Old .NET Object)
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="fromObj"></param>
-        /// <returns></returns>
-        private static T TranslatePONO<T>(ref object fromObj) where T : new()
-        {
-            Type fromType = fromObj.GetType();
-            Type toType = typeof(T);
-            T realObj = new T();
-            foreach (PropertyInfo pi in toType.GetProperties())
-            {
-                pi.SetValue(realObj, fromType.GetProperty(pi.Name).GetValue(fromObj, null), null);
-            }
-            return realObj;
-        }
-
+        
+        
 
         /// <summary>
         /// 调用指定的方法，返回.NET原生对象（即：System/System.Data等重定义的对象）。
@@ -269,6 +216,43 @@ namespace DevFuture.Common
         {
             object serviceObj = GetCachedServiceObject(serviceName);
             Type serviceObjectType = serviceObj.GetType();
+            SetSoapHeaderValue(ref serviceObj, ref serviceObjectType, soapHeaderPropertyName, header);
+            return (T)serviceObjectType.InvokeMember(methodName, BindingFlags.InvokeMethod, null, serviceObj, args);
+
+        }
+
+        /// <summary>
+        /// 获取静态的缓存服务对象，若没有缓存，就编译它.
+        /// </summary>
+        /// <param name="serviceName"></param>
+        /// <returns></returns>
+        private object GetCachedServiceObject(string serviceName)
+        {
+            object serviceObj = null;
+            lock (cachedServiceInstance)
+            {
+                if (cachedServiceInstance.ContainsKey(serviceName))
+                {
+                    serviceObj = cachedServiceInstance[serviceName];
+                }
+                else
+                {
+                    //TODO:缓存服务对象
+                    // create an instance of the specified service
+                    // and invoke the method
+                    serviceObj = this.webServiceAssembly.CreateInstance(serviceName);
+                    cachedServiceInstance.Add(serviceName, serviceObj);
+                }
+            }
+            return serviceObj;
+
+        }       
+
+
+        #region 静态辅助方法 给定制的SOAP Header 赋值
+        private static void SetSoapHeaderValue(ref object serviceObj, ref Type serviceObjectType, string soapHeaderPropertyName, object header)
+        {
+
             ///SOAP Header到达客户端后，会自动转变成 [Custom Header Type]Value 名字。
             if (!soapHeaderPropertyName.EndsWith("Value"))
             {
@@ -279,17 +263,39 @@ namespace DevFuture.Common
             //需要将传入的header转化成服务代理的[Custom Header Type]Value 属性的值。
             //由于这两个类型都不在一个名字空间中，故需要手工转化。
             Type toType = serviceObjectType.GetProperty(soapHeaderPropertyName).PropertyType;
-            object toObj= Activator.CreateInstance(serviceObjectType.GetProperty(soapHeaderPropertyName).PropertyType);
+            object toObj = Activator.CreateInstance(serviceObjectType.GetProperty(soapHeaderPropertyName).PropertyType);
             Type fromType = header.GetType();
             foreach (PropertyInfo pi in toType.GetProperties())
             {
-                if(pi.Name.StartsWith("DF_"))
-                pi.SetValue(toObj, fromType.GetProperty(pi.Name).GetValue(header, null), null);
+                if (pi.Name.StartsWith("DF_"))
+                    pi.SetValue(toObj, fromType.GetProperty(pi.Name).GetValue(header, null), null);
             }
             serviceObjectType.GetProperty(soapHeaderPropertyName).SetValue(serviceObj, toObj, null);
-            return (T)serviceObjectType.InvokeMember(methodName, BindingFlags.InvokeMethod, null, serviceObj, args);
 
         }
+        #endregion
+
+        #region 静态辅助方法， 简单.NET对象之间的转换。
+        /// <summary>
+        /// 静态辅助方法， 简单.NET对象之间的转换。(Plain Old .NET Object)
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="fromObj"></param>
+        /// <returns></returns>
+        private static T TranslatePONO<T>(ref object fromObj) where T : new()
+        {
+            Type fromType = fromObj.GetType();
+            Type toType = typeof(T);
+            T realObj = new T();
+            foreach (PropertyInfo pi in toType.GetProperties())
+            {
+                pi.SetValue(realObj, fromType.GetProperty(pi.Name).GetValue(fromObj, null), null);
+            }
+            return realObj;
+        }
+        #endregion
+
+
         #endregion
 
         #region 编译
