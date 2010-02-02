@@ -7,7 +7,7 @@
  * 若使用SOAP Header，请考虑在Global.asax文件中，包含一个Application_AuthenticateRequest处理程序，
  * 集中所有验证代码。
  * */
-
+//#define ENABLE_CACHE
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -255,7 +255,7 @@ namespace DevFuture.Common
         }
 
         /// <summary>
-        /// 调用带有特定SOAP Header的web服务方法。
+        /// 调用带有自定义SOAP Header的web服务方法。
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="soapHeaderName"></param>
@@ -265,15 +265,28 @@ namespace DevFuture.Common
         /// <param name="args"></param>
         /// <returns></returns>
         public T InvokeMethodReturnNativeObject<T>(string soapHeaderPropertyName, 
-            System.Web.Services.Protocols.SoapHeader header, 
-            string serviceName, string methodName, params object[] args)
+            object header,string serviceName, string methodName, params object[] args)
         {
             object serviceObj = GetCachedServiceObject(serviceName);
             Type serviceObjectType = serviceObj.GetType();
-            //若有SOAP Header，在这里设置
-            //注意：Web服务客户端必须具有soapHeaderName名字的public属性。
-            serviceObjectType.GetProperty(soapHeaderPropertyName).SetValue(serviceObj, header, null);
-
+            ///SOAP Header到达客户端后，会自动转变成 [Custom Header Type]Value 名字。
+            if (!soapHeaderPropertyName.EndsWith("Value"))
+            {
+                soapHeaderPropertyName += "Value";
+            }
+            //若有SOAP Header，服务中的自定义Header必须是pubulic的字段或属性。
+            //Note:自定义Header的的字段必须是DF_开头的。
+            //需要将传入的header转化成服务代理的[Custom Header Type]Value 属性的值。
+            //由于这两个类型都不在一个名字空间中，故需要手工转化。
+            Type toType = serviceObjectType.GetProperty(soapHeaderPropertyName).PropertyType;
+            object toObj= Activator.CreateInstance(serviceObjectType.GetProperty(soapHeaderPropertyName).PropertyType);
+            Type fromType = header.GetType();
+            foreach (PropertyInfo pi in toType.GetProperties())
+            {
+                if(pi.Name.StartsWith("DF_"))
+                pi.SetValue(toObj, fromType.GetProperty(pi.Name).GetValue(header, null), null);
+            }
+            serviceObjectType.GetProperty(soapHeaderPropertyName).SetValue(serviceObj, toObj, null);
             return (T)serviceObjectType.InvokeMember(methodName, BindingFlags.InvokeMethod, null, serviceObj, args);
 
         }
@@ -336,7 +349,9 @@ namespace DevFuture.Common
 
                 CompilerParameters parameters = new CompilerParameters(references);
                 parameters.GenerateExecutable = false;
+#if ENABLE_CACHE
                 parameters.OutputAssembly = wsCacheAsmName;
+#endif
 
                 // compile into assembly
                 CompilerResults results = compiler.CompileAssemblyFromDom(parameters, codeUnit);
