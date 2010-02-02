@@ -4,7 +4,8 @@
  * 支持服务对象缓存，支持编译后程序集持久化，支持PONO对象自动转换。
  * 当前版本不支持WSE。若要支持WSE，由于服务器端返回的XML发生了改变，需要引用WSE相关的库来编译。
  * 
- * 
+ * 若使用SOAP Header，请考虑在Global.asax文件中，包含一个Application_AuthenticateRequest处理程序，
+ * 集中所有验证代码。
  * */
 
 using System;
