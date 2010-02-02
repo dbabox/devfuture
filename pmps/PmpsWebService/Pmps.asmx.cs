@@ -6,9 +6,39 @@ using System.Web.Services;
 using System.Web.Services.Protocols;
 using System.ComponentModel;
 using System.Xml.Serialization;
+using Pmps.Common;
 
 namespace PmpsWebService
 {
+    /// <summary>
+    /// 自定义的SOAP Header
+    /// </summary>
+    public class MyHeader : SoapHeader
+    {
+        private string uid;
+
+        public string DF_Uid
+        {
+            get { return uid; }
+            set { uid = value; }
+        }
+        private string pwd;
+
+        public string DF_Pwd
+        {
+            get { return pwd; }
+            set { pwd = value; }
+        }
+        private string clientver;
+
+        public string DF_Clientver
+        {
+            get { return clientver; }
+            set { clientver = value; }
+        }
+
+    }
+
     /// <summary>
     /// Service1 的摘要说明
     /// </summary>
@@ -18,8 +48,11 @@ namespace PmpsWebService
     
     public class PmpsService : System.Web.Services.WebService
     {
+        public MyHeader myHeader;
 
+      
         [WebMethod]
+        [SoapHeader("myHeader", Direction = SoapHeaderDirection.InOut)]
         public string HelloWorld()
         {
             return "Hello World";
