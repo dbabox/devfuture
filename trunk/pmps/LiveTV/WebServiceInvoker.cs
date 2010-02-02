@@ -1,13 +1,28 @@
-﻿/* April 8, 2009  
+﻿/* 
  * 本工具类通过动态编译，实现对Web服务的动态调用。
+ * 本工具参考了来自互联网的众多代码，并经过大量修正和改进。
  * 
- * 支持服务对象缓存，支持编译后程序集持久化，支持PONO对象自动转换。
+ * 有任何错误，请联系：samonsun@imr.ac.cn
+ * ***************************************
+ * 
+ * 支持服务对象缓存，支持编译后程序集持久化，支持PONO对象自动转换。 
+ * 
  * 当前版本不支持WSE。若要支持WSE，由于服务器端返回的XML发生了改变，需要引用WSE相关的库来编译。
  * 
  * 若使用SOAP Header，请考虑在Global.asax文件中，包含一个Application_AuthenticateRequest处理程序，
  * 集中所有验证代码。
+ * 
+ * 自定义的SOAP Header公共字段和属性，必须以DF_开头。本程序只设置了用户定义的公共属性，SOAP Header作为SoapHeader
+ * 对象本身所继承的字段，没有做设置。可以使用仅包含具有相同的字段名的对象为自定义SOAP Header属性赋值。
+ * 
+ * 推荐：在Model中自定义的 HeaderInternal 的PONO对象，用它设置Web服务中定义的SOAP Header对象的属性值，
+ * HeaderInternal类具有和自定义SOAP Header类相同的字段名称(公共属性以DF_下划线开头)。
+ * 2010-2-2
+ * 
+ * 
  * */
-//#define ENABLE_CACHE
+#define ENABLE_CACHE
+
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -236,10 +251,7 @@ namespace DevFuture.Common
                     serviceObj = cachedServiceInstance[serviceName];
                 }
                 else
-                {
-                    //TODO:缓存服务对象
-                    // create an instance of the specified service
-                    // and invoke the method
+                {                    
                     serviceObj = this.webServiceAssembly.CreateInstance(serviceName);
                     cachedServiceInstance.Add(serviceName, serviceObj);
                 }
