@@ -10,13 +10,15 @@
     <RootNamespace>LiveTV</RootNamespace>
     <AssemblyName>LiveTV</AssemblyName>
     <ApplicationIcon>TV.ico</ApplicationIcon>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>..\..\AFC\DC\SIASUN.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;CLIENT</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
@@ -29,11 +31,11 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="AxInterop.WMPLib, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="AxInterop.WMPLib, Version=1.0.0.0, Culture=neutral, PublicKeyToken=9ed1eb93074ff5af, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>Lib\10\AxInterop.WMPLib.dll</HintPath>
     </Reference>
-    <Reference Include="Interop.WMPLib, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="Interop.WMPLib, Version=1.0.0.0, Culture=neutral, PublicKeyToken=9ed1eb93074ff5af, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>Lib\10\Interop.WMPLib.dll</HintPath>
     </Reference>
@@ -129,6 +131,9 @@
     <Compile Include="WebServiceInvoker.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\..\AFC\DC\SIASUN.snk">
+      <Link>SIASUN.snk</Link>
+    </None>
     <None Include="LD.jpg" />
     <Content Include="TV.ico">
     </Content>
