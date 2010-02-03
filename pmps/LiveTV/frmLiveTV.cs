@@ -236,6 +236,13 @@ namespace LiveTV
             //MessageBox.Show(mo.UserName);
             //MessageBox.Show(CLK.ClientLicence.SCA_GetLocalCACode());
 
+
+            //int[] rc= wsi.InvokeMethodReturnNativeObjectArray<int>("PmpsService", "GetIntArray", 5);
+            Pmps.Common.MoUser[] rc = wsi.InvokeMethodReturnCustomObjectArray<Pmps.Common.MoUser>("PmpsService", "GetUserArray", 5);
+
+            MessageBox.Show(rc[4].UserName);
+
+
             cfg = new MMSServerCFG();             
         }
 

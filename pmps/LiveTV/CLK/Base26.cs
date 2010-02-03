@@ -11,7 +11,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace LiveTV.CLK
+namespace DevFuture.Common.Security
 {
     internal class Base26
     {
