@@ -22,9 +22,12 @@
  * 
  * */
 
-//当需要在磁盘缓存时，请启用它。 
 
-//#define ENABLE_CACHE
+#if DEBUG
+#undef ENABLE_CACHE
+#else
+#define ENABLE_CACHE
+#endif
 
 using System;
 using System.Collections.Generic;
