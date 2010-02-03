@@ -15,11 +15,22 @@
  * 
  * */
 
+#if SERVER
+
+#define LOG_ENABLE
+
+#endif
+
 using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Management;
 using System.Security.Cryptography;
+
+
+#if LOG_ENABLE
+using Common.Logging;
+#endif
 
 namespace DevFuture.Common.Security
 {
@@ -29,6 +40,9 @@ namespace DevFuture.Common.Security
     /// </summary>
     internal class DFLicence
     {
+#if LOG_ENABLE
+        private static readonly ILog log = LogManager.GetCurrentClassLogger();
+#endif
         /// <summary>
         /// 1024byte的公钥，这是Vender发布的公钥，用于验证每份软件copy。仅当软件与硬件绑定时，使用此密钥认证。
         /// </summary>
@@ -104,9 +118,16 @@ namespace DevFuture.Common.Security
         internal static bool LocalCA(string caCode)
         {
             //将caCode转化成Base26，双UInt32的字节数组，注意：caCode是一连串字符串，无分隔符，每14个字符构成一个UInt64。
-            if (String.IsNullOrEmpty(caCode)||
-                caCode.Length % Base26.Bit64Base26MaxLength != 0)
+            if (String.IsNullOrEmpty(caCode))
             {
+                return false;
+            }
+            caCode=caCode.Replace("-","");
+            if (caCode.Length % Base26.Bit64Base26MaxLength != 0)
+            {
+#if LOG_ENABLE
+                log.Warn("授权码长度不正确。");
+#endif
                 return false;
             }
 
@@ -123,6 +144,9 @@ namespace DevFuture.Common.Security
             {
                 rsa.FromXmlString(publicRSAKey1024);
                 string hid = GetHID();
+#if LOG_ENABLE
+                if (log.IsInfoEnabled) log.InfoFormat("硬件ID:{0}", hid);
+#endif
                 return rsa.VerifyData(System.Text.Encoding.UTF8.GetBytes(hid), new SHA1CryptoServiceProvider(), signedData);
             }
              
@@ -130,7 +154,7 @@ namespace DevFuture.Common.Security
 
 #if CLIENT
         /// <summary>
-        /// 获取本机认证码，以供服务器认证。
+        /// 获取本机认证码，以供服务器认证。将本机硬件ID加密后传递给服务器。
         /// </summary>
         /// <returns></returns>
         internal static string SCA_GetLocalCACode()

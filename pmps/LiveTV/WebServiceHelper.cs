@@ -1,3 +1,4 @@
+#if V1
 /*
  * 动态调用Web服务的帮助类。
  * 
@@ -122,3 +123,4 @@ namespace DevFuture.Common
         #endregion
     }
 }
+#endif

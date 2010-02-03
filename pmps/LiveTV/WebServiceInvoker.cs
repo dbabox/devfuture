@@ -21,6 +21,9 @@
  * 
  * 
  * */
+
+//当需要在磁盘缓存时，请启用它。 
+
 //#define ENABLE_CACHE
 
 using System;
