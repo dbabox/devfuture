@@ -21,7 +21,7 @@
  * 
  * 
  * */
-#define ENABLE_CACHE
+//#define ENABLE_CACHE
 
 using System;
 using System.Collections.Generic;
@@ -155,9 +155,7 @@ namespace DevFuture.Common
         public T InvokeMethodReturnCustomObject<T>(string serviceName, string methodName, params object[] args ) where T:new()
         {
             object serviceObj = GetCachedServiceObject(serviceName);
-
             Type serviceObjectType = serviceObj.GetType();
-
             object rcObj= serviceObjectType.InvokeMember(methodName, BindingFlags.InvokeMethod, null, serviceObj, args);
             //Type rcType = rcObj.GetType();
 
@@ -171,6 +169,30 @@ namespace DevFuture.Common
             //return realObj;  
             return TranslatePONO<T>(ref rcObj);
         }
+
+        /// <summary>
+        /// 调用指定的方法，返回定制对象的数组。定制对象必须是简单.NET对象。(Pure .NET Object)。
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="serviceName"></param>
+        /// <param name="methodName"></param>
+        /// <param name="args"></param>
+        /// <returns></returns>
+        public T[] InvokeMethodReturnCustomObjectArray<T>(string serviceName, string methodName, params object[] args) where T : new()
+        {
+            object serviceObj = GetCachedServiceObject(serviceName);
+            Type serviceObjectType = serviceObj.GetType();
+
+            object[]  rcObjArr = serviceObjectType.InvokeMember(methodName, BindingFlags.InvokeMethod, null, serviceObj, args) as object[];           
+            if (rcObjArr != null && rcObjArr.Length > 0)
+            {               
+                T[] tArr = new T[rcObjArr.Length];
+                return TranslatePONOArray<T>(ref rcObjArr, ref tArr);            
+            }
+            throw new Exception("Web Service return none object Array.");        
+        }
+
+
 
         /// <summary>
         /// 调用带有SOAP Header的web服务方法。
@@ -194,6 +216,24 @@ namespace DevFuture.Common
             return TranslatePONO<T>(ref rcObj);
         }
 
+
+        public T[] InvokeMethodReturnCustomObjectArray<T>(string soapHeaderPropertyName,
+            object header, string serviceName, string methodName, params object[] args) where T : new()
+        {
+
+            object serviceObj = GetCachedServiceObject(serviceName);
+            Type serviceObjectType = serviceObj.GetType();
+            SetSoapHeaderValue(ref serviceObj, ref serviceObjectType, soapHeaderPropertyName, header);
+            object[] rcObjArr = serviceObjectType.InvokeMember(methodName, BindingFlags.InvokeMethod, null, serviceObj, args) as object[]; ;
+
+            if (rcObjArr != null && rcObjArr.Length > 0)
+            {
+                T[] tArr = new T[rcObjArr.Length];
+                return TranslatePONOArray<T>(ref rcObjArr, ref tArr);
+            }
+            throw new Exception("Web Service return none object Array.");        
+        }
+
         
         
 
@@ -209,10 +249,16 @@ namespace DevFuture.Common
         public T InvokeMethodReturnNativeObject<T>(string serviceName, string methodName, params object[] args)
         {
             object serviceObj = GetCachedServiceObject(serviceName);
-
             Type serviceObjectType = serviceObj.GetType();
-
             return (T)serviceObjectType.InvokeMember(methodName, BindingFlags.InvokeMethod, null, serviceObj, args);
+            
+        }
+
+        public T[] InvokeMethodReturnNativeObjectArray<T>(string serviceName, string methodName, params object[] args)
+        {
+            object serviceObj = GetCachedServiceObject(serviceName);
+            Type serviceObjectType = serviceObj.GetType();
+            return (T[])serviceObjectType.InvokeMember(methodName, BindingFlags.InvokeMethod, null, serviceObj, args);
             
         }
 
@@ -234,6 +280,15 @@ namespace DevFuture.Common
             SetSoapHeaderValue(ref serviceObj, ref serviceObjectType, soapHeaderPropertyName, header);
             return (T)serviceObjectType.InvokeMember(methodName, BindingFlags.InvokeMethod, null, serviceObj, args);
 
+        }
+
+        public T[] InvokeMethodReturnNativeObjectArray<T>(string soapHeaderPropertyName,
+          object header, string serviceName, string methodName, params object[] args)
+        {
+            object serviceObj = GetCachedServiceObject(serviceName);
+            Type serviceObjectType = serviceObj.GetType();
+            SetSoapHeaderValue(ref serviceObj, ref serviceObjectType, soapHeaderPropertyName, header);
+            return (T[])serviceObjectType.InvokeMember(methodName, BindingFlags.InvokeMethod, null, serviceObj, args);
         }
 
         /// <summary>
@@ -258,8 +313,21 @@ namespace DevFuture.Common
             }
             return serviceObj;
 
-        }       
+        }
 
+        #region 静态辅助泛型方法，PONO对象数组之间的转换
+        private static T[] TranslatePONOArray<T>(ref object[] fromArr, ref T[] toArr) where T : new()
+        {
+            object rcObj = null;
+            for (int i = 0; i < fromArr.Length; i++)
+            {
+                rcObj = fromArr[i];
+                toArr[i] = TranslatePONO<T>(ref rcObj);
+
+            }
+            return toArr;
+        }
+        #endregion
 
         #region 静态辅助方法 给定制的SOAP Header 赋值
         private static void SetSoapHeaderValue(ref object serviceObj, ref Type serviceObjectType, string soapHeaderPropertyName, object header)

@@ -74,5 +74,28 @@ namespace PmpsWebService
             m.UserName = new Random().Next().ToString()+"_NAME_";
             return m;
         }
+        [WebMethod]    
+        public int[] GetIntArray(int cnt)
+        {
+            int[] rc = new int[cnt];
+            for (int i = 0; i < cnt; i++)
+            {
+                rc[i] = new Random().Next();
+            }
+            return rc;
+        }
+
+        [WebMethod]    
+        public Pmps.Common.MoUser[] GetUserArray(int cnt)
+        {
+            Pmps.Common.MoUser[] rc = new Pmps.Common.MoUser[cnt];
+            for (int i = 0; i < cnt; i++)
+            {
+                rc[i] =new Pmps.Common.MoUser();
+                rc[i].UserName = Guid.NewGuid().ToString();
+
+            }
+            return rc;
+        }
     }
 }

@@ -1,5 +1,5 @@
 /*
- *CLK是　Client Licence Key 包的简称。 
+ *
  * 
  * 服务器具有Vender提供的授权码（根据客户特定信息生成，如用户的名字，许可的客户端数量）。此授权码由Vender使用其私钥签名得到。
  * 客户使用的服务器端软件，内嵌Vender提供的公钥，服务器端软件启动时，先获取客户自身的特征信息（如用户的名字，许可的客户端数量），
@@ -14,21 +14,20 @@
  * 
  * 
  * */
-#define CLIENT
-#define SERVER
+
 using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Management;
 using System.Security.Cryptography;
 
-namespace LiveTV.CLK
+namespace DevFuture.Common.Security
 {
     /// <summary>
     /// 授客户端授权
     /// 从
     /// </summary>
-    internal class ClientLicence
+    internal class DFLicence
     {
         /// <summary>
         /// 1024byte的公钥，这是Vender发布的公钥，用于验证每份软件copy。仅当软件与硬件绑定时，使用此密钥认证。
@@ -128,6 +127,7 @@ namespace LiveTV.CLK
             }
              
         }
+
 #if CLIENT
         /// <summary>
         /// 获取本机认证码，以供服务器认证。
@@ -165,13 +165,13 @@ namespace LiveTV.CLK
                     return rcsb.ToString();
                 }
             }
-             
-             
+
+
 
         }
+#else
 
 
- 
         /// <summary>
         /// 服务器认证客户端.
         /// </summary>
