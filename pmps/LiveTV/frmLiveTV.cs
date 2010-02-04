@@ -220,6 +220,7 @@ namespace LiveTV
 
         private void frmLiveTV_Load(object sender, EventArgs e)
         {
+            #if TEST_WEB_SRV
             //测试Web服务
             string url = "http://localhost:4155/Pmps.asmx";
             DevFuture.Common.WebServiceInvoker wsi = new DevFuture.Common.WebServiceInvoker(new Uri(url));
@@ -238,9 +239,17 @@ namespace LiveTV
 
 
             //int[] rc= wsi.InvokeMethodReturnNativeObjectArray<int>("PmpsService", "GetIntArray", 5);
-            Pmps.Common.MoUser[] rc = wsi.InvokeMethodReturnCustomObjectArray<Pmps.Common.MoUser>("PmpsService", "GetUserArray", 5);
+            Pmps.Common.MoMediaservindex[] rc = wsi.InvokeMethodReturnCustomObjectArray<Pmps.Common.MoMediaservindex>("PmpsService", "GetMedialList");
+            if (rc != null && rc.Length > 0)
+            {
+                MessageBox.Show(rc[0].ToString());
 
-            MessageBox.Show(rc[4].UserName);
+            }
+            else
+            {
+                MessageBox.Show("没数据");
+            }
+            #endif
 
 
             cfg = new MMSServerCFG();             
@@ -309,10 +318,39 @@ namespace LiveTV
 
         private void tsmiPlayList_Click(object sender, EventArgs e)
         {
-            frmPlayList frm = new frmPlayList();
+            try
+            {
+                cfg.LoadServerURLFromCfg();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("加载服务器配置失败，重新安装应用程序可以解决问题！\r\n" + ex.Message,
+                    "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+
+            frmPlayList frm = new frmPlayList(cfg,this);
             frm.Location = new Point(this.Location.X + this.Width, this.Location.Y);
             
             frm.Show();
+        }
+
+        public void PlayUrl(string url)
+        {
+            try
+            {
+                Player.Ctlcontrols.stop();
+                //若正在播放，则关闭当前视频
+                Player.URL = url;
+                Player.Ctlcontrols.play();
+                tsmiClose.Enabled = true;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("指定的地址不正确，无法播放！\r\n" + ex.Message, "错误");
+            }
+            
         }
         
     }

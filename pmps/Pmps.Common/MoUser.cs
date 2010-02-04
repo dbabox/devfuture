@@ -5,7 +5,7 @@ using System.Xml.Serialization;
 
 namespace Pmps.Common
 {
-    [SoapType("SoapMoUserType", "http://www.cohowinery.com")]
+    [SoapType("SoapMoUserType", "http://www.china.com")]
     public class MoUser
     {
         string userId;

@@ -4,7 +4,7 @@ using System.Text;
 
 namespace LiveTV
 {
-    class MMSServerCFG
+    public class MMSServerCFG
     {
         private static string startup_path;
 
