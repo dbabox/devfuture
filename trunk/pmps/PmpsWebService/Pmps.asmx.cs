@@ -7,6 +7,9 @@ using System.Web.Services.Protocols;
 using System.ComponentModel;
 using System.Xml.Serialization;
 using Pmps.Common;
+using System.Collections.Generic;
+using Common.Logging;
+ 
 
 namespace PmpsWebService
 {
@@ -48,6 +51,7 @@ namespace PmpsWebService
     
     public class PmpsService : System.Web.Services.WebService
     {
+        private static readonly ILog log = LogManager.GetCurrentClassLogger();
         public MyHeader myHeader;
 
       
@@ -86,6 +90,7 @@ namespace PmpsWebService
         }
 
         [WebMethod]    
+        [XmlInclude(typeof(Pmps.Common.MoUser))] 
         public Pmps.Common.MoUser[] GetUserArray(int cnt)
         {
             Pmps.Common.MoUser[] rc = new Pmps.Common.MoUser[cnt];
@@ -96,6 +101,53 @@ namespace PmpsWebService
 
             }
             return rc;
+        }
+
+        const string SQL_GetMedialList = "SELECT SERVERNAME,URL,DESCRIPTION,DURATION FROM MEDIASERVINDEX";
+        private static readonly System.Configuration.ConnectionStringSettings connSetting = System.Configuration.ConfigurationManager.ConnectionStrings["MediaInfo"];
+        
+        [WebMethod]
+        [XmlInclude(typeof(Pmps.Common.MoMediaservindex))] 
+        public Pmps.Common.MoMediaservindex[]  GetMedialList()
+        {
+            log.Debug("请求服务:GetMedialList");
+            List<Pmps.Common.MoMediaservindex> list = new List<MoMediaservindex>();
+                
+            using (System.Data.SQLite.SQLiteConnection conn = new System.Data.SQLite.SQLiteConnection(connSetting.ConnectionString))
+            {
+                conn.Open();
+                log.Debug("连接打开");
+                using (System.Data.SQLite.SQLiteTransaction trans = conn.BeginTransaction())
+                {
+                    log.Debug("启动事务");
+                    using (System.Data.SQLite.SQLiteCommand cmd = conn.CreateCommand())//命令
+                    {
+                        log.Debug("创建命令");
+                        cmd.CommandText = SQL_GetMedialList;
+                        cmd.CommandType = CommandType.Text;
+                        cmd.Transaction = trans;
+                        using (IDataReader rd = cmd.ExecuteReader())
+                        {
+                            while (rd.Read())
+                            {
+                                
+                                Pmps.Common.MoMediaservindex m = new MoMediaservindex();
+                                if (!rd.IsDBNull(0)) m.Servername = rd.GetString(0);
+                                if (!rd.IsDBNull(1)) m.Url = rd.GetString(1);
+                                if (!rd.IsDBNull(2)) m.Description = rd.GetString(2);
+                                if(!rd.IsDBNull(3)) m.Duration = rd.GetDateTime(3);
+                                list.Add(m);
+                                log.DebugFormat("读取到：{0}", m);
+
+                            }
+                        }
+                         
+                    }
+                    trans.Commit();
+                }
+                conn.Close();
+            }
+            return list.ToArray();
         }
     }
 }
