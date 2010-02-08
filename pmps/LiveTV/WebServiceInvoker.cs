@@ -381,6 +381,30 @@ namespace DevFuture.Common
         }
         #endregion
 
+        /// <summary>
+        /// 将本地PONO代理类(或接近)转化成Web服务Export的类型(真正的代理).
+        /// </summary>
+        /// <param name="stubObj"></param>
+        /// <param name="serviceExportTypeName"></param>
+        /// <returns></returns>
+        public object TranslateStub(object stubObj, string serviceExportTypeName)
+        {
+
+            if (!availableTypes.ContainsKey(serviceExportTypeName))
+            {
+                throw new Exception(String.Format("找不到类型:{0}", serviceExportTypeName));
+            }
+            Type toType = availableTypes[serviceExportTypeName];
+            object realObj = Activator.CreateInstance(toType);
+            Type fromType = stubObj.GetType();
+            foreach (PropertyInfo pi in toType.GetProperties())
+            {
+                pi.SetValue(realObj, fromType.GetProperty(pi.Name).GetValue(stubObj, null), null);
+            }
+
+            return realObj;
+        }
+
 
         #endregion
 
