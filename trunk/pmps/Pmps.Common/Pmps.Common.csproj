@@ -40,6 +40,9 @@
     <Compile Include="MoUser.cs" />
     <Compile Include="MyHeader.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="StubGetFileRequestStreaming.cs" />
+    <Compile Include="StubGetFileResponse.cs" />
+    <Compile Include="StubGetFileResponseStreaming.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\AFC\DC\SIASUN.snk">

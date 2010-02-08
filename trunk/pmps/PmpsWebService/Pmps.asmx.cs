@@ -52,7 +52,23 @@ namespace PmpsWebService
     public class PmpsService : System.Web.Services.WebService
     {
         private static readonly ILog log = LogManager.GetCurrentClassLogger();
+        private static int objCount=0;
         public MyHeader myHeader;
+
+        public PmpsService()
+        {
+            ++objCount;
+            log.DebugFormat("创建第{0}个对象,HashCode={1}", objCount,GetHashCode());
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            base.Dispose(disposing);
+            --objCount;
+            log.DebugFormat("释放对象{0},HashCode={1}", objCount, GetHashCode());
+        }
+
+       
 
       
         [WebMethod]
