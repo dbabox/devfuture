@@ -16,8 +16,10 @@
  * 对象本身所继承的字段，没有做设置。可以使用仅包含具有相同的字段名的对象为自定义SOAP Header属性赋值。
  * 
  * 推荐：在Model中自定义的 HeaderInternal 的PONO对象，用它设置Web服务中定义的SOAP Header对象的属性值，
- * HeaderInternal类具有和自定义SOAP Header类相同的字段名称(公共属性以DF_下划线开头)。
- * 2010-2-2
+ * HeaderInternal类具有和自定义SOAP Header类相同的字段名称(公共属性以DF_下划线开头)。[2010-2-2]
+ * 
+ * 对于byte[] 类型的参数，可以直接在调用时传入即可，无需转换成BASE64字符串。[2010-2-8]
+ * 
  * 
  * 
  * */
@@ -210,7 +212,7 @@ namespace DevFuture.Common
         /// <param name="methodName"></param>
         /// <param name="args"></param>
         /// <returns></returns>
-        public T InvokeMethodReturnCustomObject<T>(string soapHeaderPropertyName, 
+        public T InvokeMethodReturnCustomObjectWithSoapHeader<T>(string soapHeaderPropertyName, 
             object header, string serviceName, string methodName, params object[] args) where T : new()
         {
 
@@ -223,7 +225,7 @@ namespace DevFuture.Common
         }
 
 
-        public T[] InvokeMethodReturnCustomObjectArray<T>(string soapHeaderPropertyName,
+        public T[] InvokeMethodReturnCustomObjectArrayWithSoapHeader<T>(string soapHeaderPropertyName,
             object header, string serviceName, string methodName, params object[] args) where T : new()
         {
 
@@ -260,6 +262,34 @@ namespace DevFuture.Common
             
         }
 
+        /// <summary>
+        /// 具有输出参数的函数调用.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="serviceName"></param>
+        /// <param name="methodName"></param>
+        /// <param name="args"></param>
+        /// <param name="modifiers"></param>
+        /// <returns></returns>
+        public T InvokeMethodReturnNativeObject<T>(string serviceName, string methodName,ref object[] args,bool[] modifiers)
+        {
+            object serviceObj = GetCachedServiceObject(serviceName);
+            Type serviceObjectType = serviceObj.GetType();
+
+            ParameterModifier p = new ParameterModifier(args.Length);
+            for (int i = 0; i < args.Length; i++)
+            {
+                p[i] = modifiers[i];
+            }
+
+            return (T)serviceObjectType.InvokeMember(methodName, BindingFlags.InvokeMethod, null, 
+                serviceObj, args, new ParameterModifier[] { p } ,
+                null, null);
+
+        }
+
+
+
         public T[] InvokeMethodReturnNativeObjectArray<T>(string serviceName, string methodName, params object[] args)
         {
             object serviceObj = GetCachedServiceObject(serviceName);
@@ -278,7 +308,7 @@ namespace DevFuture.Common
         /// <param name="methodName"></param>
         /// <param name="args"></param>
         /// <returns></returns>
-        public T InvokeMethodReturnNativeObject<T>(string soapHeaderPropertyName, 
+        public T InvokeMethodReturnNativeObjectWithSoapHeader<T>(string soapHeaderPropertyName, 
             object header,string serviceName, string methodName, params object[] args)
         {
             object serviceObj = GetCachedServiceObject(serviceName);
@@ -288,7 +318,7 @@ namespace DevFuture.Common
 
         }
 
-        public T[] InvokeMethodReturnNativeObjectArray<T>(string soapHeaderPropertyName,
+        public T[] InvokeMethodReturnNativeObjectArrayWithSoapHeader<T>(string soapHeaderPropertyName,
           object header, string serviceName, string methodName, params object[] args)
         {
             object serviceObj = GetCachedServiceObject(serviceName);
