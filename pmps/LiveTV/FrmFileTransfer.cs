@@ -23,7 +23,7 @@ namespace LiveTV
             }
             catch(Exception ex)
             {
-                MessageBox.Show(ex.Message);
+                MessageBox.Show("获取服务失败！"+ ex.Message);
             }
         }
 
@@ -86,6 +86,10 @@ namespace LiveTV
                     else mods[i][0] = false;
                 }
 
+                
+
+                //输出参数是对数组中的元素的引用的修改
+                //切记：String和所有值类型，作为数组的元素时，会有值复制，结构会有装箱的过程；
                 object[] args = new object[3] { fi.Extension, fi.Length, rfilename };
 
                 rc = wsi.InvokeMethodReturnNativeObject<bool>("FileTransfer", "PrepareForUploadFileByServer",
