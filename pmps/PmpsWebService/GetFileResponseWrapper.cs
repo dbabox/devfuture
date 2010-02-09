@@ -62,6 +62,7 @@ namespace PmpsWebService
             get { return _tfc; }
         }
 
+      
         public GetFileResponseWrapper()
             : this(null)
         {
@@ -72,6 +73,7 @@ namespace PmpsWebService
         {
             _fileName = fileName;
             _tfc = new TempFileCollection();
+            _tfc.KeepFiles = false;
         }
 
         #region Dispose logic
@@ -147,6 +149,11 @@ namespace PmpsWebService
             }
         }
 
+        /// <summary>
+        /// 从XML中读取二进制数据到文件中，反序列化XML时使用。
+        /// </summary>
+        /// <param name="reader"></param>
+        /// <param name="fileName"></param>
         void ReadContentsIntoFile(XmlReader reader, string fileName)
         {
             using (FileStream fs = new FileStream(fileName, FileMode.CreateNew))
@@ -159,8 +166,7 @@ namespace PmpsWebService
                     int numRead = 0;
                     while ((numRead = reader.ReadContentAsBase64(buf, 0, Buff_Size)) > 0)
                     {
-                        fs.Write(buf, 0, numRead);
-                        if(log.IsDebugEnabled) log.DebugFormat("读取了{0}字节", numRead);
+                        fs.Write(buf, 0, numRead);                      
                     }
                 }
                 else

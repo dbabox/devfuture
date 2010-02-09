@@ -31,6 +31,10 @@
             this.BtnDownloadViaStream = new System.Windows.Forms.Button();
             this.textBoxFileName = new System.Windows.Forms.TextBox();
             this.BtnPutStream = new System.Windows.Forms.Button();
+            this.BtnSendByChunk = new System.Windows.Forms.Button();
+            this.BtnSend2Chunk = new System.Windows.Forms.Button();
+            this.textBox1 = new System.Windows.Forms.TextBox();
+            this.BtnVerify = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // BtnDownloadViaStream
@@ -53,7 +57,7 @@
             // 
             // BtnPutStream
             // 
-            this.BtnPutStream.Location = new System.Drawing.Point(336, 80);
+            this.BtnPutStream.Location = new System.Drawing.Point(328, 48);
             this.BtnPutStream.Name = "BtnPutStream";
             this.BtnPutStream.Size = new System.Drawing.Size(112, 23);
             this.BtnPutStream.TabIndex = 2;
@@ -61,12 +65,54 @@
             this.BtnPutStream.UseVisualStyleBackColor = true;
             this.BtnPutStream.Click += new System.EventHandler(this.BtnPutStream_Click);
             // 
+            // BtnSendByChunk
+            // 
+            this.BtnSendByChunk.Location = new System.Drawing.Point(328, 80);
+            this.BtnSendByChunk.Name = "BtnSendByChunk";
+            this.BtnSendByChunk.Size = new System.Drawing.Size(104, 24);
+            this.BtnSendByChunk.TabIndex = 3;
+            this.BtnSendByChunk.Text = "分块上传";
+            this.BtnSendByChunk.UseVisualStyleBackColor = true;
+            this.BtnSendByChunk.Click += new System.EventHandler(this.BtnSendByChunk_Click);
+            // 
+            // BtnSend2Chunk
+            // 
+            this.BtnSend2Chunk.Location = new System.Drawing.Point(336, 120);
+            this.BtnSend2Chunk.Name = "BtnSend2Chunk";
+            this.BtnSend2Chunk.Size = new System.Drawing.Size(75, 23);
+            this.BtnSend2Chunk.TabIndex = 4;
+            this.BtnSend2Chunk.Text = "分2次上传";
+            this.BtnSend2Chunk.UseVisualStyleBackColor = true;
+            this.BtnSend2Chunk.Click += new System.EventHandler(this.BtnSend2Chunk_Click);
+            // 
+            // textBox1
+            // 
+            this.textBox1.Location = new System.Drawing.Point(16, 104);
+            this.textBox1.Name = "textBox1";
+            this.textBox1.Size = new System.Drawing.Size(272, 21);
+            this.textBox1.TabIndex = 1;
+            this.textBox1.Text = "ddd.bak";
+            // 
+            // BtnVerify
+            // 
+            this.BtnVerify.Location = new System.Drawing.Point(200, 136);
+            this.BtnVerify.Name = "BtnVerify";
+            this.BtnVerify.Size = new System.Drawing.Size(88, 24);
+            this.BtnVerify.TabIndex = 5;
+            this.BtnVerify.Text = "Verify";
+            this.BtnVerify.UseVisualStyleBackColor = true;
+            this.BtnVerify.Click += new System.EventHandler(this.BtnVerify_Click);
+            // 
             // FrmFileTransfer
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(465, 267);
+            this.Controls.Add(this.BtnVerify);
+            this.Controls.Add(this.BtnSend2Chunk);
+            this.Controls.Add(this.BtnSendByChunk);
             this.Controls.Add(this.BtnPutStream);
+            this.Controls.Add(this.textBox1);
             this.Controls.Add(this.textBoxFileName);
             this.Controls.Add(this.BtnDownloadViaStream);
             this.Name = "FrmFileTransfer";
@@ -81,5 +127,9 @@
         private System.Windows.Forms.Button BtnDownloadViaStream;
         private System.Windows.Forms.TextBox textBoxFileName;
         private System.Windows.Forms.Button BtnPutStream;
+        private System.Windows.Forms.Button BtnSendByChunk;
+        private System.Windows.Forms.Button BtnSend2Chunk;
+        private System.Windows.Forms.TextBox textBox1;
+        private System.Windows.Forms.Button BtnVerify;
     }
 }
