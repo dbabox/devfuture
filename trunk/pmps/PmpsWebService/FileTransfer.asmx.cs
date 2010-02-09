@@ -104,14 +104,14 @@ namespace PmpsWebService
         /// <param name="Offset">偏移</param>
         /// <returns></returns>
         [WebMethod]
-        public bool UploadDataToPreparedFile(string FileName, byte[] buffer, long Offset)
+        public bool UploadDataToPreparedFile(string fileName, byte[] buffer, long offset)
         {           
             bool retVal = false;
             try
             {
                 // setting the file location to be save in the server. reading from the web.config file
 
-                string FilePath = Path.Combine(UPLOAD_PUTH, FileName);
+                string FilePath = Path.Combine(UPLOAD_PUTH, fileName);
                 if (!File.Exists(FilePath)) return false;
 
                 //if (Offset == 0) // new file, create an empty file
@@ -119,7 +119,7 @@ namespace PmpsWebService
                 // open a file stream and write the buffer. Don't open with FileMode.Append because the transfer may wish to start a different point
                 using (FileStream fs = new FileStream(FilePath, FileMode.Open, FileAccess.ReadWrite, FileShare.Read))
                 {
-                    fs.Seek(Offset, SeekOrigin.Begin);
+                    fs.Seek(offset, SeekOrigin.Begin);
                     fs.Write(buffer, 0, buffer.Length);
                 }
                 retVal = true;
@@ -127,7 +127,7 @@ namespace PmpsWebService
             }
             catch (Exception ex)
             {
-                log.ErrorFormat("UploadFile 文件名:{0},Offset={1}异常.{2}", FileName, Offset, ex);
+                log.ErrorFormat("UploadFile 文件名:{0},Offset={1}异常.{2}", fileName, offset, ex);
             }
             return retVal;
         }
@@ -140,20 +140,20 @@ namespace PmpsWebService
         /// <param name="Offset">偏移，即起始位置.</param>
         /// <returns>boolean: true means append is suucessfully</returns>
         [WebMethod]
-        public bool UploadFile(string FileName, byte[] buffer, long Offset)
+        public bool UploadFile(string fileName, byte[] buffer, long offset)
         {
             bool retVal = false;
             try
             {
                 // setting the file location to be save in the server. reading from the web.config file
-                string FilePath = Path.Combine(UPLOAD_PUTH, FileName);
+                string FilePath = Path.Combine(UPLOAD_PUTH, fileName);
                 
-                if (Offset == 0) // new file, create an empty file
+                if (offset == 0) // new file, create an empty file
                     File.Create(FilePath).Close();
                 // open a file stream and write the buffer. Don't open with FileMode.Append because the transfer may wish to start a different point
                 using (FileStream fs = new FileStream(FilePath, FileMode.Open, FileAccess.ReadWrite, FileShare.Read))
                 {
-                    fs.Seek(Offset, SeekOrigin.Begin);
+                    fs.Seek(offset, SeekOrigin.Begin);
                     fs.Write(buffer, 0, buffer.Length);
                 }
                 retVal = true;
@@ -161,7 +161,7 @@ namespace PmpsWebService
             }
             catch (Exception ex)
             {
-                log.ErrorFormat("UploadFile 文件名:{0},Offset={1}异常.{2}", FileName, Offset, ex);                       
+                log.ErrorFormat("UploadFile 文件名:{0},Offset={1}异常.{2}", fileName, offset, ex);                       
             }
             return retVal;
         }

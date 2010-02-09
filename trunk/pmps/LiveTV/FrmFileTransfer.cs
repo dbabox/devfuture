@@ -97,6 +97,10 @@ namespace LiveTV
 
                 MessageBox.Show(args[2].ToString());
 
+                Pmps.Common.StubGetFileResponse m = new Pmps.Common.StubGetFileResponse();
+                
+              
+
             }
         }
 
