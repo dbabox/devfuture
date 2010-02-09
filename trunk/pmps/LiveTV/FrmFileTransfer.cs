@@ -109,5 +109,12 @@ namespace LiveTV
             bool rc= wsi.InvokeMethodReturnNativeObject<bool>("FileTransfer", "VerifyFileMD5", textBox1.Text, hash);
             MessageBox.Show(rc.ToString());
         }
+
+        private void BtnClearWsCache_Click(object sender, EventArgs e)
+        {
+            //这个做不到，因为必须Unload应用程序域；
+        }
+
+       
     }
 }

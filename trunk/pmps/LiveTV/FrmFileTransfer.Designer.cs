@@ -35,6 +35,7 @@
             this.BtnSend2Chunk = new System.Windows.Forms.Button();
             this.textBox1 = new System.Windows.Forms.TextBox();
             this.BtnVerify = new System.Windows.Forms.Button();
+            this.BtnClearWsCache = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // BtnDownloadViaStream
@@ -103,11 +104,22 @@
             this.BtnVerify.UseVisualStyleBackColor = true;
             this.BtnVerify.Click += new System.EventHandler(this.BtnVerify_Click);
             // 
+            // BtnClearWsCache
+            // 
+            this.BtnClearWsCache.Location = new System.Drawing.Point(328, 176);
+            this.BtnClearWsCache.Name = "BtnClearWsCache";
+            this.BtnClearWsCache.Size = new System.Drawing.Size(120, 23);
+            this.BtnClearWsCache.TabIndex = 6;
+            this.BtnClearWsCache.Text = "Clear WS Cache";
+            this.BtnClearWsCache.UseVisualStyleBackColor = true;
+            this.BtnClearWsCache.Click += new System.EventHandler(this.BtnClearWsCache_Click);
+            // 
             // FrmFileTransfer
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(465, 267);
+            this.Controls.Add(this.BtnClearWsCache);
             this.Controls.Add(this.BtnVerify);
             this.Controls.Add(this.BtnSend2Chunk);
             this.Controls.Add(this.BtnSendByChunk);
@@ -131,5 +143,6 @@
         private System.Windows.Forms.Button BtnSend2Chunk;
         private System.Windows.Forms.TextBox textBox1;
         private System.Windows.Forms.Button BtnVerify;
+        private System.Windows.Forms.Button BtnClearWsCache;
     }
 }
