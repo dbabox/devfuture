@@ -24,8 +24,9 @@ namespace PmpsWebService
             //校验服务器
             if (!DevFuture.Common.Security.DFLicence.LocalCA(Application["DF_CA_KEY"] as string))
             {
-                log.WarnFormat("服务器授权码无效:{0}", Application["DF_CA_KEY"]);
-                app.CompleteRequest();
+                log.WarnFormat("服务器授权码无效:{0}", Application["DF_CA_KEY"]);                
+                app.CompleteRequest();              
+                
             }
             else
             {
