@@ -206,18 +206,18 @@ namespace PmpsWebService
             try
             {
 
-                foreach (String sourceFileName in request.FileContents.FileCollection)
-                {
-                    log.DebugFormat("{0} lenth={1}", sourceFileName, new FileInfo(sourceFileName).Length);
-                    if (File.Exists(destFileName))
-                        File.Delete(destFileName);
-                    File.Move(sourceFileName, destFileName);
-                    break;
-                }
-                //if (File.Exists(destFileName))
-                //    File.Delete(destFileName);
-                //File.Move(request.FileContents.FileName, destFileName);
-                //File.Delete(request.FileContents.FileName);
+                //foreach (String sourceFileName in request.FileContents.FileCollection)
+                //{
+                //    log.DebugFormat("{0} lenth={1}", sourceFileName, new FileInfo(sourceFileName).Length);
+                //    if (File.Exists(destFileName))
+                //        File.Delete(destFileName);
+                //    File.Move(sourceFileName, destFileName);
+                //    break;
+                //}
+                if (File.Exists(destFileName))
+                    File.Delete(destFileName);
+                File.Move(request.FileContents.FileName, destFileName);
+                request.FileContents.Dispose();
                 rc = true;
             }
             catch (Exception ex)
