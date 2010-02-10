@@ -54,7 +54,7 @@
             this.textBoxFileName.Name = "textBoxFileName";
             this.textBoxFileName.Size = new System.Drawing.Size(272, 21);
             this.textBoxFileName.TabIndex = 1;
-            this.textBoxFileName.Text = "E:\\temp\\ddd.bak";
+            this.textBoxFileName.Text = "E:\\temp\\zb20100210.bak";
             // 
             // BtnPutStream
             // 
@@ -92,7 +92,7 @@
             this.textBox1.Name = "textBox1";
             this.textBox1.Size = new System.Drawing.Size(272, 21);
             this.textBox1.TabIndex = 1;
-            this.textBox1.Text = "ddd.bak";
+            this.textBox1.Text = "zb20100210.bak";
             // 
             // BtnVerify
             // 

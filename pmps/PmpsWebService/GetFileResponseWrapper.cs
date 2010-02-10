@@ -126,7 +126,8 @@ namespace PmpsWebService
            
             // Read the binary data that represents the file contents
             // into a temp file.
-            _fileName = _tfc.AddExtension("fileContents", true);
+           
+            _fileName =_tfc.AddExtension("fileContents", false);       
             if (log.IsDebugEnabled) log.DebugFormat("从XML中读取内容到临时文件{0}", _fileName);
             ReadContentsIntoFile(r, _fileName);     
             // Read the close tag of the encapsulating element
