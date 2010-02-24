@@ -1,4 +1,9 @@
-using System;
+/*
+ * 本窗体用于测试文件传输.
+ * 
+ * 
+ * */
+ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -50,7 +55,8 @@ namespace LiveTV
                 rq.fileName =  System.IO.Path.GetFileName(textBoxFileName.Text);
                 rq.fileData = System.IO.File.ReadAllBytes(textBoxFileName.Text);
 
-                bool rc = wsi.InvokeMethodReturnNativeObject<bool>("FileTransfer", "PutFileStreaming", wsi.TranslateStub(rq, "GetFileRequestStreaming"));
+                bool rc = wsi.InvokeMethodReturnNativeObject<bool>("FileTransfer", "PutFileStreaming", 
+                    wsi.TranslateStub(rq, "GetFileRequestStreaming"));
                 MessageBox.Show(rc.ToString());
             }
         }
@@ -84,9 +90,7 @@ namespace LiveTV
                     mods[i] = new ParameterModifier(1);
                     if (i == 2) mods[i][0] = true;
                     else mods[i][0] = false;
-                }
-
-                
+                }             
 
                 //输出参数是对数组中的元素的引用的修改
                 //切记：String和所有值类型，作为数组的元素时，会有值复制，结构会有装箱的过程；
@@ -97,7 +101,7 @@ namespace LiveTV
 
                 MessageBox.Show(args[2].ToString());
 
-                Pmps.Common.StubGetFileResponse m = new Pmps.Common.StubGetFileResponse();
+                
                 
               
 
@@ -126,3 +130,4 @@ namespace LiveTV
        
     }
 }
+ 
