@@ -5,6 +5,7 @@ using System.Data;
 using Microsoft.Practices.EnterpriseLibrary.Data;
 using System.Data.Common;
 using Common.Logging;
+using System.Xml.Serialization;
 
 
 namespace TreeEditor.Core
@@ -16,7 +17,7 @@ namespace TreeEditor.Core
     {
 
         private static Dictionary<String, String> providerDic = new Dictionary<string, string>();
-
+        [XmlIgnoreAttribute()]
         public static Dictionary<String, String> ProviderDic
         {
             get { return TvaSchema.providerDic; }
@@ -129,11 +130,9 @@ namespace TreeEditor.Core
         {
             get
             {
-                if (String.IsNullOrEmpty(sql_GetTreeNodeDataTable))
-                {
-                    if (String.IsNullOrEmpty(tna_table_name)) throw new ArgumentNullException("tna_table_name");
-                    sql_GetTreeNodeDataTable = String.Format("SELECT * FROM {0}", tna_table_name);
-                }
+                if (String.IsNullOrEmpty(tna_table_name)) throw new ArgumentNullException("tna_table_name");
+                sql_GetTreeNodeDataTable = String.Format("SELECT * FROM {0} ORDER BY {1}", tna_table_name, tna_logic_id_map_field);
+                log.DebugFormat("获取所有节点SQL:{0}", sql_GetTreeNodeDataTable);
                 return sql_GetTreeNodeDataTable;
             }
             set
@@ -221,7 +220,7 @@ namespace TreeEditor.Core
 
 
         private DbType idFieldDbType=DbType.String;
-
+        [XmlIgnoreAttribute()]
         public DbType IdFieldDbType
         {
             get { return idFieldDbType; }            
@@ -259,7 +258,7 @@ namespace TreeEditor.Core
 
         #region 所有的SQL命令 DbCommand 对象
         private DbCommand cmdIsExist;
-
+        [XmlIgnoreAttribute()]
         public DbCommand CmdIsExist
         {
             get { return cmdIsExist; }
@@ -267,27 +266,27 @@ namespace TreeEditor.Core
         }
 
         private DbCommand cmdGetTreeNodeDataTable;
-
+        [XmlIgnoreAttribute()]
         public DbCommand CmdGetTreeNodeDataTable
         {
             get { return cmdGetTreeNodeDataTable; }           
         }
 
         private DbCommand cmdGetGetNodesTotalCount;
-
+        [XmlIgnoreAttribute()]
         public DbCommand CmdGetGetNodesTotalCount
         {
             get { return cmdGetGetNodesTotalCount; }            
         }
 
         private DbCommand cmdAdd;
-
+        [XmlIgnoreAttribute()]
         public DbCommand CmdAdd
         {
             get { return cmdAdd; }            
         }
         private DbCommand cmdUpdate;
-
+        [XmlIgnoreAttribute()]
         public DbCommand CmdUpdate
         {
             get { return cmdUpdate; }
@@ -295,7 +294,7 @@ namespace TreeEditor.Core
         }
 
         private DbCommand cmdClearSourceTreeNodeTable;
-
+        [XmlIgnoreAttribute()]
         public DbCommand CmdClearSourceTreeNodeTable
         {
             get { return cmdClearSourceTreeNodeTable; }
