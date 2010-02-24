@@ -9,7 +9,7 @@ using System.Data;
 
 namespace MediaService
 {
-    class dbperator
+    class dbperator:IDisposable
     {
         static private SQLiteConnection conn;
         private string datasource;
@@ -18,18 +18,17 @@ namespace MediaService
         {
             datasource = inputsource;
             conn = new SQLiteConnection();
-            connectDB();
+            connectDB(); //这里启动了DB
         }
+
+          
 
         //连接数据库
         private void connectDB()
         {
             SQLiteConnectionStringBuilder connstr = new SQLiteConnectionStringBuilder();
-
             connstr.DataSource = datasource;
-
             conn.ConnectionString = connstr.ToString();
-
             conn.Open();
         }
 
@@ -61,38 +60,48 @@ namespace MediaService
         //向表中插入数据
         public void insertTable(string servname, string urlstr)
         {
-            SQLiteCommand cmd = new SQLiteCommand();
-            cmd.CommandText = "insert into MediaServIndex(ServerName, URL, Description,duration) values(?,?,?,?)";
-            DbParameter p1 = cmd.CreateParameter();
-            DbParameter p2 = cmd.CreateParameter();
-            DbParameter p3 = cmd.CreateParameter();
-            DbParameter p4 = cmd.CreateParameter();
+            using (SQLiteCommand cmd = new SQLiteCommand())
+            {
+                cmd.CommandText = "REPLACE  into MediaServIndex(ServerName, URL, Description,duration) values(?,?,?,?)";
+                DbParameter p1 = cmd.CreateParameter();
+                DbParameter p2 = cmd.CreateParameter();
+                DbParameter p3 = cmd.CreateParameter();
+                DbParameter p4 = cmd.CreateParameter();
 
-            cmd.Parameters.Add(p1);
-            cmd.Parameters.Add(p2);
-            cmd.Parameters.Add(p3);
-            cmd.Parameters.Add(p4);
+                cmd.Parameters.Add(p1);
+                cmd.Parameters.Add(p2);
+                cmd.Parameters.Add(p3);
+                cmd.Parameters.Add(p4);
 
-            p1.Value = servname;
-            p2.Value = urlstr;
-            p3.Value = " "; // 暂时保存一个空字符
-            p4.Value = " "; // 暂时保存一个空字符
-            cmd.Connection = conn;
-            cmd.ExecuteNonQuery();
+                p1.Value = servname;
+                p2.Value = urlstr;
+                p3.Value = " "; // 暂时保存一个空字符
+                p4.Value = " "; // 暂时保存一个空字符
+                cmd.Connection = conn;
+                cmd.ExecuteNonQuery();
+            }
         }
+
+        const string sql_dropTable = "drop table MediaServIndex";
 
         //删除数据表
         public void dropTable()
         {
-            SQLiteCommand cmd = new SQLiteCommand();
-
-            string sql = "drop table MediaServIndex";
-
-            cmd.CommandText = sql;
-
-            cmd.Connection = conn;
-
-            cmd.ExecuteNonQuery();
+            using (SQLiteCommand cmd = new SQLiteCommand())
+            {
+                cmd.CommandText = sql_dropTable;
+                cmd.Connection = conn;
+                cmd.ExecuteNonQuery();
+            }
         }
+
+        #region IDisposable 成员
+
+        public void Dispose()
+        {
+            if (conn != null) conn.Dispose();
+        }
+
+        #endregion
     }
 }

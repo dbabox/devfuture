@@ -20,6 +20,7 @@ namespace PmpsWebService
       
         protected void Application_BeginRequest(Object sender, EventArgs e)
         {            
+#if ENABLE_CLK
             HttpApplication app = (HttpApplication)sender;
             //校验服务器
             if (!DevFuture.Common.Security.DFLicence.LocalCA(Application["DF_CA_KEY"] as string))
@@ -35,7 +36,7 @@ namespace PmpsWebService
                 //执行其他动作
 
             }
-            
+#endif
             
 
         }

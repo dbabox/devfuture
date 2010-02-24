@@ -5,10 +5,10 @@ using System.Text;
 namespace Pmps.Common
 {
     /// <remarks/>
-    //[System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "2.0.50727.42")]
-    //[System.SerializableAttribute()]
-    //[System.Diagnostics.DebuggerStepThroughAttribute()]
-    //[System.ComponentModel.DesignerCategoryAttribute("code")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "2.0.50727.42")]
+    [System.SerializableAttribute()]
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
     public partial class StubGetFileRequestStreaming
     {
 
@@ -30,7 +30,7 @@ namespace Pmps.Common
         }
 
         /// <remarks/>
-        //[System.Xml.Serialization.XmlElementAttribute(DataType = "base64Binary")]
+        [System.Xml.Serialization.XmlElementAttribute(DataType = "base64Binary")]
         public byte[] fileData
         {
             get

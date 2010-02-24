@@ -45,6 +45,10 @@ namespace MediaService
         {
             watchpath = pathConfig;
             dbopt = dbsource;
+            //删除表中数据
+            dbopt.dropTable();
+            //重新创建表
+            dbopt.createTable();
 
             FileWatcher = new FileSystemWatcher();
             FileWatcher.Filter = "*.asx"; //设定监听的文件类型
@@ -53,20 +57,14 @@ namespace MediaService
             FileWatcher.Created += new FileSystemEventHandler(filewatcherModified); //Created事件处理
             FileWatcher.Deleted += new FileSystemEventHandler(filewatcherModified); //Deleted事件处理
             //FileWatcher.Renamed += new RenamedEventHandler(filewatcherModified);//Renamed事件处理
-            FileWatcher.IncludeSubdirectories = false;//不需监听子目录
+            FileWatcher.IncludeSubdirectories = true;//不需监听子目录
             FileWatcher.EnableRaisingEvents = true;//开始进行监听
         }
 
         //监控处理函数，每当文件发生变动的时候，就重新生成数据表。就目前情况，数据量很小，速度能满足。
         void filewatcherModified(object sender, FileSystemEventArgs e)
         {
-            DirectoryInfo dir = new DirectoryInfo(watchpath);
-
-            //删除表中数据
-            dbopt.dropTable();
-
-            //重新创建表
-            dbopt.createTable();
+            DirectoryInfo dir = new DirectoryInfo(watchpath);           
 
             //重新向表中加入数据
             foreach (FileInfo infoFile in dir.GetFiles("*.asx")) //遍历获得以asx为扩展名的文件   
