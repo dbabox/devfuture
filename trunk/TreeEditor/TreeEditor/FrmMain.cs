@@ -36,15 +36,17 @@ namespace TreeEditor
         //TNMTreeModel tnmModel;
         DataRowTreeModel tnmModel;
         IList<DataRowTvaNode> checkedNodes;
+        private TvaSchema s;
 
         //private Dictionary<ITreeTableAdapter, string> treeAdapterDic = new Dictionary<ITreeTableAdapter, string>();
 
         public FrmMain(TvaSchema s)
         {
+            this.s = s;
             InitializeComponent();
             SetupTree(_tree);
 
-            tnmModel = new DataRowTreeModel(s);         
+            tnmModel = new DataRowTreeModel(this.s);         
             tnmModel.NodesRemoved += new EventHandler<TreeModelEventArgs>(tnmModel_NodesRemoved);
             tnmModel.NodesInserted += new EventHandler<TreeModelEventArgs>(tnmModel_NodesInserted);
             _tree.SelectionChanged += new EventHandler(_tree_SelectionChanged);
@@ -122,8 +124,25 @@ namespace TreeEditor
             tb.EditOnClick = false;
             //tb.ChangesApplied += new EventHandler(tb_ChangesApplied);
             tva.NodeControls.Add(tb);
+            tva.SelectionChanged += new EventHandler(tva_SelectionChanged);
 
             
+        }
+
+        void tva_SelectionChanged(object sender, EventArgs e)
+        {
+            if (_tree.CurrentNode != null)
+            {
+                DataRowTvaNode node=_tree.CurrentNode.Tag as DataRowTvaNode;
+                foreach (DataGridViewRow r in dgvTarget.Rows)
+                {
+                    if (r.Cells[s.Tna_id_field_name.ToUpper()].Value == node.DataRow[s.Tna_id_field_name])
+                    {
+                        dgvTarget.CurrentCell = r.Cells[s.Tna_id_field_name.ToUpper()];
+                        break;
+                    }
+                }
+            }
         }
  
         void cb_CheckStateChanged(object sender, TreePathEventArgs e)
@@ -382,7 +401,7 @@ namespace TreeEditor
             int rc = tnmModel.SyncDataTable2TreeNodes();           
             _tree.EndUpdate();
             MessageBox.Show(String.Format("表格中的数据同步到树完成!{0}",
-                rc==dgvTarget.RowCount?String.Empty:
+                rc==tnmModel.TreeTable.Rows.Count?String.Empty:
                 String.Format("\r\n表格中有{0}条记录，树中有{1}个节点，说明表格中存在[悬空]节点.\r\n具体信息见错误日志.",dgvTarget.RowCount,
                 rc)), "提示",
                 MessageBoxButtons.OK, MessageBoxIcon.Information);

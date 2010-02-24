@@ -625,7 +625,7 @@ namespace TreeEditor
         /// </summary>
         /// <returns></returns>
         public int SyncDataTable2TreeNodes()
-        {           
+        {
             treeTable.AcceptChanges();         
             this.nodesTotalCount = treeTable.Rows.Count;
             p2cDic.Clear();

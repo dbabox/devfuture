@@ -46,6 +46,7 @@
             this.checkBoxForce = new System.Windows.Forms.CheckBox();
             this.BtnDb2Tree = new System.Windows.Forms.Button();
             this.textBoxLog = new System.Windows.Forms.TextBox();
+            this.label1 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.dgvTarget)).BeginInit();
             this.contextMenuStrip1.SuspendLayout();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -173,6 +174,7 @@
             // 
             // splitContainer1.Panel2
             // 
+            this.splitContainer1.Panel2.Controls.Add(this.label1);
             this.splitContainer1.Panel2.Controls.Add(this.BtnDt2Tree);
             this.splitContainer1.Panel2.Controls.Add(this.checkBoxForce);
             this.splitContainer1.Panel2.Controls.Add(this.BtnDb2Tree);
@@ -198,7 +200,7 @@
             this.checkBoxForce.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.checkBoxForce.AutoSize = true;
             this.checkBoxForce.ForeColor = System.Drawing.Color.Red;
-            this.checkBoxForce.Location = new System.Drawing.Point(377, 265);
+            this.checkBoxForce.Location = new System.Drawing.Point(377, 282);
             this.checkBoxForce.Name = "checkBoxForce";
             this.checkBoxForce.Size = new System.Drawing.Size(72, 16);
             this.checkBoxForce.TabIndex = 4;
@@ -226,6 +228,17 @@
             this.textBoxLog.Name = "textBoxLog";
             this.textBoxLog.Size = new System.Drawing.Size(702, 111);
             this.textBoxLog.TabIndex = 8;
+            // 
+            // label1
+            // 
+            this.label1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.label1.AutoEllipsis = true;
+            this.label1.ForeColor = System.Drawing.SystemColors.ActiveCaption;
+            this.label1.Location = new System.Drawing.Point(375, 238);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(100, 41);
+            this.label1.TabIndex = 6;
+            this.label1.Text = "通过表格添加了节点时，请选中强制同步。";
             // 
             // FrmMain
             // 
@@ -267,6 +280,7 @@
         private System.Windows.Forms.ToolStripMenuItem tsmiUP;
         private System.Windows.Forms.ToolStripMenuItem tsmiDown;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
+        private System.Windows.Forms.Label label1;
     }
 }
 
