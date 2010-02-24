@@ -22,7 +22,7 @@ namespace TreeEditor
 
         #region 从配置文件获取
         /// <summary>
-        /// 根的逻辑ID格式
+        /// 根的逻辑ID格式 [前缀][###]
         /// </summary>
         string LOGIC_ID_FMT_1 = "{1}{0,3:D3}";
         /// <summary>
@@ -552,11 +552,15 @@ namespace TreeEditor
 
         private void RefreshLogicId(string parentId)
         {
-            string parentLogicId = tnmDic[parentId].TNA_LogicId;
-            IList<DataRowTvaNode> list = p2cDic[parentId];
-            for (int i = 0; i < list.Count; i++)
+            string parentLogicId = tnmDic[parentId].TNA_LogicId; //父节点的逻辑ID
+            if (p2cDic.ContainsKey(parentId) && p2cDic[parentId].Count > 0)
             {
-                list[i].TNA_LogicId = String.Format(LOGIC_ID_FMT_2, parentLogicId, i + 1);
+                IList<DataRowTvaNode> list = p2cDic[parentId];
+                for (int i = 0; i < list.Count; i++)
+                {
+                    list[i].TNA_LogicId = String.Format(LOGIC_ID_FMT_2, parentLogicId, i + 1);
+                    RefreshLogicId(list[i].TNA_ID);
+                }
             }
         }
 
@@ -565,6 +569,10 @@ namespace TreeEditor
             for (int i = 0; i < rootList.Count; i++)
             {
                 rootList[i].TNA_LogicId = GetRoolLogicId(i);
+            }
+            foreach (string key in tnmDic.Keys)
+            {
+                tnmDic[key].TNA_LogicId = GetLogicId(tnmDic[key]);
             }
         }
 

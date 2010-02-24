@@ -31,6 +31,7 @@ namespace TreeEditor.Core
 
         static readonly ILog log = LogManager.GetCurrentClassLogger();
 
+        #region 需要外部提供的
         private string tna_id_field_name="FUNC_ID";
         /// <summary>
         /// ID字段的名称
@@ -99,6 +100,8 @@ namespace TreeEditor.Core
             get { return connectionString; }
             set { connectionString = value; }
         }
+
+        #endregion
 
         private string sql_GetGetNodesTotalCount;
         /// <summary>

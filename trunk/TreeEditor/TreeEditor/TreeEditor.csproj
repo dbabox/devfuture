@@ -71,6 +71,7 @@
     <Compile Include="FrmSchema.Designer.cs">
       <DependentUpon>FrmSchema.cs</DependentUpon>
     </Compile>
+    <Compile Include="ObjectXMLSerializer.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="FrmMain.resx">
