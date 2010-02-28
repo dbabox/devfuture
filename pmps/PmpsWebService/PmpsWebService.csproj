@@ -43,13 +43,12 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\AFC\DC\Lib\log4net.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.WindowsMediaServices, Version=9.1.1.3842, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\LiveTV\Lib\Microsoft.WindowsMediaServices.DLL</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
-    <Reference Include="System.Data.SQLite, Version=1.0.60.0, Culture=neutral, PublicKeyToken=db937bc2d44ff139, processorArchitecture=x86">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\KB\DotNet\SQLite.NET\dotNet2.0\1.0.60\SQLite-1.0.60.0-binaries\bin\System.Data.SQLite.DLL</HintPath>
-    </Reference>
-    <Reference Include="System.Drawing" />
     <Reference Include="System.Management" />
     <Reference Include="System.Web" />
     <Reference Include="System.Xml" />

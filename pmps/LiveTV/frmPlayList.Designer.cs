@@ -65,7 +65,7 @@
             this.olvColMediaName.AspectName = "Url";
             this.olvColMediaName.HeaderFont = null;
             this.olvColMediaName.Text = "名称";
-            this.olvColMediaName.Width = 150;
+            this.olvColMediaName.Width = 200;
             // 
             // olvColDecription
             // 

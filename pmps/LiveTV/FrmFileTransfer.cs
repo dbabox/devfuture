@@ -17,7 +17,7 @@ namespace LiveTV
 {
     public partial class FrmFileTransfer : Form
     {
-        string url = "http://localhost:4155/FileTransfer.asmx";
+        string url = "http://localhost/FileTransfer.asmx";
         DevFuture.Common.WebServiceInvoker wsi;
         public FrmFileTransfer()
         {
