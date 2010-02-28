@@ -61,12 +61,22 @@ namespace LiveTV
             {
                 try
                 {
-                    Pmps.Common.MoMediaservindex[] rc = wsi.InvokeMethodReturnCustomObjectArray<Pmps.Common.MoMediaservindex>("PmpsService", "GetMedialList");
-                    if (rc != null && rc.Length > 0)
+                    string[] urlArr = wsi.InvokeMethodReturnNativeObjectArray<string>("PmpsService", "GetMedialUrl");
+                    if (urlArr != null && urlArr.Length > 0)
                     {
-                        mediaList.Clear();
-                        mediaList.AddRange(rc);
-                        objectListView1.BuildList();
+                        Pmps.Common.MoMediaservindex[] rc = new Pmps.Common.MoMediaservindex[urlArr.Length];
+                        for (int i = 0; i < urlArr.Length; i++)
+                        {
+                            rc[i].Url = urlArr[i];
+                            rc[i].Description = "试验版不支持返回描述.";
+                        }
+
+                        if (rc != null && rc.Length > 0)
+                        {
+                            mediaList.Clear();
+                            mediaList.AddRange(rc);
+                            objectListView1.BuildList();
+                        }
                     }
                 }
                 catch (Exception ex)
@@ -78,15 +88,16 @@ namespace LiveTV
 
         private void InitWs()
         {
+             string url = String.Format("http://{0}/Pmps.asmx", cfg.Base_Url);
             try
             {
                 //从服务器获取最新的播放列表
-                string url = String.Format("http://{0}/Pmps.asmx", cfg.Base_Url);
-                wsi = new WebServiceInvoker(url);
+               
+                wsi = new WebServiceInvoker("http://localhost/zbws/Pmps.asmx");
             }
             catch (Exception ex)
             {
-                MessageBox.Show("服务无效！\r\n" + ex.Message);
+                MessageBox.Show(String.Format("服务无效！{0}\r\n{1}" ,url, ex.Message));
             }
         }
     }

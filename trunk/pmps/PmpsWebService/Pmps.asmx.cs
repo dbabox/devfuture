@@ -9,6 +9,7 @@ using System.Xml.Serialization;
 using Pmps.Common;
 using System.Collections.Generic;
 using Common.Logging;
+using Microsoft.WindowsMediaServices.Interop;
  
 
 namespace PmpsWebService
@@ -54,6 +55,7 @@ namespace PmpsWebService
         private static readonly ILog log = LogManager.GetCurrentClassLogger();
         private static int objCount=0;
         public MyHeader myHeader;
+ 
 
         public PmpsService()
         {
@@ -118,7 +120,8 @@ namespace PmpsWebService
             }
             return rc;
         }
-
+        #region 使用文件监视器时
+#if FILEWATCH
         const string SQL_GetMedialList = "SELECT SERVERNAME,URL,DESCRIPTION,DURATION FROM MEDIASERVINDEX";
         private static readonly System.Configuration.ConnectionStringSettings connSetting = System.Configuration.ConfigurationManager.ConnectionStrings["MediaInfo"];
         
@@ -165,5 +168,123 @@ namespace PmpsWebService
             }
             return list.ToArray();
         }
+#endif
+        #endregion
+
+
+        #region 下列方法返回MMS服务器的有效URL
+        [WebMethod]  
+        public string[] GetMedialUrl()
+        {
+            WMSServer server = null;
+            try
+            {
+                #region 处理服务器发布点信息
+                server = new WMSServerClass();
+                foreach (string ip in server.AvailableIPAddresses)
+                {
+                    Console.WriteLine("服务器有效IP:{0}", ip);
+                }
+                List<String> urlList = new List<string>();
+
+
+                Console.WriteLine("服务器上共有{0}个发布点", server.PublishingPoints.Count);
+                foreach (IWMSPublishingPoint p in server.PublishingPoints)
+                {
+                    switch (p.Type)
+                    {
+                        case WMS_PUBLISHING_POINT_TYPE.WMS_PUBLISHING_POINT_TYPE_ON_DEMAND:
+                            {
+                                //默认发布点 / ，以文件方式获取
+                                Console.WriteLine("随需发布点({0}) :{1},状态:{2} ", p.Type, p.Name, p.Status);
+                                Console.WriteLine("Path={0},WrapperPath={1}", p.Path, p.WrapperPath);
+                                if (p.Status == WMS_PUBLISHING_POINT_STATUS.WMS_PUBLISHING_POINT_RUNNING)
+                                {
+                                    urlList.AddRange(GetUrlForPublishPoint(p.Path, GetServerPublicIP(server), p.Name));
+                                }
+                                break;
+                            }
+                        case WMS_PUBLISHING_POINT_TYPE.WMS_PUBLISHING_POINT_TYPE_CACHE_PROXY_BROADCAST:
+                            {
+                                //代理发布点
+                                Console.WriteLine("缓存代理广播({0}) :{1},状态:{2}", p.Type, p.Name, p.Status);
+                                break;
+                            }
+                        case WMS_PUBLISHING_POINT_TYPE.WMS_PUBLISHING_POINT_TYPE_CACHE_PROXY_ON_DEMAND:
+                            {
+                                Console.WriteLine("缓存代理随需发布点({0}) :{1},状态:{2}", p.Type, p.Name, p.Status);
+                                break;
+                            }
+                        case WMS_PUBLISHING_POINT_TYPE.WMS_PUBLISHING_POINT_TYPE_BROADCAST:
+                            {
+
+                                Console.WriteLine("广播发布点({0}) :{1},状态:{2}", p.Type, p.Name, p.Status);
+                                Console.WriteLine("Path={0},WrapperPath={1}", p.Path, p.WrapperPath);
+                                if (p.Status == WMS_PUBLISHING_POINT_STATUS.WMS_PUBLISHING_POINT_RUNNING)
+                                {
+                                    urlList.AddRange(GetUrlForPublishPoint(p.Path, GetServerPublicIP(server), p.Name));
+                                }
+                                break;
+                            }
+                    }
+                    Console.WriteLine("================================================");
+                }
+                #endregion
+
+#if DEBUG
+                Console.WriteLine("==============打印最终结果================");
+                foreach (string url in urlList)
+                {
+                    Console.WriteLine(url);
+                }
+#endif
+                //将urlList输出返回即可
+                return urlList.ToArray();
+
+            }
+            finally
+            {
+                if (server != null)
+                {
+                    System.Runtime.InteropServices.Marshal.ReleaseComObject(server);
+                    server = null;
+                }
+            }
+        }
+
+        internal static string[] GetUrlForPublishPoint(string ppUri, string serverIp, string ppName)
+        {
+            List<string> urlList = new List<string>();
+            string pp = ppName == "/" ? String.Empty : "/" + ppName;
+            Uri u = new Uri(ppUri);
+            if (System.IO.Directory.Exists(u.LocalPath))
+            {
+                string[] fiArr = System.IO.Directory.GetFiles(u.LocalPath);
+                for (int i = 0; i < fiArr.Length; i++)
+                {
+                    urlList.Add(String.Format("mms://{0}{1}/{2}", serverIp, pp, System.IO.Path.GetFileName(fiArr[i])));
+                }
+            }
+            else
+            {
+                urlList.Add(String.Format("mms://{0}{1}/{2}", serverIp, pp, System.IO.Path.GetFileName(u.LocalPath)));
+            }
+            return urlList.ToArray();
+        }
+
+        internal static string GetServerPublicIP(WMSServer server)
+        {
+            foreach (string ip in server.AvailableIPAddresses)
+            {
+                Console.WriteLine("服务器有效IP:{0}", ip);
+                if (String.CompareOrdinal("127.0.0.1", ip) != 0) return ip;
+            }
+            return "127.0.0.1";
+
+        }
+        #endregion
+
+
+
     }
 }

@@ -11,6 +11,7 @@ namespace MediaService
 {
     class FileWatchClass
     {
+        const string filetype = "*.wsx";
         private FileSystemWatcher FileWatcher;
         private dbperator dbopt;
         private string watchpath;
@@ -51,7 +52,7 @@ namespace MediaService
             dbopt.createTable();
 
             FileWatcher = new FileSystemWatcher();
-            FileWatcher.Filter = "*.asx"; //设定监听的文件类型
+            FileWatcher.Filter = filetype; //设定监听的文件类型
             FileWatcher.Path = watchpath; //设定监听的目录
             FileWatcher.Changed += new FileSystemEventHandler(filewatcherModified); //Changed 事件处理            
             FileWatcher.Created += new FileSystemEventHandler(filewatcherModified); //Created事件处理
@@ -67,7 +68,7 @@ namespace MediaService
             DirectoryInfo dir = new DirectoryInfo(watchpath);           
 
             //重新向表中加入数据
-            foreach (FileInfo infoFile in dir.GetFiles("*.asx")) //遍历获得以asx为扩展名的文件   
+            foreach (FileInfo infoFile in dir.GetFiles(filetype)) //遍历获得以asx为扩展名的文件   
             {
                 string name;
                 string urlinfo;
