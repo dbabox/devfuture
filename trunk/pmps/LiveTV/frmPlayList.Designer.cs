@@ -37,6 +37,7 @@
             // 
             // objectListView1
             // 
+            this.objectListView1.Activation = System.Windows.Forms.ItemActivation.OneClick;
             this.objectListView1.AllColumns.Add(this.olvColMediaName);
             this.objectListView1.AllColumns.Add(this.olvColDecription);
             this.objectListView1.AlternateRowBackColor = System.Drawing.SystemColors.GradientInactiveCaption;
@@ -51,6 +52,8 @@
             this.objectListView1.EmptyListMsg = "服务器未发布任何媒体。";
             this.objectListView1.EmptyListMsgFont = new System.Drawing.Font("宋体", 12F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.objectListView1.FullRowSelect = true;
+            this.objectListView1.HotTracking = true;
+            this.objectListView1.HoverSelection = true;
             this.objectListView1.Location = new System.Drawing.Point(0, 0);
             this.objectListView1.MultiSelect = false;
             this.objectListView1.Name = "objectListView1";

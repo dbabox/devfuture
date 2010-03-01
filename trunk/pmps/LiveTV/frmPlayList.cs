@@ -67,8 +67,9 @@ namespace LiveTV
                         Pmps.Common.MoMediaservindex[] rc = new Pmps.Common.MoMediaservindex[urlArr.Length];
                         for (int i = 0; i < urlArr.Length; i++)
                         {
+                            rc[i] = new Pmps.Common.MoMediaservindex();
                             rc[i].Url = urlArr[i];
-                            rc[i].Description = "试验版不支持返回描述.";
+                            rc[i].Description = "评估版不支持返回描述.";
                         }
 
                         if (rc != null && rc.Length > 0)
@@ -88,12 +89,12 @@ namespace LiveTV
 
         private void InitWs()
         {
-             string url = String.Format("http://{0}/Pmps.asmx", cfg.Base_Url);
+             string url = String.Format("http://{0}/Pmps.asmx", cfg.Pmps_Base_Url);
             try
             {
                 //从服务器获取最新的播放列表
                
-                wsi = new WebServiceInvoker("http://localhost/zbws/Pmps.asmx");
+                wsi = new WebServiceInvoker(url);
             }
             catch (Exception ex)
             {

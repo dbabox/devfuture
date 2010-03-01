@@ -40,6 +40,7 @@
             this.btnCancel = new System.Windows.Forms.Button();
             this.comboBoxProto = new System.Windows.Forms.ComboBox();
             this.label5 = new System.Windows.Forms.Label();
+            this.labelSampleLink = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // textBoxPingLog
@@ -81,9 +82,9 @@
             this.label1.AutoSize = true;
             this.label1.Location = new System.Drawing.Point(0, 17);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(65, 12);
+            this.label1.Size = new System.Drawing.Size(53, 12);
             this.label1.TabIndex = 8;
-            this.label1.Text = "服务器地址";
+            this.label1.Text = "服务地址";
             // 
             // label2
             // 
@@ -92,7 +93,7 @@
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(65, 12);
             this.label2.TabIndex = 9;
-            this.label2.Text = "媒体发布点";
+            this.label2.Text = "广播发布点";
             // 
             // textBoxVieo_Url
             // 
@@ -102,24 +103,24 @@
             this.textBoxVieo_Url.Size = new System.Drawing.Size(345, 23);
             this.textBoxVieo_Url.TabIndex = 10;
             this.textBoxVieo_Url.Text = "/LiveTV/Show.asf";
+            this.textBoxVieo_Url.Leave += new System.EventHandler(this.textBoxVieo_Url_Leave);
             // 
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(93, 92);
+            this.label3.Location = new System.Drawing.Point(91, 89);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(137, 12);
+            this.label3.Size = new System.Drawing.Size(203, 12);
             this.label3.TabIndex = 9;
-            this.label3.Text = "例如：/LiveTV/Show.asf";
+            this.label3.Text = "例如：192.168.0.1/LiveTV/Show.asf";
             // 
             // label4
             // 
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(93, 40);
+            this.label4.Location = new System.Drawing.Point(91, 36);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(149, 12);
+            this.label4.Size = new System.Drawing.Size(347, 24);
             this.label4.TabIndex = 9;
-            this.label4.Text = "请输入服务器名称或IP地址";
+            this.label4.Text = "请输入服务器名称或IP地址,如果是虚拟目录，请输入完整虚拟目录地址。eg: 192.168.0.1:8080/pmps";
             // 
             // btnSave
             // 
@@ -149,10 +150,11 @@
             "RTSP",
             "HTTP",
             "FILE"});
-            this.comboBoxProto.Location = new System.Drawing.Point(98, 116);
+            this.comboBoxProto.Location = new System.Drawing.Point(93, 114);
             this.comboBoxProto.Name = "comboBoxProto";
             this.comboBoxProto.Size = new System.Drawing.Size(121, 20);
             this.comboBoxProto.TabIndex = 12;
+            this.comboBoxProto.SelectedIndexChanged += new System.EventHandler(this.comboBoxProto_SelectedIndexChanged);
             // 
             // label5
             // 
@@ -162,6 +164,15 @@
             this.label5.Size = new System.Drawing.Size(65, 12);
             this.label5.TabIndex = 9;
             this.label5.Text = "服务器协议";
+            // 
+            // labelSampleLink
+            // 
+            this.labelSampleLink.AutoSize = true;
+            this.labelSampleLink.Location = new System.Drawing.Point(91, 137);
+            this.labelSampleLink.Name = "labelSampleLink";
+            this.labelSampleLink.Size = new System.Drawing.Size(203, 12);
+            this.labelSampleLink.TabIndex = 9;
+            this.labelSampleLink.Text = "例如：192.168.0.1/LiveTV/Show.asf";
             // 
             // frmMMSServer
             // 
@@ -174,6 +185,7 @@
             this.Controls.Add(this.btnSave);
             this.Controls.Add(this.textBoxVieo_Url);
             this.Controls.Add(this.label4);
+            this.Controls.Add(this.labelSampleLink);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.label5);
             this.Controls.Add(this.label2);
@@ -206,5 +218,6 @@
         private System.Windows.Forms.Button btnCancel;
         private System.Windows.Forms.ComboBox comboBoxProto;
         private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.Label labelSampleLink;
     }
 }

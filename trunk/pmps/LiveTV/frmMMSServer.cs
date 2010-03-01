@@ -29,6 +29,7 @@ namespace LiveTV
         #endregion
 
         private MMSServerCFG cfg;
+        private Uri wsUri;
 
         public frmMMSServer()
         {
@@ -38,7 +39,7 @@ namespace LiveTV
             cfg = new MMSServerCFG();
             ping = new System.Net.NetworkInformation.Ping();
             ping.PingCompleted += new System.Net.NetworkInformation.PingCompletedEventHandler(ping_PingCompleted);
-            
+            labelSampleLink.Text = String.Empty;
            
         }
         void ping_PingCompleted(object sender, System.Net.NetworkInformation.PingCompletedEventArgs e)
@@ -47,12 +48,14 @@ namespace LiveTV
             {
                 textBoxPingLog.AppendText("Ping Cancled.");
                 textBoxPingLog.AppendText(Environment.NewLine);
+                btnTestServer.Enabled = true;
             }
             else if (!e.Cancelled && ping!=null && e.Error != null)
             {
                 textBoxPingLog.AppendText("Error:");
                 textBoxPingLog.AppendText(e.Error.ToString());
                 textBoxPingLog.AppendText(Environment.NewLine);
+                btnTestServer.Enabled = true;
 
             }           
             else if(!e.Cancelled && ping!=null)
@@ -64,7 +67,8 @@ namespace LiveTV
                 DisplayReply(e.Reply);
                 if (pingCount <= maxpingCount)
                 {
-                    ping.SendAsync(textBoxBase_Url.Text, timeout, buffer, options, (object)pingCount++);
+
+                    ping.SendAsync(wsUri.DnsSafeHost, timeout, buffer, options, (object)pingCount++);
                 }
                 else
                 {
@@ -73,6 +77,7 @@ namespace LiveTV
                     rpt.Sort();
                     textBoxPingLog.AppendText("统计信息：" + Environment.NewLine);
                     textBoxPingLog.AppendText(String.Format("min RoundtripTime:{0}ms,  max RoundtripTime:{1}ms\r\n", rpt[0], rpt[pingCount - 2]));
+                    btnTestServer.Enabled = true;
                 }
             }
 
@@ -99,20 +104,25 @@ namespace LiveTV
 
         private void btnTestServer_Click(object sender, EventArgs e)
         {
+            wsUri= new Uri(String.Format("http://{0}", textBoxBase_Url.Text));
+           
+
             textBoxPingLog.Clear();
-            //检查是否URL
-            UriHostNameType uhnt= System.Uri.CheckHostName(textBoxBase_Url.Text);
-            if (uhnt != UriHostNameType.Unknown)
+            if (!String.IsNullOrEmpty(wsUri.DnsSafeHost))
             {
                 pingCount = 1;
                 rpt.Clear();
-                ping.SendAsync(textBoxBase_Url.Text, timeout, buffer, options, (object)pingCount++);
+                btnTestServer.Enabled = false;
+                ping.SendAsync(wsUri.DnsSafeHost, timeout, buffer, options, (object)pingCount++);
             }
             else
             {
-                MessageBox.Show("IP地址错误！");
+                MessageBox.Show(String.Format( "服务地址有错误:\r\n{0}",textBoxBase_Url.Text),
+                    "错误",MessageBoxButtons.OK,MessageBoxIcon.Error);
                 textBoxBase_Url.Focus();
             }
+            
+          
           
            
         }
@@ -125,13 +135,13 @@ namespace LiveTV
 
         private void btnSave_Click(object sender, EventArgs e)
         {
-            cfg.Base_Url = textBoxBase_Url.Text;
+            cfg.Pmps_Base_Url = textBoxBase_Url.Text;
             cfg.Video_Proto = comboBoxProto.SelectedItem.ToString();
-            cfg.Video_Url = textBoxVieo_Url.Text;
+            cfg.Broadcast_Url = labelSampleLink.Text;
 
 
             cfg.SaveServerURLCfg();
-            MessageBox.Show(String.Format("服务器地址被设置为:\r\n{0}", cfg.Media_Url), 
+            MessageBox.Show(String.Format("媒体广播地址被设置为:\r\n{0}", cfg.Broadcast_Url), 
                 "服务器", MessageBoxButtons.OK, MessageBoxIcon.Information);
             this.Close();
         }
@@ -140,12 +150,21 @@ namespace LiveTV
         {
             cfg.LoadServerURLFromCfg();
             textBoxPingLog.Clear();
-            textBoxBase_Url.Text = cfg.Base_Url;
-            textBoxVieo_Url.Text = cfg.Video_Url;
+            textBoxBase_Url.Text = cfg.Pmps_Base_Url;
             if (!String.IsNullOrEmpty(cfg.Video_Proto))
             {
                 comboBoxProto.SelectedItem = cfg.Video_Proto;
             }
+            if (cfg.Video_Proto == "FILE")
+            {
+                textBoxVieo_Url.Text = cfg.Broadcast_Url.Substring(8);
+            }
+            else
+            {
+                textBoxVieo_Url.Text = cfg.Broadcast_Url.Substring( cfg.Video_Proto.Length+3);
+            }
+
+           
         }
 
         /// <summary>
@@ -164,6 +183,39 @@ namespace LiveTV
         private void frmMMSServer_FormClosing(object sender, FormClosingEventArgs e)
         {
             DisposePing();
+        }
+
+        private void comboBoxProto_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            UpdateBroadcastUrl();
+        }
+
+        private void textBoxVieo_Url_Leave(object sender, EventArgs e)
+        {
+            UpdateBroadcastUrl();
+        }
+
+        private void UpdateBroadcastUrl()
+        {
+            string prefix = null;
+            if (!String.IsNullOrEmpty(comboBoxProto.Text))
+            {
+                if (comboBoxProto.Text == "FILE")
+                {
+                    prefix = "///";
+                }
+                else
+                {
+                    prefix = "//";
+                }
+
+                labelSampleLink.Text = String.Format("{0}:{2}{1}", 
+                    comboBoxProto.Text, textBoxVieo_Url.Text, prefix);
+            }
+            else
+            {
+                labelSampleLink.Text = String.Empty;
+            }
         }
     }
 }
