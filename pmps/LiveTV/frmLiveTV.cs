@@ -42,8 +42,10 @@ namespace LiveTV
             Player.StatusChange += new EventHandler(player_StatusChange);
             //播放时发生警告
             Player.Warning +=new AxWMPLib._WMPOCXEvents_WarningEventHandler(player_Warning);
+#if ENABLE_TIME_CHECK
             timer1.Tick += new EventHandler(timer1_Tick);//6秒
             cnt = 0;
+#endif
 
         }
 
@@ -84,7 +86,7 @@ namespace LiveTV
         {
             try
             {
-                Player.Ctlcontrols.stop();
+                Player.Ctlcontrols.stop();                
             }
             catch (COMException comExc)
             {
@@ -181,6 +183,8 @@ namespace LiveTV
             try
             {
                 Player.Ctlcontrols.stop();
+                tsmiPlayMMSServer.Enabled = true;
+               
             }
             catch (COMException comExc)
             {
@@ -220,38 +224,6 @@ namespace LiveTV
 
         private void frmLiveTV_Load(object sender, EventArgs e)
         {
-            #if TEST_WEB_SRV
-            //测试Web服务
-            string url = "http://localhost:4155/Pmps.asmx";
-            DevFuture.Common.WebServiceInvoker wsi = new DevFuture.Common.WebServiceInvoker(new Uri(url));
-            Pmps.Common.MyHeaderInternal h = new Pmps.Common.MyHeaderInternal();
-            h.DF_Uid = "0001";
-            //string result = wsi.InvokeMethodReturnNativeObject<string>("MyHeader", h, "PmpsService", "HelloWorld", null);
-
-
-            Pmps.Common.MoUser result = wsi.InvokeMethodReturnCustomObject<Pmps.Common.MoUser>("MyHeader", h, "PmpsService", "GetUser", null);
-            //object result = DevFuture.Common.WebServiceHelper.InvokeWebService(url, "PmpsService", "GetUser", null);
-            //Pmps.Common.MoUser m = (Pmps.Common.MoUser)result;
-            MessageBox.Show(result.UserName);
-            //Pmps.Common.MoUser mo = wsi.InvokeMethod<Pmps.Common.MoUser>("Pmps.Common.PmpsService", "GetUser", null);
-            //MessageBox.Show(mo.UserName);
-            //MessageBox.Show(CLK.ClientLicence.SCA_GetLocalCACode());
-
-
-            //int[] rc= wsi.InvokeMethodReturnNativeObjectArray<int>("PmpsService", "GetIntArray", 5);
-            Pmps.Common.MoMediaservindex[] rc = wsi.InvokeMethodReturnCustomObjectArray<Pmps.Common.MoMediaservindex>("PmpsService", "GetMedialList");
-            if (rc != null && rc.Length > 0)
-            {
-                MessageBox.Show(rc[0].ToString());
-
-            }
-            else
-            {
-                MessageBox.Show("没数据");
-            }
-            #endif
-
-
             cfg = new MMSServerCFG();             
         }
 
@@ -282,20 +254,21 @@ namespace LiveTV
 
             try
             {
-                Player.URL=cfg.Media_Url;
+                Player.URL=cfg.Broadcast_Url;
                 
 
                 if (Player.Error.errorCount > 0)
                 {
                     //发生了错误
-                    MessageBox.Show("地址" + cfg.Media_Url + "有错误，无法播放。\r\n可能网络不通，请检查网络！", "错误");
+                    MessageBox.Show("广播地址" + cfg.Broadcast_Url + "有错误，无法播放。\r\n可能网络不通，请检查网络！", "错误");
                 }
                 else
                 {
                     tsmiPlayMMSServer.Enabled = false;
                 }
-                
+#if ENABLE_CHECK_TIME
                 timer1.Start();
+#endif
 
             }
             catch (Exception ex)
