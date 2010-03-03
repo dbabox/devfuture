@@ -32,7 +32,7 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FrmMain));
             this.dgvTarget = new System.Windows.Forms.DataGridView();
             this.BtnDtToDb = new System.Windows.Forms.Button();
-            this._tree = new Aga.Controls.Tree.TreeViewAdv();
+            this.tva = new Aga.Controls.Tree.TreeViewAdv();
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.tsmiUP = new System.Windows.Forms.ToolStripMenuItem();
             this.tsmiDown = new System.Windows.Forms.ToolStripMenuItem();
@@ -43,10 +43,7 @@
             this.unCheckAllNodesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.BtnDt2Tree = new System.Windows.Forms.Button();
-            this.checkBoxForce = new System.Windows.Forms.CheckBox();
-            this.BtnDb2Tree = new System.Windows.Forms.Button();
             this.textBoxLog = new System.Windows.Forms.TextBox();
-            this.label1 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.dgvTarget)).BeginInit();
             this.contextMenuStrip1.SuspendLayout();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -77,30 +74,30 @@
             this.BtnDtToDb.UseVisualStyleBackColor = true;
             this.BtnDtToDb.Click += new System.EventHandler(this.BtnSyncToDb_Click);
             // 
-            // _tree
+            // tva
             // 
-            this._tree.AllowDrop = true;
-            this._tree.AutoRowHeight = true;
-            this._tree.BackColor = System.Drawing.SystemColors.Window;
-            this._tree.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this._tree.ContextMenuStrip = this.contextMenuStrip1;
-            this._tree.DefaultToolTipProvider = null;
-            this._tree.DisplayDraggingNodes = true;
-            this._tree.Dock = System.Windows.Forms.DockStyle.Fill;
-            this._tree.DragDropMarkColor = System.Drawing.Color.Maroon;
-            this._tree.LineColor = System.Drawing.SystemColors.ControlDark;
-            this._tree.LoadOnDemand = true;
-            this._tree.Location = new System.Drawing.Point(0, 0);
-            this._tree.Model = null;
-            this._tree.Name = "_tree";
-            this._tree.SelectedNode = null;
-            this._tree.SelectionMode = Aga.Controls.Tree.TreeSelectionMode.MultiSameParent;
-            this._tree.Size = new System.Drawing.Size(221, 346);
-            this._tree.TabIndex = 6;
-            this._tree.Text = "树";
-            this._tree.DragDrop += new System.Windows.Forms.DragEventHandler(this._tree_DragDrop);
-            this._tree.DragEnter += new System.Windows.Forms.DragEventHandler(this._tree_DragEnter);
-            this._tree.ItemDrag += new System.Windows.Forms.ItemDragEventHandler(this._tree_ItemDrag);
+            this.tva.AllowDrop = true;
+            this.tva.AutoRowHeight = true;
+            this.tva.BackColor = System.Drawing.SystemColors.Window;
+            this.tva.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.tva.ContextMenuStrip = this.contextMenuStrip1;
+            this.tva.DefaultToolTipProvider = null;
+            this.tva.DisplayDraggingNodes = true;
+            this.tva.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tva.DragDropMarkColor = System.Drawing.Color.Maroon;
+            this.tva.LineColor = System.Drawing.SystemColors.ControlDark;
+            this.tva.LoadOnDemand = true;
+            this.tva.Location = new System.Drawing.Point(0, 0);
+            this.tva.Model = null;
+            this.tva.Name = "tva";
+            this.tva.SelectedNode = null;
+            this.tva.SelectionMode = Aga.Controls.Tree.TreeSelectionMode.MultiSameParent;
+            this.tva.Size = new System.Drawing.Size(221, 346);
+            this.tva.TabIndex = 6;
+            this.tva.Text = "树";
+            this.tva.DragDrop += new System.Windows.Forms.DragEventHandler(this._tree_DragDrop);
+            this.tva.DragEnter += new System.Windows.Forms.DragEventHandler(this._tree_DragEnter);
+            this.tva.ItemDrag += new System.Windows.Forms.ItemDragEventHandler(this._tree_ItemDrag);
             // 
             // contextMenuStrip1
             // 
@@ -170,14 +167,11 @@
             // 
             // splitContainer1.Panel1
             // 
-            this.splitContainer1.Panel1.Controls.Add(this._tree);
+            this.splitContainer1.Panel1.Controls.Add(this.tva);
             // 
             // splitContainer1.Panel2
             // 
-            this.splitContainer1.Panel2.Controls.Add(this.label1);
             this.splitContainer1.Panel2.Controls.Add(this.BtnDt2Tree);
-            this.splitContainer1.Panel2.Controls.Add(this.checkBoxForce);
-            this.splitContainer1.Panel2.Controls.Add(this.BtnDb2Tree);
             this.splitContainer1.Panel2.Controls.Add(this.dgvTarget);
             this.splitContainer1.Panel2.Controls.Add(this.BtnDtToDb);
             this.splitContainer1.Size = new System.Drawing.Size(708, 346);
@@ -195,30 +189,6 @@
             this.BtnDt2Tree.UseVisualStyleBackColor = true;
             this.BtnDt2Tree.Click += new System.EventHandler(this.BtnDt2Tree_Click);
             // 
-            // checkBoxForce
-            // 
-            this.checkBoxForce.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.checkBoxForce.AutoSize = true;
-            this.checkBoxForce.ForeColor = System.Drawing.Color.Red;
-            this.checkBoxForce.Location = new System.Drawing.Point(377, 282);
-            this.checkBoxForce.Name = "checkBoxForce";
-            this.checkBoxForce.Size = new System.Drawing.Size(72, 16);
-            this.checkBoxForce.TabIndex = 4;
-            this.checkBoxForce.Text = "强制同步";
-            this.checkBoxForce.UseVisualStyleBackColor = true;
-            this.checkBoxForce.CheckedChanged += new System.EventHandler(this.checkBoxForce_CheckedChanged);
-            // 
-            // BtnDb2Tree
-            // 
-            this.BtnDb2Tree.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.BtnDb2Tree.Location = new System.Drawing.Point(377, 3);
-            this.BtnDb2Tree.Name = "BtnDb2Tree";
-            this.BtnDb2Tree.Size = new System.Drawing.Size(103, 23);
-            this.BtnDb2Tree.TabIndex = 2;
-            this.BtnDb2Tree.Text = "从DB加载树";
-            this.BtnDb2Tree.UseVisualStyleBackColor = true;
-            this.BtnDb2Tree.Click += new System.EventHandler(this.btnSync2Tree_Click);
-            // 
             // textBoxLog
             // 
             this.textBoxLog.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
@@ -228,17 +198,6 @@
             this.textBoxLog.Name = "textBoxLog";
             this.textBoxLog.Size = new System.Drawing.Size(702, 111);
             this.textBoxLog.TabIndex = 8;
-            // 
-            // label1
-            // 
-            this.label1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.label1.AutoEllipsis = true;
-            this.label1.ForeColor = System.Drawing.SystemColors.ActiveCaption;
-            this.label1.Location = new System.Drawing.Point(375, 238);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(100, 41);
-            this.label1.TabIndex = 6;
-            this.label1.Text = "通过表格添加了节点时，请选中强制同步。";
             // 
             // FrmMain
             // 
@@ -255,7 +214,6 @@
             this.contextMenuStrip1.ResumeLayout(false);
             this.splitContainer1.Panel1.ResumeLayout(false);
             this.splitContainer1.Panel2.ResumeLayout(false);
-            this.splitContainer1.Panel2.PerformLayout();
             this.splitContainer1.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -266,21 +224,18 @@
 
         private System.Windows.Forms.DataGridView dgvTarget;
         private System.Windows.Forms.Button BtnDtToDb;
-        private Aga.Controls.Tree.TreeViewAdv _tree;
+        private Aga.Controls.Tree.TreeViewAdv tva;
         private System.Windows.Forms.SplitContainer splitContainer1;
         private System.Windows.Forms.ContextMenuStrip contextMenuStrip1;
         private System.Windows.Forms.ToolStripMenuItem delNodeToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem delCheckedNodesToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem unCheckAllNodesToolStripMenuItem;
-        private System.Windows.Forms.Button BtnDb2Tree;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
-        private System.Windows.Forms.CheckBox checkBoxForce;
         private System.Windows.Forms.Button BtnDt2Tree;
         private System.Windows.Forms.TextBox textBoxLog;
         private System.Windows.Forms.ToolStripMenuItem tsmiUP;
         private System.Windows.Forms.ToolStripMenuItem tsmiDown;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
-        private System.Windows.Forms.Label label1;
     }
 }
 
