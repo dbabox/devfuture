@@ -3,11 +3,239 @@ using System.Collections.Generic;
 using System.Text;
 using Aga.Controls.Tree;
 using TreeEditor.Core;
-using Common.Logging;
+
 using System.Data;
+using System.Diagnostics;
 
 namespace TreeEditor
 {
+    public class DataRowTvaNode
+    {
+        private DataRow row;
+
+        public DataRow DataRow
+        {
+            get { return row; }
+            set { row = value; }
+        }
+        private TvaSchema rowSchema;
+        public DataRowTvaNode(DataRow row_, TvaSchema rowSchema_)
+        {
+            row = row_;
+            rowSchema = rowSchema_;
+            SyncDataRow2TvnNode();
+            original_tna_id = tna_id;//仅在构造函数中赋值
+        }
+
+        public void SyncDataRow2TvnNode()
+        {
+            tna_id = row[rowSchema.Tna_id_field_name].ToString();
+            tna_pid = row[rowSchema.Tna_pid_field_name].ToString();
+            tna_text = row[rowSchema.Tna_text_field_name].ToString();
+        }
+
+
+        #region ITvaNode 成员
+
+
+        private readonly string original_tna_id;
+        /// <summary>
+        /// 原始的ID
+        /// </summary>
+        public string Original_tna_id
+        {
+            get
+            {
+                return original_tna_id;
+            }
+
+        }
+
+        /// <summary>
+        /// tna_id不直接使用 return row[rowSchema.Tna_id_field_name].ToString()的原因在于当Row被删除
+        /// 时，此调用将出现错误。2009-12-20
+        /// </summary>
+        private string tna_id;
+        public string TNA_ID
+        {
+            get
+            {
+                return tna_id;
+            }
+            set
+            {
+                tna_id = value;
+                row[rowSchema.Tna_id_field_name] = value;
+            }
+        }
+
+        private string tna_pid;
+        public string TNA_PID
+        {
+            get
+            {
+                return tna_pid;
+            }
+            set
+            {
+                tna_pid = value;
+                row[rowSchema.Tna_pid_field_name] = value;
+            }
+        }
+
+        private string tna_text;
+        public string TNA_Text
+        {
+            get
+            {
+
+                return tna_text;
+            }
+            set
+            {
+                tna_text = value;
+                row[rowSchema.Tna_text_field_name] = value;
+            }
+        }
+
+        private string tna_LogicId;
+        public string TNA_LogicId
+        {
+            get
+            {
+                return tna_LogicId;
+            }
+            set
+            {
+                tna_LogicId = value;
+                if (!String.IsNullOrEmpty(rowSchema.Tna_logic_id_map_field))
+                {
+                    row[rowSchema.Tna_logic_id_map_field] = value;
+                }
+            }
+        }
+
+        private IList<DataRowTvaNode> owner;
+        public IList<DataRowTvaNode> Owner
+        {
+            get
+            {
+                return owner;
+            }
+            set
+            {
+                if (object.ReferenceEquals(owner, value) == false)
+                {
+                    owner = value;
+                }
+            }
+        }
+
+        private int tna_Level;
+        public int TNA_Level
+        {
+            get
+            {
+                return tna_Level;
+            }
+            set
+            {
+                tna_Level = value;
+            }
+        }
+
+        public int TNA_Index
+        {
+            get
+            {
+                if (owner != null) return owner.IndexOf(this);
+                return -1;
+            }
+        }
+
+        protected System.Drawing.Image icon;
+        public virtual System.Drawing.Image Icon
+        {
+            get
+            {
+                return icon;
+            }
+            set
+            {
+                icon = value;
+            }
+        }
+
+        private bool isChecked;
+        public bool IsChecked
+        {
+            get
+            {
+                return isChecked;
+            }
+            set
+            {
+                isChecked = value;
+            }
+        }
+
+
+
+
+        #endregion
+
+        #region ICloneable 成员
+
+        public object Clone()
+        {
+            DataRow newrow = row.Table.NewRow();
+            row.ItemArray.CopyTo(newrow.ItemArray, 0);
+            return new DataRowTvaNode(newrow, this.rowSchema);
+
+        }
+
+        #endregion
+
+        /// <summary>
+        /// 将逻辑ID赋给行的某个值
+        /// </summary>
+        private void SyncLogicId()
+        {
+            if (!String.IsNullOrEmpty(rowSchema.Tna_logic_id_map_field))
+            {
+                row[rowSchema.Tna_logic_id_map_field] = TNA_LogicId;
+            }
+        }
+
+        public static DataRowTvaNode[] CreateNodes(TvaSchema rowSchema, params DataRow[] rows)
+        {
+            DataRowTvaNode[] nodes = new DataRowTvaNode[rows.Length];
+            for (int i = 0; i < rows.Length; i++)
+            {
+                nodes[i] = new DataRowTvaNode(rows[i], rowSchema);
+            }
+            return nodes;
+        }
+
+        public override string ToString()
+        {
+            System.Text.StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < row.Table.Columns.Count; i++)
+            {
+                if (i < row.Table.Columns.Count - 1)
+                {
+                    sb.AppendFormat("{0}={1}/", row.Table.Columns[i].ColumnName, row[i]);
+                }
+                else
+                {
+                    sb.AppendFormat("{0}={1}", row.Table.Columns[i].ColumnName, row[i]);
+                }
+            }
+            return sb.ToString();
+        }
+
+    }
+
     public class DataRowTreeModel : TreeModelBase
     {
         private DataTableTreeAdapter tta;
@@ -18,7 +246,7 @@ namespace TreeEditor
             set { tta = value; }
         }
 
-        static readonly ILog log = LogManager.GetCurrentClassLogger();
+        
 
         #region 从配置文件获取
         /// <summary>
@@ -159,7 +387,7 @@ namespace TreeEditor
                 }
                 string backupFileName = System.IO.Path.Combine(backup_path, Guid.NewGuid().ToString("D") + ".xml");
                 treeDs.WriteXml(backupFileName, XmlWriteMode.WriteSchema);
-                log.InfoFormat("备份{0}到{1}", tta.GetType(), backupFileName);
+                Trace.TraceInformation("备份{0}到{1}", tta.GetType(), backupFileName);
             }
             #endregion
             treeTable = treeDs.Tables[0];
@@ -188,7 +416,7 @@ namespace TreeEditor
         {
             if (treePath.IsEmpty())
             {
-                log.DebugFormat("查询根节点:{0}", treePath.FirstNode);
+                Trace.TraceInformation("查询根节点:{0}", treePath.FirstNode);
                 if (rootList == null || rootList.Count == 0)
                 {
                     DataRow[] rootRows = treeTable.Select(tta.Schema.RowFilter_GetRootNodes);
@@ -208,7 +436,7 @@ namespace TreeEditor
             {
 
                 DataRowTvaNode nm = treePath.LastNode as DataRowTvaNode;
-                log.DebugFormat("查询{0}孩子节点", nm);
+                Trace.TraceInformation("查询{0}孩子节点", nm);
                 if (p2cDic.ContainsKey(nm.TNA_ID))
                 {
                     return p2cDic[nm.TNA_ID];
@@ -240,7 +468,7 @@ namespace TreeEditor
         public override bool IsLeaf(TreePath treePath)
         {
             DataRowTvaNode nm = treePath.LastNode as DataRowTvaNode;
-            log.DebugFormat("判定{0}是否叶子.", nm);
+            Trace.TraceInformation("判定{0}是否叶子.", nm);
 
             if (isLoadNodesComplete)
             {
@@ -291,7 +519,7 @@ namespace TreeEditor
         {
             if (node == null) throw new ArgumentNullException("node");
 
-            log.DebugFormat("RemoveLeafNode {0} ", node);
+            Trace.TraceInformation("RemoveLeafNode {0} ", node);
 
             if (!String.IsNullOrEmpty(node.TNA_PID))
             {
@@ -303,7 +531,7 @@ namespace TreeEditor
 
                 if (p2cDic[node.TNA_PID].Count == 0)
                 {
-                    log.DebugFormat("节点{0}下已经无子节点,移除空列表", tnmDic[node.TNA_PID]);
+                    Trace.TraceInformation("节点{0}下已经无子节点,移除空列表", tnmDic[node.TNA_PID]);
                     p2cDic.Remove(node.TNA_PID);
                     OnStructureChanged(new TreeModelEventArgs(fromOwnerPath, new object[] { tnmDic[node.TNA_PID] }));
                 }
@@ -337,7 +565,7 @@ namespace TreeEditor
             }
             else
             {
-                log.WarnFormat("试图删除不存在的节点:{0}", node);
+                Trace.TraceInformation("试图删除不存在的节点:{0}", node);
             }
         }
 
@@ -375,7 +603,7 @@ namespace TreeEditor
             if (ownerNode == null) throw new ArgumentNullException("ownerNode");
 
 
-            log.DebugFormat("MoveNode {0} 到 {1} 下", node, ownerNode);
+            Trace.TraceInformation("MoveNode {0} 到 {1} 下", node, ownerNode);
 
             try
             {
@@ -407,7 +635,7 @@ namespace TreeEditor
                         OnNodesRemoved(new TreeModelEventArgs(fromOwnerPath, new int[] { from }, new object[] { node }));//从源路径移除
                         if (p2cDic[node.TNA_PID].Count == 0)
                         {
-                            log.DebugFormat("节点{0}下已经无子节点,移除空列表，结构发生变化", fromOwner);
+                            Trace.TraceInformation("节点{0}下已经无子节点,移除空列表，结构发生变化", fromOwner);
                             p2cDic.Remove(fromOwner.TNA_ID);
                             OnStructureChanged(new TreeModelEventArgs(fromOwnerPath, new object[] { fromOwner }));
                         }
@@ -442,7 +670,7 @@ namespace TreeEditor
                         p2cDic.Add(ownerNode.TNA_ID, new List<DataRowTvaNode>(new DataRowTvaNode[] { node }));
                         node.Owner = p2cDic[ownerNode.TNA_ID];
                         node.TNA_LogicId = String.Format(LOGIC_ID_FMT_2, ownerNode.TNA_LogicId, index + 1); 
-                        log.DebugFormat("节点从叶子变成支节点，结构发生变化。节点信息：{0}", ownerNode);
+                        Trace.TraceInformation("节点从叶子变成支节点，结构发生变化。节点信息：{0}", ownerNode);
                         OnNodesInserted(new TreeModelEventArgs(toPath, new int[] { index }, new object[] { node }));
                         OnStructureChanged(new TreeModelEventArgs(toPath, new object[] { ownerNode }));
                     }
@@ -454,7 +682,7 @@ namespace TreeEditor
                 {
                     #region 同层调整
                     from = p2cDic[node.TNA_PID].IndexOf(node);
-                    log.DebugFormat("要转移的目标位置和当前位置层相同:转移节点={0},目标位置={1}，只改变序号from={2} to={3}", node, ownerNode, from, index);
+                    Trace.TraceInformation("要转移的目标位置和当前位置层相同:转移节点={0},目标位置={1}，只改变序号from={2} to={3}", node, ownerNode, from, index);
                     if (from != index)
                     {
                         p2cDic[node.TNA_PID].Remove(node);
@@ -471,7 +699,8 @@ namespace TreeEditor
             }
             catch (Exception ex)
             {
-                log.Error("Move出现错误", ex);
+                
+                Trace.TraceError("Move出现错误:{0}", ex);
             }
 
 
@@ -505,11 +734,11 @@ namespace TreeEditor
 
                 int from = -1;
 
-                log.DebugFormat("MoveNode {0} 到根下.", node);
+                Trace.TraceInformation("MoveNode {0} 到根下.", node);
                 if (String.IsNullOrEmpty(node.TNA_PID)) //同根层调整
                 {
                     from = rootList.IndexOf(node);
-                    log.DebugFormat("要转移的目标位置和当前位置相同:转移节点={0}就是根节点，只改变序号.From={1},To={2}", node, from, index);
+                    Trace.TraceInformation("要转移的目标位置和当前位置相同:转移节点={0}就是根节点，只改变序号.From={1},To={2}", node, from, index);
                     rootList.RemoveAt(from);
                     OnNodesRemoved(new TreeModelEventArgs(fromOwnerPath, new int[] { from }, new object[] { node }));
 
@@ -521,7 +750,7 @@ namespace TreeEditor
 
                     if (p2cDic[fromOwner.TNA_ID].Count == 0)
                     {
-                        log.DebugFormat("节点{0}下已经无子节点.", fromOwner);
+                        Trace.TraceInformation("节点{0}下已经无子节点.", fromOwner);
                         p2cDic.Remove(fromOwner.TNA_ID);
                         OnNodesRemoved(new TreeModelEventArgs(fromOwnerPath, new int[] { from }, new object[] { node }));
                         OnStructureChanged(new TreeModelEventArgs(fromOwnerPath, new object[] { fromOwner }));

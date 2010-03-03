@@ -20,7 +20,7 @@ using System.Windows.Forms;
 using TreeEditor.Core;
 using Aga.Controls.Tree;
 using Aga.Controls.Tree.NodeControls;
-using Common.Logging;
+using System.Diagnostics;
 using System.Data.Common;
 
 namespace TreeEditor
@@ -28,7 +28,7 @@ namespace TreeEditor
     public partial class FrmMain : Form
     {
          
-        static readonly ILog log = LogManager.GetCurrentClassLogger();
+        
         const string TEMP_UNKNOW_NODE_PID = "#UNKNOW_PID#";
         const string NODE_INFO_FMT = "ID={0}\r\nText={1}\r\nLogicID={2}\r\nIndex={3}\r\nPID={4}\r\nIsChecked={5}\r\n实体信息:{6}";
 
@@ -169,7 +169,8 @@ namespace TreeEditor
         /// <param name="e"></param>
         private void _tree_DragDrop(object sender, DragEventArgs e)
         {
-            log.DebugFormat("_tree_DragDrop:e.Data={0}",e.Data);  
+            
+            Trace.TraceInformation("_tree_DragDrop:e.Data={0}",e.Data);  
             //往上放的节点，使用它来判断相对位置
             if (_tree.DropPosition.Node != null)
             {
@@ -178,21 +179,17 @@ namespace TreeEditor
                 TreeNodeAdv[] nodes = (TreeNodeAdv[])e.Data.GetData(typeof(TreeNodeAdv[]));
                 TreeNodeAdv dropOnNode = _tree.DropPosition.Node;
                 DataRowTvaNode dropOnNodeNM = _tree.DropPosition.Node.Tag as DataRowTvaNode;
-                if (log.IsDebugEnabled)
+                Trace.TraceInformation("以下节点被拖拽到此节点{0}上:", dropOnNodeNM);
+                for (int i = 0; i < nodes.Length; i++)
                 {
-                    log.DebugFormat("以下节点被拖拽到此节点{0}上:", dropOnNodeNM);
-                    for (int i = 0; i < nodes.Length; i++)
-                    {
-                        log.DebugFormat("节点{0} 被拖拽到:{0}上", nodes[i].Tag);
-                    }
+                    Trace.TraceInformation("节点{0} 被拖拽到:{0}上", nodes[i].Tag);
                 }
-
 
                 _tree.BeginUpdate();      
                 //如果在内(且下面)
                 if (_tree.DropPosition.Position == NodePosition.Inside)
                 {
-                    log.DebugFormat("放置在节点内:{0}", _tree.DropPosition.Node.Tag);                    
+                    Trace.TraceInformation("放置在节点内:{0}", _tree.DropPosition.Node.Tag);                    
                     foreach (TreeNodeAdv n in nodes)
                     {
                         DataRowTvaNode nm = n.Tag as DataRowTvaNode;
@@ -206,7 +203,7 @@ namespace TreeEditor
                 else //在外部(分前后)
                 {
                     TreeNodeAdv parent = dropOnNode.Parent;
-                    log.DebugFormat("拖拽到Level={0},NM={1},位置={2}", parent.Level, parent.Tag, _tree.DropPosition.Position);
+                    Trace.TraceInformation("拖拽到Level={0},NM={1},位置={2}", parent.Level, parent.Tag, _tree.DropPosition.Position);
 
                     int toIndex = dropOnNode.Index;
                    
@@ -248,7 +245,7 @@ namespace TreeEditor
         /// <param name="e"></param>
         private void _tree_ItemDrag(object sender, ItemDragEventArgs e)
         {
-            log.DebugFormat("开始拖动:_tree_ItemDrag:e.Item={0}", e.Item);            
+            Trace.TraceInformation("开始拖动:_tree_ItemDrag:e.Item={0}", e.Item);            
             _tree.DoDragDropSelectedNodes(DragDropEffects.Move);
         }
 
@@ -264,12 +261,12 @@ namespace TreeEditor
            
             if (e.Data.GetDataPresent(typeof(TreeNodeAdv[]))) //格式有效数据
             {
-                log.Debug("拖动进入区域:_tree_DragEnter:格式有效");
+                Trace.WriteLine("拖动进入区域:_tree_DragEnter:格式有效");
                 e.Effect = e.AllowedEffect;
             }
             else
             {
-                log.Debug("拖动进入区域:_tree_DragEnter:格式无效");
+                Trace.WriteLine("拖动进入区域:_tree_DragEnter:格式无效");
                 e.Effect = DragDropEffects.None;
             }
                      

@@ -33,17 +33,17 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\AFC\DC\Lib\Aga.Controls.dll</HintPath>
     </Reference>
-    <Reference Include="Common.Logging, Version=2.0.0.0, Culture=neutral, PublicKeyToken=af08829b84f0328e, processorArchitecture=MSIL">
+    <Reference Include="Microsoft.Practices.EnterpriseLibrary.Common, Version=3.1.0.0, Culture=neutral, PublicKeyToken=9ed1eb93074ff5af, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\AFC\DC\Lib\Common.Logging.dll</HintPath>
+      <HintPath>..\..\AFC\DC\Lib\EntLib3.1\Microsoft.Practices.EnterpriseLibrary.Common.dll</HintPath>
     </Reference>
-    <Reference Include="Common.Logging.Log4Net, Version=2.0.0.0, Culture=neutral, PublicKeyToken=af08829b84f0328e, processorArchitecture=MSIL">
+    <Reference Include="Microsoft.Practices.EnterpriseLibrary.Data, Version=3.1.0.0, Culture=neutral, PublicKeyToken=9ed1eb93074ff5af, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\AFC\DC\Lib\Common.Logging.Log4Net.dll</HintPath>
+      <HintPath>..\..\AFC\DC\Lib\EntLib3.1\Microsoft.Practices.EnterpriseLibrary.Data.dll</HintPath>
     </Reference>
-    <Reference Include="log4net, Version=1.2.10.0, Culture=neutral, PublicKeyToken=1b44e1d426115821, processorArchitecture=MSIL">
+    <Reference Include="Microsoft.Practices.ObjectBuilder, Version=1.0.51206.0, Culture=neutral, PublicKeyToken=9ed1eb93074ff5af, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\AFC\DC\Lib\log4net.dll</HintPath>
+      <HintPath>..\..\AFC\DC\Lib\EntLib3.1\Microsoft.Practices.ObjectBuilder.dll</HintPath>
     </Reference>
     <Reference Include="Oracle.DataAccess, Version=2.111.6.20, Culture=neutral, PublicKeyToken=89b483f429c47342, processorArchitecture=x86">
       <SpecificVersion>False</SpecificVersion>
@@ -59,6 +59,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DataRowTreeModel.cs" />
+    <Compile Include="DataTableTreeAdapter.cs" />
     <Compile Include="FrmMain.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -93,9 +94,6 @@
       <DesignTime>True</DesignTime>
     </Compile>
     <None Include="App.config" />
-    <None Include="log4net.config">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -105,14 +103,7 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
-    <Compile Include="Dev.Future.Logging.Log4Net\RichTextBoxAppender.cs" />
-    <Compile Include="Dev.Future.Logging.Log4Net\TextBoxAppender.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\TreeEditor.Core\TreeEditor.Core.csproj">
-      <Project>{CE364C1C-649D-4D9F-94B2-20ED3D7CB985}</Project>
-      <Name>TreeEditor.Core</Name>
-    </ProjectReference>
+    <Compile Include="TvaSchema.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Tree4.ico" />
