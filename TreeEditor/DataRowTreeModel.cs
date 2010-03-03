@@ -23,82 +23,68 @@ namespace TreeEditor
         {
             row = row_;
             rowSchema = rowSchema_;
-            SyncDataRow2TvnNode();
-            original_tna_id = tna_id;//仅在构造函数中赋值
+       
         }
 
-        public void SyncDataRow2TvnNode()
-        {
-            tna_id = row[rowSchema.Tna_id_field_name].ToString();
-            tna_pid = row[rowSchema.Tna_pid_field_name].ToString();
-            tna_text = row[rowSchema.Tna_text_field_name].ToString();
-        }
+    
 
 
         #region ITvaNode 成员
 
 
-        private readonly string original_tna_id;
+       
+        
         /// <summary>
-        /// 原始的ID
+        /// 赋值时连同row一起赋值更新了。
+        /// 需坚持ID不变原则
         /// </summary>
-        public string Original_tna_id
-        {
-            get
-            {
-                return original_tna_id;
-            }
-
-        }
-
-        /// <summary>
-        /// tna_id不直接使用 return row[rowSchema.Tna_id_field_name].ToString()的原因在于当Row被删除
-        /// 时，此调用将出现错误。2009-12-20
-        /// </summary>
-        private string tna_id;
         public string TNA_ID
         {
             get
             {
-                return tna_id;
+                return row[rowSchema.Tna_id_field_name].ToString();
             }
             set
             {
-                tna_id = value;
+                
                 row[rowSchema.Tna_id_field_name] = value;
             }
         }
 
-        private string tna_pid;
+        
+        /// <summary>
+        /// 父ID
+        /// </summary>
         public string TNA_PID
         {
             get
             {
-                return tna_pid;
+                return row[rowSchema.Tna_pid_field_name].ToString();
             }
             set
-            {
-                tna_pid = value;
+            {                
                 row[rowSchema.Tna_pid_field_name] = value;
             }
         }
 
-        private string tna_text;
+     
         public string TNA_Text
         {
             get
             {
-
-                return tna_text;
+                return row[rowSchema.Tna_text_field_name].ToString();
             }
             set
             {
-                tna_text = value;
+               
                 row[rowSchema.Tna_text_field_name] = value;
             }
         }
 
         private string tna_LogicId;
+        /// <summary>
+        /// 编辑器要使用的逻辑ID
+        /// </summary>
         public string TNA_LogicId
         {
             get
@@ -108,6 +94,7 @@ namespace TreeEditor
             set
             {
                 tna_LogicId = value;
+                //如果表具有逻辑ID字段，则自动映射上去
                 if (!String.IsNullOrEmpty(rowSchema.Tna_logic_id_map_field))
                 {
                     row[rowSchema.Tna_logic_id_map_field] = value;
@@ -115,45 +102,12 @@ namespace TreeEditor
             }
         }
 
-        private IList<DataRowTvaNode> owner;
-        public IList<DataRowTvaNode> Owner
-        {
-            get
-            {
-                return owner;
-            }
-            set
-            {
-                if (object.ReferenceEquals(owner, value) == false)
-                {
-                    owner = value;
-                }
-            }
-        }
-
-        private int tna_Level;
-        public int TNA_Level
-        {
-            get
-            {
-                return tna_Level;
-            }
-            set
-            {
-                tna_Level = value;
-            }
-        }
-
-        public int TNA_Index
-        {
-            get
-            {
-                if (owner != null) return owner.IndexOf(this);
-                return -1;
-            }
-        }
+      
 
         protected System.Drawing.Image icon;
+        /// <summary>
+        /// 图标
+        /// </summary>
         public virtual System.Drawing.Image Icon
         {
             get
@@ -167,6 +121,9 @@ namespace TreeEditor
         }
 
         private bool isChecked;
+        /// <summary>
+        /// 多选时是否选中
+        /// </summary>
         public bool IsChecked
         {
             get
@@ -196,16 +153,7 @@ namespace TreeEditor
 
         #endregion
 
-        /// <summary>
-        /// 将逻辑ID赋给行的某个值
-        /// </summary>
-        private void SyncLogicId()
-        {
-            if (!String.IsNullOrEmpty(rowSchema.Tna_logic_id_map_field))
-            {
-                row[rowSchema.Tna_logic_id_map_field] = TNA_LogicId;
-            }
-        }
+       
 
         public static DataRowTvaNode[] CreateNodes(TvaSchema rowSchema, params DataRow[] rows)
         {
@@ -270,6 +218,8 @@ namespace TreeEditor
         /// </summary>
         string SPECIALED_SIGNLE_ROOT_ID = String.Empty;
 
+        const string Default_TVA_ROOT_KEY = "ROOT";
+
         bool is_auto_backup = true;
 
         string backup_path = System.IO.Path.Combine(Environment.CurrentDirectory, "backup");
@@ -279,39 +229,45 @@ namespace TreeEditor
 
 
         private int nodesTotalCount;
-       
 
-        private DataSet treeDs;
-        private DataTable treeTable;
 
-        public DataTable TreeTable
+
+ 
+
+        private Dictionary<string, DataRowTvaNode> allNodesMap;
+        /// <summary>
+        /// 所有节点。当且仅当树调用ExpandAll之后，它才真正包含所有节点；
+        /// </summary>
+        internal Dictionary<string, DataRowTvaNode> AllNodesMap
         {
-            get { return treeTable; }
-            set { treeTable = value; }
+            get { return allNodesMap; }
+
         }
-
-        /// <summary>
-        /// 根节点列表，在构造函数中自动初始化.
-        /// </summary>
-        private IList<DataRowTvaNode> rootList;
-
-        /// <summary>
-        /// 节点集合
-        /// </summary>
-        private Dictionary<string, DataRowTvaNode> tnmDic = null;
+             
         //必须实现节点本地CRUD       
         /// <summary>
         /// 父节点ID，邻接孩子列表，这里父节点ID，不能为空。
         /// </summary>
-        private Dictionary<string, IList<DataRowTvaNode>> p2cDic = new Dictionary<string, IList<DataRowTvaNode>>();
+        private  Dictionary<string, DataRowTvaNode[]> treeNodesMap = new Dictionary<string, DataRowTvaNode[]>();
+
+        public Dictionary<string, DataRowTvaNode[]> TreeNodesMap
+        {
+            get { return treeNodesMap; }
+        }
 
 
-        private bool isLoadNodesComplete = false;
+
+        //非随需加载时，使用此变量保存所有节点的表数据
+        private DataTable dtTreeNodeMo;
+
+        public DataTable DtTreeNodeMo
+        {
+            get { return dtTreeNodeMo; }
+        }
 
         public DataRowTreeModel(TvaSchema schema_)
         {
-            TvaSchema schema = schema_;
-            tta = new DataTableTreeAdapter(schema);
+            tta = new DataTableTreeAdapter(schema_);
             #region 配置信息
             if (!String.IsNullOrEmpty(System.Configuration.ConfigurationManager.AppSettings["LOGIC_ID_FMT_1"]))
             {
@@ -351,32 +307,65 @@ namespace TreeEditor
                 bool.TryParse(System.Configuration.ConfigurationManager.AppSettings["AutoBackup"], out is_auto_backup);
             }
             #endregion
+
+            dtTreeNodeMo = tta.GetTreeNodeDataTable().Tables[0];
+            InitTreeModelViaDataTable();
         }
 
         public DataRowTreeModel():this(new TvaSchema())
         {
-             
+
         }
 
-       
+        
+        /// <summary>
+        /// 从指定的根加载树 , 考虑通用实现，这里要求树的源表警告TreeEditor的标准化处理，
+        /// 包括逻辑层次ID字段，形如：001001002... 有时候，逻辑层次ID字段，就是主键字段。
+        /// 但不推荐这么做，因为主键一旦成为外键，不可更改。
+        /// </summary>
+        /// <param name="rootFilter"></param>
+        private void InitTreeModelViaDataTable()
+        {
+            DataRow[] rootRows = dtTreeNodeMo.Select( tta.Schema.RowFilter_GetRootNodes );//默认根为类型码1代表根
 
+            treeNodesMap = new Dictionary<string, DataRowTvaNode[]>();
+            allNodesMap = new Dictionary<string, DataRowTvaNode>(dtTreeNodeMo.Rows.Count);
+
+            DataRowTvaNode[] roots = new DataRowTvaNode[rootRows.Length];
+            for (int i = 0; i < rootRows.Length; i++)
+            {
+                roots[i] = new DataRowTvaNode(rootRows[i],tta.Schema);
+                allNodesMap.Add(roots[i].TNA_ID, roots[i]);
+                Trace.TraceInformation("初始化根节点{0}.", roots[i]);
+            }
+            lock (treeNodesMap)
+            {
+                treeNodesMap.Add(Default_TVA_ROOT_KEY, roots);
+            }
+                   
+           
+        }
+
+
+        #region 从DB加载树
         /// <summary>
         /// 使用适配器刷新Model.
         /// </summary>
         public void RefreshFromAdapter()
         {
+            Trace.WriteLine("从DB加载树.");
             nodesTotalCount = tta.GetNodesTotalCount();
-            if (tnmDic == null)
+            if (allNodesMap == null)
             {
-                tnmDic = new Dictionary<string, DataRowTvaNode>(nodesTotalCount);
+                allNodesMap = new Dictionary<string, DataRowTvaNode>(nodesTotalCount);
             }
             else
             {
-                tnmDic.Clear();
+                allNodesMap.Clear();
             }
 
-            p2cDic.Clear();
-            treeDs = tta.GetTreeNodeDataTable();
+            treeNodesMap.Clear();
+            DataSet treeDs = tta.GetTreeNodeDataTable();
 
             #region //这里自动备份
             if (is_auto_backup)
@@ -390,200 +379,218 @@ namespace TreeEditor
                 Trace.TraceInformation("备份{0}到{1}", tta.GetType(), backupFileName);
             }
             #endregion
-            treeTable = treeDs.Tables[0];
-            nodesTotalCount = treeTable.Rows.Count;
-           
-            Refresh();
+            dtTreeNodeMo = treeDs.Tables[0];
+            nodesTotalCount = dtTreeNodeMo.Rows.Count;            
+            base.Refresh();
         }
 
-      
+        #endregion
 
-        /// <summary>
-        /// 添加节点到tnmDic中。
-        /// </summary>
-        /// <param name="nodes"></param>
-        private void AddTvaNode2tnmDic(IList<DataRowTvaNode> nodes)
-        {
-            for (int i = 0; i < nodes.Count; i++)
-            {
-                nodes[i].Owner = nodes;
-                tnmDic.Add(nodes[i].TNA_ID, nodes[i]);
-            }
-
-        }
-
+        #region 必须重写的函数
         public override System.Collections.IEnumerable GetChildren(TreePath treePath)
         {
-            if (treePath.IsEmpty())
+            lock (treeNodesMap)
             {
-                Trace.TraceInformation("查询根节点:{0}", treePath.FirstNode);
-                if (rootList == null || rootList.Count == 0)
+                if (treePath.IsEmpty())
                 {
-                    DataRow[] rootRows = treeTable.Select(tta.Schema.RowFilter_GetRootNodes);
-                    if(rootList==null)
-                       rootList = new List<DataRowTvaNode>(rootRows.Length);
-                    for (int i = 0; i < rootRows.Length; i++)
-                    {
-                        DataRowTvaNode node = new DataRowTvaNode(rootRows[i], tta.Schema);
-                        node.TNA_LogicId = String.Format(LOGIC_ID_FMT_1, i + 1, ROOT_LOGIC_ID_PREFIX);
-                        rootList.Add(node);
-                    }
-                    AddTvaNode2tnmDic(rootList);
+                    return treeNodesMap[Default_TVA_ROOT_KEY];
                 }
-                return rootList;
-            }
-            else
-            {
-
-                DataRowTvaNode nm = treePath.LastNode as DataRowTvaNode;
-                Trace.TraceInformation("查询{0}孩子节点", nm);
-                if (p2cDic.ContainsKey(nm.TNA_ID))
+                else
                 {
-                    return p2cDic[nm.TNA_ID];
-                }
-                else //从DataTable中找，一次找出该节点的所有孩子
-                {                  
-                    DataRow[] rows = treeTable.Select(String.Format("{0}='{1}'", tta.Schema.Tna_pid_field_name, nm.TNA_ID));
-                    IList<DataRowTvaNode> list = new List<DataRowTvaNode>(rows.Length);
-
-                    for (int i = 0; i < rows.Length; i++)
+                    DataRowTvaNode n = treePath.LastNode as DataRowTvaNode;//获取它的孩子
+                    if (treeNodesMap.ContainsKey(n.TNA_ID))
                     {
-                        DataRowTvaNode tn = new DataRowTvaNode(rows[i], tta.Schema);
-                        tn.TNA_LogicId = String.Format(LOGIC_ID_FMT_2, nm.TNA_LogicId, i + 1);
-                        //对所有行
-                        list.Add(tn);
+                        return treeNodesMap[n.TNA_ID];
                     }
-                    //list中返回孩子节点列表
-                    AddTvaNode2tnmDic(list);
-                    //增加了孩子列表
-                    p2cDic.Add(nm.TNA_ID, list);
-                    return list;
+                    else
+                    {
+                        //找所有的直属孩子
+                        DataRow[] rows = dtTreeNodeMo.Select(String.Format("{0}='{1}'",
+                            tta.Schema.Tna_pid_field_name , n.TNA_ID));
+                        if (rows != null && rows.Length > 0)
+                        {
+                            DataRowTvaNode[] nodeArray = new DataRowTvaNode[rows.Length];
+                            for (int r = 0; r < rows.Length; r++)
+                            {
+                                nodeArray[r] = new DataRowTvaNode(rows[r], tta.Schema);
+                                allNodesMap.Add(nodeArray[r].TNA_ID, nodeArray[r]);
+                            }
+                            lock (treeNodesMap)
+                            {
+                                treeNodesMap.Add(n.TNA_ID, nodeArray);
+                            }
+                            return nodeArray;
+                        }
+                        else
+                        {
+                            return null;
+                        }
+                    }
+
                 }
-
-
             }
-            
         }
 
         public override bool IsLeaf(TreePath treePath)
         {
-            DataRowTvaNode nm = treePath.LastNode as DataRowTvaNode;
-            Trace.TraceInformation("判定{0}是否叶子.", nm);
-
-            if (isLoadNodesComplete)
-            {
-                return (p2cDic.ContainsKey(nm.TNA_ID) == false);
-            }
-
-          
-            return treeTable.Select(String.Format("{0}='{1}'",
-                        tta.Schema.Tna_pid_field_name, nm.TNA_ID)).Length == 0;
+            DataRowTvaNode n = treePath.LastNode as DataRowTvaNode;
+            if (n == null) return true;
+            return Convert.ToInt32(dtTreeNodeMo.Compute(String.Format("COUNT({0})", tta.Schema.Tna_id_field_name),
+                String.Format("{0}='{1}'",tta.Schema.Tna_pid_field_name, n.TNA_ID))) == 0;
         }
+        #endregion
+
+        #region 表格数据同步到树，这时可以实现添加。
+        /// <summary>
+        /// 表格数据同步到树，这时可以实现添加。
+        /// </summary>
+        /// <returns></returns>
+        public int SyncDataTable2TreeNodes()
+        {
+            dtTreeNodeMo.AcceptChanges();         
+            this.nodesTotalCount = dtTreeNodeMo.Rows.Count;
+            treeNodesMap.Clear();
+          
+            allNodesMap.Clear();
+           
+            //重新构建树
+            Refresh();//这是个长时间的过程。
+            return allNodesMap.Count;
+        }
+        #endregion
+
+        #region 所有TVA树可共用的方法
 
 
-        #region 节点移动
+
+        #region 添加新节点到树
 
         /// <summary>
-        /// 获取一个节点的路径
+        /// 添加新节点到某个指定父亲的某个指定位置。
         /// </summary>
+        /// <param name="node">必须给定Key和文本。</param>
+        /// <param name="parent"></param>
+        /// <param name="index"></param>
+        /// <returns></returns>
+        public DataRowTvaNode Add(DataRowTvaNode node, TreePath parent, int index)
+        {
+            //父一定要改变
+            node.TNA_PID = (parent == TreePath.Empty) ? null : ((DataRowTvaNode)parent.LastNode).TNA_ID;
+            //确定父亲键
+            string parentId = (parent == TreePath.Empty) ? Default_TVA_ROOT_KEY :
+                ((DataRowTvaNode)parent.LastNode).TNA_ID;
+
+            DataRowTvaNode[] newArr = null;
+            if (treeNodesMap.ContainsKey(parentId))
+            {
+                //原数组长度
+                DataRowTvaNode[] oldArr = treeNodesMap[parentId];
+                int oldLenth = oldArr.Length;
+                newArr = new DataRowTvaNode[oldLenth + 1];
+                Array.Copy(oldArr, 0, newArr, 0, index);
+                newArr[index] = node;
+                Trace.TraceInformation("为节点赋予了完整的ParentKey和临时唯一Key:{0}", node);
+                if (newArr.Length > (index + 1)) //还有没copy的
+                {
+                    Array.Copy(oldArr, index, newArr, index + 1, oldArr.Length - index);
+                }
+
+            }
+            else
+            {
+                newArr = new DataRowTvaNode[] { node };
+            }
+            treeNodesMap[parentId] = newArr; //赋予了新的数组
+            allNodesMap.Add(node.TNA_ID, node);//此时Key是GUID，不可能重复
+            dtTreeNodeMo.Rows.Add(node.DataRow);
+            OnStructureChanged(new TreeModelEventArgs(parent, new int[] { index }, new object[] { node }));
+
+            return node;
+
+
+        }
+        #endregion
+
+        #region 删除节点
+        /// <summary>
+        /// 删除某个节点下的某个子节点
+        /// </summary>
+        /// <param name="parent"></param>
         /// <param name="node"></param>
         /// <returns></returns>
-        public TreePath GetPath(DataRowTvaNode node)
+        internal DataRowTvaNode RemoveNode(TreePath parent, DataRowTvaNode node)
         {
-            if (rootList.Contains(node))//是根节点，则直接返回
+            //确定父亲键
+            string partentKey = (parent == TreePath.Empty) ? Default_TVA_ROOT_KEY :
+                ((DataRowTvaNode)parent.LastNode).TNA_ID;
+            DataRowTvaNode[] oldArr = treeNodesMap[partentKey];
+            if (oldArr.Length == 1) //只有1个孩子，那么肯定是node
             {
-                return new TreePath(node);
-            }
-            else //非根
-            {
-                Stack<object> stack = new Stack<object>();
-                stack.Push(node);
-                while (p2cDic.ContainsKey(node.TNA_PID)) //在非根节点中找
-                {
-                    node = tnmDic[node.TNA_PID];//切换到其父亲
-                    stack.Push(node);
-                    if (String.IsNullOrEmpty(node.TNA_PID)) break;
-
-                }
-                return new TreePath(stack.ToArray());
-
-            }
-
-        }
-
-        /// <summary>
-        /// 删除叶子节点，不影响节点索引.
-        /// </summary>
-        /// <param name="node"></param>
-        public void RemoveLeafNode(DataRowTvaNode node)
-        {
-            if (node == null) throw new ArgumentNullException("node");
-
-            Trace.TraceInformation("RemoveLeafNode {0} ", node);
-
-            if (!String.IsNullOrEmpty(node.TNA_PID))
-            {
-                TreePath fromOwnerPath = GetPath(tnmDic[node.TNA_PID]);
-                tnmDic.Remove(node.TNA_ID);//删除此节点
-                treeTable.Rows.Remove(node.DataRow);
-                p2cDic[node.TNA_PID].Remove(node);//从列表中也删除
-                OnNodesRemoved(new TreeModelEventArgs(fromOwnerPath, new DataRowTvaNode[] { node }));
-
-                if (p2cDic[node.TNA_PID].Count == 0)
-                {
-                    Trace.TraceInformation("节点{0}下已经无子节点,移除空列表", tnmDic[node.TNA_PID]);
-                    p2cDic.Remove(node.TNA_PID);
-                    OnStructureChanged(new TreeModelEventArgs(fromOwnerPath, new object[] { tnmDic[node.TNA_PID] }));
-                }
+                System.Diagnostics.Trace.Assert(node.TNA_ID == oldArr[0].TNA_ID);
+                Trace.TraceInformation("父{0}下只有1个孩子，且删除它:{1}", partentKey, node);
+                //执行删除
+                treeNodesMap.Remove(partentKey);
             }
             else
             {
-                rootList.Remove(node);//如果它是根，则也删除
-                tnmDic.Remove(node.TNA_ID);//删除此节点
-                treeTable.Rows.Remove(node.DataRow);
-                OnNodesRemoved(new TreeModelEventArgs(TreePath.Empty, new DataRowTvaNode[] { node }));
-            }
+                DataRowTvaNode[] newArr = new DataRowTvaNode[oldArr.Length - 1];
+                int removedNodeIndex = -1;
+                for (int i = 0; i < oldArr.Length; i++)
+                {
+                    if (oldArr[i] == node || oldArr[i].TNA_ID == node.TNA_ID)
+                    {
+                        removedNodeIndex = i;
+                        break;
+                    }
 
+                }
+                Array.Copy(oldArr, 0, newArr, 0, removedNodeIndex);
+                if (removedNodeIndex < (newArr.Length - 1)) //非末节点
+                {
+                    Array.Copy(oldArr, removedNodeIndex + 1,
+                        newArr, removedNodeIndex, oldArr.Length - removedNodeIndex); //copy剩下的
+                }
+                //将已经执行删除的数组放回映射表
+                treeNodesMap[partentKey] = newArr;
+
+            }
+            //真正清除
+            allNodesMap.Remove((string)node.TNA_ID);
+            DataRow[] rows = dtTreeNodeMo.Select(String.Format("{1}='{0}'", node.TNA_ID, tta.Schema.Tna_id_field_name));
+            if (rows.Length == 1) dtTreeNodeMo.Rows.Remove(rows[0]);
+            OnNodesRemoved(new TreeModelEventArgs(parent, new object[] { node }));
+            return node;
+        }
+        /// <summary>
+        /// 级联删除时使用，将一个节点彻底删除
+        /// </summary>
+        /// <param name="node"></param>
+        internal void RemoveNodeCssWithRow(DataRowTvaNode node)
+        {
+            if (treeNodesMap.ContainsKey((string)node.TNA_ID))
+            {
+                treeNodesMap.Remove((string)node.TNA_ID);
+            }
+            allNodesMap.Remove((string)node.TNA_ID);
+            DataRow[] rows = dtTreeNodeMo.Select(String.Format("{1}='{0}'", node.TNA_ID, tta.Schema.Tna_id_field_name));
+            if (rows.Length == 1) dtTreeNodeMo.Rows.Remove(rows[0]);
         }
 
         /// <summary>
-        /// 删除任意一个节点.此函数将重建树。
+        /// 删除现存的一个节点。删除实际是从孩子集合中移除。
         /// </summary>
-        /// <param name="node"></param>
-        public void RemoveNode(DataRowTvaNode node)
+        /// <param name="parent">父节点路径.</param>
+        /// <param name="node">被删除的节点，只能是叶子。</param>
+        public void Remove(TreePath parent, DataRowTvaNode node)
         {
-            if (tnmDic.ContainsKey(node.TNA_ID))
+            Stack<DataRowTvaNode> removed = new Stack<DataRowTvaNode>();
+            GetChildCss(node, removed);
+            while (removed.Count > 1)
             {
-                Stack<DataRowTvaNode> rcContainer = new Stack<DataRowTvaNode>(nodesTotalCount);
-                FindChild(node, rcContainer);
-                DataRowTvaNode[] nodes = rcContainer.ToArray();
-                for (int i = 0; i < nodes.Length; i++)
-                {
-                    RemoveLeafNode(nodes[i]);
-                }
-                Refresh();
+                DataRowTvaNode n = removed.Pop();
+                RemoveNodeCssWithRow(n);
             }
-            else
-            {
-                Trace.TraceInformation("试图删除不存在的节点:{0}", node);
-            }
-        }
-
-        /// <summary>
-        /// 找出一个节点的所有孩子结点，含自己.
-        /// </summary>
-        /// <param name="node"></param>
-        /// <param name="rcContainer"></param>
-        private void FindChild(DataRowTvaNode node, Stack<DataRowTvaNode> rcContainer)
-        {
-            rcContainer.Push(node);
-            if (p2cDic.ContainsKey(node.TNA_ID))
-            {
-                foreach (DataRowTvaNode n in p2cDic[node.TNA_ID])
-                {
-                    FindChild(n, rcContainer);
-                }
-            }
+            RemoveNode(parent, node); //删除这个节点，孩子也一并删除了
 
         }
 
@@ -591,187 +598,15 @@ namespace TreeEditor
 
 
 
-        /// <summary>
-        /// 转移节点，影响节点索引。
-        /// 转移到ownerNode下的第几个节点位置。
-        /// </summary>
-        /// <param name="node"></param>
-        public void MoveNode(DataRowTvaNode node, DataRowTvaNode ownerNode, int index)
+        internal void GetChildCss(DataRowTvaNode node, Stack<DataRowTvaNode> stack)
         {
-
-            if (node == null) throw new ArgumentNullException("node");
-            if (ownerNode == null) throw new ArgumentNullException("ownerNode");
-
-
-            Trace.TraceInformation("MoveNode {0} 到 {1} 下", node, ownerNode);
-
-            try
+            stack.Push(node);
+            if (treeNodesMap.ContainsKey((string)node.TNA_ID))
             {
-                int from = -1;
-                TreePath fromPath = GetPath(node);
-                TreePath toPath = GetPath(ownerNode);
-                DataRowTvaNode fromOwner = null;
-                TreePath fromOwnerPath = null;
-
-                if (!String.IsNullOrEmpty(node.TNA_PID))
+                foreach (DataRowTvaNode n in treeNodesMap[(string)node.TNA_ID])
                 {
-                    fromOwner = tnmDic[node.TNA_PID];
-                    fromOwnerPath = GetPath(fromOwner);
+                    GetChildCss(n, stack);
                 }
-                else
-                {
-                    fromOwnerPath = TreePath.Empty;
-                }
-
-
-                if (node.TNA_PID != ownerNode.TNA_ID) //不同层
-                {
-                    #region 跨层移动
-                    if (!String.IsNullOrEmpty(node.TNA_PID)) //此节点非根
-                    {
-                        //从原父亲列表中移除
-                        from = p2cDic[node.TNA_PID].IndexOf(node);
-                        p2cDic[node.TNA_PID].RemoveAt(from);
-                        OnNodesRemoved(new TreeModelEventArgs(fromOwnerPath, new int[] { from }, new object[] { node }));//从源路径移除
-                        if (p2cDic[node.TNA_PID].Count == 0)
-                        {
-                            Trace.TraceInformation("节点{0}下已经无子节点,移除空列表，结构发生变化", fromOwner);
-                            p2cDic.Remove(fromOwner.TNA_ID);
-                            OnStructureChanged(new TreeModelEventArgs(fromOwnerPath, new object[] { fromOwner }));
-                        }
-                        else
-                        {
-                            RefreshLogicId(fromOwner.TNA_ID);
-                        }
-
-                    }
-                    else
-                    {
-                        from = rootList.IndexOf(node);
-                        rootList.RemoveAt(from);//从根集合中移除     
-                        //此时fromOwnerPath=Empty
-                        OnNodesRemoved(new TreeModelEventArgs(TreePath.Empty, new int[] { from }, new object[] { node }));
-                        RefreshRootLogicId();
-                    }
-                    //重新放到集合中              
-                    node.TNA_PID = ownerNode.TNA_ID;//改变父亲
-
-                    if (p2cDic.ContainsKey(ownerNode.TNA_ID))//目标节点原来就是非叶子节点，有孩子
-                    {
-                        p2cDic[ownerNode.TNA_ID].Insert(index, node);
-                        node.Owner = p2cDic[ownerNode.TNA_ID];
-                        node.TNA_LogicId = GetLogicId(node);
-                        //如何在非根节点插入呢？
-                        OnNodesInserted(new TreeModelEventArgs(toPath, new int[] { index }, new object[] { node }));
-                        RefreshLogicId(ownerNode.TNA_ID);
-                    }
-                    else//目标节点没孩子
-                    {
-                        p2cDic.Add(ownerNode.TNA_ID, new List<DataRowTvaNode>(new DataRowTvaNode[] { node }));
-                        node.Owner = p2cDic[ownerNode.TNA_ID];
-                        node.TNA_LogicId = String.Format(LOGIC_ID_FMT_2, ownerNode.TNA_LogicId, index + 1); 
-                        Trace.TraceInformation("节点从叶子变成支节点，结构发生变化。节点信息：{0}", ownerNode);
-                        OnNodesInserted(new TreeModelEventArgs(toPath, new int[] { index }, new object[] { node }));
-                        OnStructureChanged(new TreeModelEventArgs(toPath, new object[] { ownerNode }));
-                    }
-
-
-                    #endregion
-                }
-                else
-                {
-                    #region 同层调整
-                    from = p2cDic[node.TNA_PID].IndexOf(node);
-                    Trace.TraceInformation("要转移的目标位置和当前位置层相同:转移节点={0},目标位置={1}，只改变序号from={2} to={3}", node, ownerNode, from, index);
-                    if (from != index)
-                    {
-                        p2cDic[node.TNA_PID].Remove(node);
-                        OnNodesRemoved(new TreeModelEventArgs(toPath, new int[] { from }, new object[] { node }));
-
-                        p2cDic[node.TNA_PID].Insert(index, node); //添加了此节点到列表中
-                        node.TNA_LogicId = GetLogicId(node, index);
-                        //实际上同层的其他逻辑ID都应该改变
-                        OnNodesInserted(new TreeModelEventArgs(toPath, new int[] { index }, new object[] { node }));
-                        RefreshLogicId(ownerNode.TNA_ID);
-                    }
-                    #endregion
-                }
-            }
-            catch (Exception ex)
-            {
-                
-                Trace.TraceError("Move出现错误:{0}", ex);
-            }
-
-
-
-        }
-
-        /// <summary>
-        /// 移动到根
-        /// </summary>
-        /// <param name="node"></param>
-        public void MoveToRoot(DataRowTvaNode node, int index)
-        {
-            if (node == null) throw new ArgumentNullException("node");
-            try
-            {
-                TreePath ownerPath = TreePath.Empty;
-                TreePath fromPath = GetPath(node);
-
-                DataRowTvaNode fromOwner = null;
-                TreePath fromOwnerPath = null;
-
-                if (!String.IsNullOrEmpty(node.TNA_PID))
-                {
-                    fromOwner = tnmDic[node.TNA_PID];
-                    fromOwnerPath = GetPath(fromOwner);
-                }
-                else
-                {
-                    fromOwnerPath = TreePath.Empty;
-                }
-
-                int from = -1;
-
-                Trace.TraceInformation("MoveNode {0} 到根下.", node);
-                if (String.IsNullOrEmpty(node.TNA_PID)) //同根层调整
-                {
-                    from = rootList.IndexOf(node);
-                    Trace.TraceInformation("要转移的目标位置和当前位置相同:转移节点={0}就是根节点，只改变序号.From={1},To={2}", node, from, index);
-                    rootList.RemoveAt(from);
-                    OnNodesRemoved(new TreeModelEventArgs(fromOwnerPath, new int[] { from }, new object[] { node }));
-
-                }
-                else //从其他层转移到根
-                {
-                    from = p2cDic[node.TNA_PID].IndexOf(node);
-                    p2cDic[fromOwner.TNA_ID].Remove(node);
-
-                    if (p2cDic[fromOwner.TNA_ID].Count == 0)
-                    {
-                        Trace.TraceInformation("节点{0}下已经无子节点.", fromOwner);
-                        p2cDic.Remove(fromOwner.TNA_ID);
-                        OnNodesRemoved(new TreeModelEventArgs(fromOwnerPath, new int[] { from }, new object[] { node }));
-                        OnStructureChanged(new TreeModelEventArgs(fromOwnerPath, new object[] { fromOwner }));
-                    }
-                    else
-                    {
-                        OnNodesRemoved(new TreeModelEventArgs(fromOwnerPath, new int[] { from }, new object[] { node }));
-                        RefreshLogicId(fromOwner.TNA_ID);
-                    }
-
-                }
-                node.TNA_PID = null;//改变父亲 
-                rootList.Insert(index, node);//移动到根
-                node.Owner = rootList;
-                OnNodesInserted(new TreeModelEventArgs(ownerPath, new int[] { index }, new object[] { node }));
-                //刷新该层的逻辑ID
-                RefreshRootLogicId();
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Trace.Assert(ex != null, ex.Message);
             }
 
         }
@@ -779,91 +614,101 @@ namespace TreeEditor
 
         #endregion
 
-        private void RefreshLogicId(string parentId)
+        #region 移动节点
+        /// <summary>
+        /// 移动已知的node节点到另一个节点之下。
+        /// </summary>
+        /// <param name="fromPath">从哪里移动</param>
+        /// <param name="node">被移动的节点</param>
+        /// <param name="toPath">移动的目的地方</param>
+        /// <param name="index">位于目的地方的同层孩子第几个。</param>
+        /// <returns>返回最终被移动到新位置的节点</returns>
+        public DataRowTvaNode Move(TreePath fromPath, DataRowTvaNode node, TreePath toPath, int index)
         {
-            string parentLogicId = tnmDic[parentId].TNA_LogicId; //父节点的逻辑ID
-            if (p2cDic.ContainsKey(parentId) && p2cDic[parentId].Count > 0)
+            //先删除            
+            return Add(RemoveNode(fromPath, node), toPath, index);
+
+        }
+        #endregion
+
+        #region 完全更新ID并保存树
+        /// <summary>
+        /// 递归更新孩子的逻辑ID
+        /// </summary>
+        /// <param name="node"></param>
+        internal void UpdateChildLogicId(DataRowTvaNode node)
+        {
+            if (treeNodesMap.ContainsKey(node.TNA_ID))//它有孩子
             {
-                IList<DataRowTvaNode> list = p2cDic[parentId];
-                for (int i = 0; i < list.Count; i++)
+                DataRowTvaNode[] child = treeNodesMap[node.TNA_ID];
+                for (int i = 0; i < child.Length; i++)
                 {
-                    list[i].TNA_LogicId = String.Format(LOGIC_ID_FMT_2, parentLogicId, i + 1);
-                    RefreshLogicId(list[i].TNA_ID);
+                    child[i].TNA_LogicId = String.Format("{0}{1,3:D3}", node.TNA_LogicId, i + 1);
+                    dtTreeNodeMo.Select(String.Format("{1}='{0}'", child[i].TNA_ID, tta.Schema.Tna_id_field_name))[0][tta.Schema.Tna_logic_id_map_field] = child[i].TNA_LogicId;
+                    UpdateChildLogicId(child[i]);
                 }
             }
         }
 
-        private void RefreshRootLogicId()
-        {
-            for (int i = 0; i < rootList.Count; i++)
-            {
-                rootList[i].TNA_LogicId = GetRoolLogicId(i);
-            }
-            foreach (string key in tnmDic.Keys)
-            {
-                tnmDic[key].TNA_LogicId = GetLogicId(tnmDic[key]);
-            }
-        }
 
-        private string GetLogicId(DataRowTvaNode node)
+        /// <summary>
+        /// 更新所有ID和逻辑ID并保存整个树到DB中。
+        /// 会先清除旧的树，再添加当前树。
+        /// </summary>
+        public void FullUpdateIDAndSave()
         {
-            if (rootList.Contains(node))//如果根中包含
+            if (allNodesMap.Count > 0)
             {
-                if (rootList.Count == 1 && USE_SINGLE_SPECIAL_ROOT_ID)
+                allNodesMap.Clear();
+                DataRowTvaNode[] root = treeNodesMap[Default_TVA_ROOT_KEY];
+                //清除数据库中久的Key
+                StringBuilder sbdel = new StringBuilder();
+                sbdel.Append(" WHERE ");
+                for (int i = 0; i < root.Length; i++)
                 {
-                    return SPECIALED_SIGNLE_ROOT_ID;
+                    sbdel.AppendFormat(" {1} LIKE '{0}%' ", root[i].TNA_ID, tta.Schema.Tna_id_field_name);
+                    if (i < root.Length - 1) sbdel.Append(" OR ");
                 }
-                return String.Format(LOGIC_ID_FMT_1, node.TNA_Index + 1, ROOT_LOGIC_ID_PREFIX);
-            }
-            else //非根
-            {
-                return String.Format(LOGIC_ID_FMT_2, tnmDic[node.TNA_PID].TNA_LogicId, node.TNA_Index + 1);
+                //用于删除旧的记录
+                Trace.TraceInformation("删除给定根集合及其子节点:{0}", sbdel.ToString());
+                for (int i = 0; i < root.Length; i++)
+                {
+                    root[i].TNA_LogicId = String.Format("{0,3:D3}", i + 1);
+                    DataRow row = dtTreeNodeMo.Select(String.Format("{1}='{0}'", root[i].TNA_ID, tta.Schema.Tna_id_field_name))[0];
+                    row[tta.Schema.Tna_logic_id_map_field] = root[i].TNA_LogicId;
+
+                    allNodesMap.Add(root[i].TNA_LogicId, root[i]);
+                    UpdateChildLogicId(root[i]);//更新孩子结点的逻辑Key
+                    root[i].TNA_ID = root[i].TNA_LogicId;//将逻辑Key同步到真Key
+                    row[tta.Schema.Tna_id_field_name] = root[i].TNA_ID;
+                }
+                foreach (DataRow row in dtTreeNodeMo.Rows)
+                {
+                    row[tta.Schema.Tna_id_field_name] = row[tta.Schema.Tna_logic_id_map_field];//逻辑ID列值赋给真正的ID列
+                    string lkey = row[tta.Schema.Tna_logic_id_map_field].ToString();
+                    if (lkey.Length > 3)
+                    {
+                        row[tta.Schema.Tna_pid_field_name] = lkey.Substring(0, lkey.Length - 3);
+                    }
+                    else
+                    {
+                        row[tta.Schema.Tna_pid_field_name] = null;
+                    }
+                }
+                dtTreeNodeMo.AcceptChanges();//所有的逻辑ID更新完毕，且dt也全部同步，map中只有root节点    
+                //将dt存储到表中
+                //da.SaveTree(sbdel.ToString(), dtTreeNodeMo);
+                //TODO:真正保存到DB
+
+                treeNodesMap.Clear();
+                treeNodesMap.Add(Default_TVA_ROOT_KEY, root);
+                OnStructureChanged(new TreePathEventArgs(TreePath.Empty));
+
             }
 
         }
-        private string GetLogicId(DataRowTvaNode node, int index)
-        {
-            if (rootList.Contains(node))
-            {
-                return GetRoolLogicId(index);
-            }
-            else
-            {
-                return String.Format(LOGIC_ID_FMT_2, tnmDic[node.TNA_PID].TNA_LogicId, index + 1);
-            }
-        }
-        private string GetRoolLogicId(int index)
-        {
-            if (rootList.Count == 1 && USE_SINGLE_SPECIAL_ROOT_ID)
-            {
-                return SPECIALED_SIGNLE_ROOT_ID;
-            }
-            return String.Format(LOGIC_ID_FMT_1, index + 1, ROOT_LOGIC_ID_PREFIX);
-        }
-
-        /// <summary>
-        /// 把更改通过适配器写回
-        /// </summary>
-        public int SyncToDb(bool force)
-        {
-            return tta.SyncToDb(tnmDic.Values, force);
-        }
-
-        /// <summary>
-        /// 表格数据同步到树，这时可以实现添加。
-        /// </summary>
-        /// <returns></returns>
-        public int SyncDataTable2TreeNodes()
-        {
-            treeTable.AcceptChanges();         
-            this.nodesTotalCount = treeTable.Rows.Count;
-            p2cDic.Clear();
-            rootList.Clear();
-            tnmDic.Clear();
-            isLoadNodesComplete = false;
-            //重新构建树
-            Refresh();//这是个长时间的过程。
-            return tnmDic.Count;
-        }
+        #endregion
+        #endregion
+         
     }
 }
