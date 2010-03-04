@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using Common.Logging;
 using Microsoft.WindowsMediaServices.Interop;
 using System.Diagnostics;
+using System.Management;
  
 
 namespace PmpsWebService
@@ -177,6 +178,7 @@ namespace PmpsWebService
         [WebMethod]  
         public string[] GetMedialUrl()
         {
+            
             WMSServer server = null;
             try
             {
