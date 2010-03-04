@@ -5,13 +5,13 @@ using System.Runtime.InteropServices;
 // 有关程序集的常规信息通过下列属性集
 // 控制。更改这些属性值可修改
 // 与程序集关联的信息。
-[assembly: AssemblyTitle("TreeEditor")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyTitle("层次结构编辑")]
+[assembly: AssemblyDescription("树结构表可视化编辑器")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("Dev Future")]
 [assembly: AssemblyProduct("TreeEditor")]
 [assembly: AssemblyCopyright("版权所有 (C)  2010")]
-[assembly: AssemblyTrademark("")]
+[assembly: AssemblyTrademark("DFT")]
 [assembly: AssemblyCulture("")]
 
 // 将 ComVisible 设置为 false 使此程序集中的类型
@@ -29,5 +29,5 @@ using System.Runtime.InteropServices;
 //      内部版本号
 //      修订号
 //
-[assembly: AssemblyVersion("1.0.0.0")]
-[assembly: AssemblyFileVersion("1.0.0.0")]
+[assembly: AssemblyVersion("3.0.0.0")]
+[assembly: AssemblyFileVersion("3.0.0.0")]
