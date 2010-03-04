@@ -69,7 +69,7 @@ namespace LiveTV
                         {
                             rc[i] = new Pmps.Common.MoMediaservindex();
                             rc[i].Url = urlArr[i];
-                            rc[i].Description = "评估版不支持返回描述.";
+                            rc[i].Description = "";
                         }
 
                         if (rc != null && rc.Length > 0)

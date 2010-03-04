@@ -30,7 +30,7 @@
         {
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
-            this.textBox1 = new System.Windows.Forms.TextBox();
+            this.textBoxLicence = new System.Windows.Forms.TextBox();
             this.label3 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
             this.btnSupport = new System.Windows.Forms.Button();
@@ -52,21 +52,21 @@
             this.label2.Font = new System.Drawing.Font("新宋体", 18F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Italic))), System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.label2.Location = new System.Drawing.Point(218, 9);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(235, 24);
+            this.label2.Size = new System.Drawing.Size(185, 24);
             this.label2.TabIndex = 0;
-            this.label2.Text = "电子教育内容播放器";
+            this.label2.Text = "教育视频播放器";
             // 
-            // textBox1
+            // textBoxLicence
             // 
-            this.textBox1.BackColor = System.Drawing.SystemColors.Window;
-            this.textBox1.Location = new System.Drawing.Point(204, 76);
-            this.textBox1.Multiline = true;
-            this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(290, 48);
-            this.textBox1.TabIndex = 4;
-            this.textBox1.TabStop = false;
-            this.textBox1.Text = "试用版（Trial Version）";
-            this.textBox1.WordWrap = false;
+            this.textBoxLicence.BackColor = System.Drawing.SystemColors.Window;
+            this.textBoxLicence.Location = new System.Drawing.Point(204, 76);
+            this.textBoxLicence.Multiline = true;
+            this.textBoxLicence.Name = "textBoxLicence";
+            this.textBoxLicence.Size = new System.Drawing.Size(290, 48);
+            this.textBoxLicence.TabIndex = 4;
+            this.textBoxLicence.TabStop = false;
+            this.textBoxLicence.Text = "试用版（Trial Version）";
+            this.textBoxLicence.WordWrap = false;
             // 
             // label3
             // 
@@ -118,7 +118,7 @@
             this.Controls.Add(this.btnSupport);
             this.Controls.Add(this.btnOK);
             this.Controls.Add(this.label4);
-            this.Controls.Add(this.textBox1);
+            this.Controls.Add(this.textBoxLicence);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
@@ -135,7 +135,7 @@
 
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.TextBox textBox1;
+        private System.Windows.Forms.TextBox textBoxLicence;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Button btnSupport;
