@@ -13,6 +13,8 @@ namespace LiveTV
         public frmAbout()
         {
             InitializeComponent();
+            textBoxLicence.Text = String.Format("{0},{1}\r\n本机客户端已授权。",
+                Environment.MachineName, Environment.OSVersion);
         }
 
         private void btnOK_Click(object sender, EventArgs e)

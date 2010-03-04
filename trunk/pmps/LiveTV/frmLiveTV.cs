@@ -15,10 +15,7 @@ namespace LiveTV
     {
        
         private MMSServerCFG cfg;
-        /// <summary>
-        /// 计时器
-        /// </summary>
-        private int cnt;
+       
 
         public frmLiveTV()
         {
@@ -42,10 +39,7 @@ namespace LiveTV
             Player.StatusChange += new EventHandler(player_StatusChange);
             //播放时发生警告
             Player.Warning +=new AxWMPLib._WMPOCXEvents_WarningEventHandler(player_Warning);
-#if ENABLE_TIME_CHECK
-            timer1.Tick += new EventHandler(timer1_Tick);//6秒
-            cnt = 0;
-#endif
+
 
         }
 
@@ -68,18 +62,7 @@ namespace LiveTV
             tsslCommon.Text = Player.status;
         }
 
-        void timer1_Tick(object sender, EventArgs e)
-        {
-            if (cnt++ > 100)
-            {
-                timer1.Stop();
-                Player.Ctlcontrols.stop();
-                MessageBox.Show("试用版仅允许播放10分钟！\r\n若您喜欢本软件，请购买正式版。");
-                this.Close();
-            }
-
-        }
-
+        
 
         #region 控制键响应
         private void btnStop_Click(object sender, EventArgs e)

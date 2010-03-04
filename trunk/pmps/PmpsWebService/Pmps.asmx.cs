@@ -10,6 +10,7 @@ using Pmps.Common;
 using System.Collections.Generic;
 using Common.Logging;
 using Microsoft.WindowsMediaServices.Interop;
+using System.Diagnostics;
  
 
 namespace PmpsWebService
@@ -183,12 +184,12 @@ namespace PmpsWebService
                 server = new WMSServerClass();
                 foreach (string ip in server.AvailableIPAddresses)
                 {
-                    Console.WriteLine("服务器有效IP:{0}", ip);
+                    Trace.TraceInformation( "服务器有效IP:{0}", ip);
                 }
                 List<String> urlList = new List<string>();
 
 
-                Console.WriteLine("服务器上共有{0}个发布点", server.PublishingPoints.Count);
+                Trace.TraceInformation("服务器上共有{0}个发布点", server.PublishingPoints.Count);
                 foreach (IWMSPublishingPoint p in server.PublishingPoints)
                 {
                     switch (p.Type)
@@ -196,8 +197,8 @@ namespace PmpsWebService
                         case WMS_PUBLISHING_POINT_TYPE.WMS_PUBLISHING_POINT_TYPE_ON_DEMAND:
                             {
                                 //默认发布点 / ，以文件方式获取
-                                Console.WriteLine("随需发布点({0}) :{1},状态:{2} ", p.Type, p.Name, p.Status);
-                                Console.WriteLine("Path={0},WrapperPath={1}", p.Path, p.WrapperPath);
+                                Trace.TraceInformation("随需发布点({0}) :{1},状态:{2} ", p.Type, p.Name, p.Status);
+                                Trace.TraceInformation("Path={0},WrapperPath={1}", p.Path, p.WrapperPath);
                                 if (p.Status == WMS_PUBLISHING_POINT_STATUS.WMS_PUBLISHING_POINT_RUNNING)
                                 {
                                     urlList.AddRange(GetUrlForPublishPoint(p.Path, GetServerPublicIP(server), p.Name));
@@ -207,19 +208,19 @@ namespace PmpsWebService
                         case WMS_PUBLISHING_POINT_TYPE.WMS_PUBLISHING_POINT_TYPE_CACHE_PROXY_BROADCAST:
                             {
                                 //代理发布点
-                                Console.WriteLine("缓存代理广播({0}) :{1},状态:{2}", p.Type, p.Name, p.Status);
+                                Trace.TraceInformation("缓存代理广播({0}) :{1},状态:{2}", p.Type, p.Name, p.Status);
                                 break;
                             }
                         case WMS_PUBLISHING_POINT_TYPE.WMS_PUBLISHING_POINT_TYPE_CACHE_PROXY_ON_DEMAND:
                             {
-                                Console.WriteLine("缓存代理随需发布点({0}) :{1},状态:{2}", p.Type, p.Name, p.Status);
+                                Trace.TraceInformation("缓存代理随需发布点({0}) :{1},状态:{2}", p.Type, p.Name, p.Status);
                                 break;
                             }
                         case WMS_PUBLISHING_POINT_TYPE.WMS_PUBLISHING_POINT_TYPE_BROADCAST:
                             {
 
-                                Console.WriteLine("广播发布点({0}) :{1},状态:{2}", p.Type, p.Name, p.Status);
-                                Console.WriteLine("Path={0},WrapperPath={1}", p.Path, p.WrapperPath);
+                                Trace.TraceInformation("广播发布点({0}) :{1},状态:{2}", p.Type, p.Name, p.Status);
+                                Trace.TraceInformation("Path={0},WrapperPath={1}", p.Path, p.WrapperPath);
                                 if (p.Status == WMS_PUBLISHING_POINT_STATUS.WMS_PUBLISHING_POINT_RUNNING)
                                 {
                                     urlList.AddRange(GetUrlForPublishPoint(p.Path, GetServerPublicIP(server), p.Name));
@@ -227,15 +228,15 @@ namespace PmpsWebService
                                 break;
                             }
                     }
-                    Console.WriteLine("================================================");
+                    Trace.TraceInformation("================================================");
                 }
                 #endregion
 
 #if DEBUG
-                Console.WriteLine("==============打印最终结果================");
+                Trace.TraceInformation("==============打印最终结果================");
                 foreach (string url in urlList)
                 {
-                    Console.WriteLine(url);
+                    Trace.TraceInformation(url);
                 }
 #endif
                 //将urlList输出返回即可
@@ -276,7 +277,7 @@ namespace PmpsWebService
         {
             foreach (string ip in server.AvailableIPAddresses)
             {
-                Console.WriteLine("服务器有效IP:{0}", ip);
+                Trace.TraceInformation("服务器有效IP:{0}", ip);
                 if (String.CompareOrdinal("127.0.0.1", ip) != 0) return ip;
             }
             return "127.0.0.1";

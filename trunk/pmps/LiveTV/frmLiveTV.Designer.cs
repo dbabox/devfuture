@@ -36,6 +36,7 @@
             this.tsmiClose = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.tsmiPlayMMSServer = new System.Windows.Forms.ToolStripMenuItem();
+            this.tsmiPlayList = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.tsmiExit = new System.Windows.Forms.ToolStripMenuItem();
             this.tsmiPlay = new System.Windows.Forms.ToolStripMenuItem();
@@ -50,7 +51,6 @@
             this.Player = new AxWMPLib.AxWindowsMediaPlayer();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.tsslCommon = new System.Windows.Forms.ToolStripStatusLabel();
-            this.tsmiPlayList = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.Player)).BeginInit();
             this.statusStrip1.SuspendLayout();
@@ -109,6 +109,13 @@
             this.tsmiPlayMMSServer.Text = "播放服务器广播";
             this.tsmiPlayMMSServer.Click += new System.EventHandler(this.tsmiPlayMMSServer_Click);
             // 
+            // tsmiPlayList
+            // 
+            this.tsmiPlayList.Name = "tsmiPlayList";
+            this.tsmiPlayList.Size = new System.Drawing.Size(154, 22);
+            this.tsmiPlayList.Text = "服务器媒体列表";
+            this.tsmiPlayList.Click += new System.EventHandler(this.tsmiPlayList_Click);
+            // 
             // toolStripSeparator3
             // 
             this.toolStripSeparator3.Name = "toolStripSeparator3";
@@ -135,26 +142,26 @@
             // tsmiPause_Continue
             // 
             this.tsmiPause_Continue.Name = "tsmiPause_Continue";
-            this.tsmiPause_Continue.Size = new System.Drawing.Size(152, 22);
+            this.tsmiPause_Continue.Size = new System.Drawing.Size(142, 22);
             this.tsmiPause_Continue.Text = "暂停/继续(&C)";
             this.tsmiPause_Continue.Click += new System.EventHandler(this.tsmiPause_Continue_Click);
             // 
             // tsmiStop
             // 
             this.tsmiStop.Name = "tsmiStop";
-            this.tsmiStop.Size = new System.Drawing.Size(152, 22);
+            this.tsmiStop.Size = new System.Drawing.Size(142, 22);
             this.tsmiStop.Text = "停止(&Stop)";
             this.tsmiStop.Click += new System.EventHandler(this.tsmiStop_Click);
             // 
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(149, 6);
+            this.toolStripSeparator1.Size = new System.Drawing.Size(139, 6);
             // 
             // tsmiFullScreen
             // 
             this.tsmiFullScreen.Name = "tsmiFullScreen";
-            this.tsmiFullScreen.Size = new System.Drawing.Size(152, 22);
+            this.tsmiFullScreen.Size = new System.Drawing.Size(142, 22);
             this.tsmiFullScreen.Text = "全屏(&Full)";
             this.tsmiFullScreen.Click += new System.EventHandler(this.tsmiFullScreen_Click);
             // 
@@ -169,7 +176,7 @@
             // tsmiSMServer
             // 
             this.tsmiSMServer.Name = "tsmiSMServer";
-            this.tsmiSMServer.Size = new System.Drawing.Size(152, 22);
+            this.tsmiSMServer.Size = new System.Drawing.Size(148, 22);
             this.tsmiSMServer.Text = "媒体发布点(&M)";
             this.tsmiSMServer.Click += new System.EventHandler(this.tsmiMMSServer_Click);
             // 
@@ -184,13 +191,13 @@
             // 
             this.timer1.Interval = 6000;
             // 
-            // player
+            // Player
             // 
             this.Player.Dock = System.Windows.Forms.DockStyle.Fill;
             this.Player.Enabled = true;
             this.Player.Location = new System.Drawing.Point(0, 24);
-            this.Player.Name = "player";
-            this.Player.OcxState = ((System.Windows.Forms.AxHost.State)(resources.GetObject("player.OcxState")));
+            this.Player.Name = "Player";
+            this.Player.OcxState = ((System.Windows.Forms.AxHost.State)(resources.GetObject("Player.OcxState")));
             this.Player.Size = new System.Drawing.Size(546, 374);
             this.Player.TabIndex = 6;
             // 
@@ -210,13 +217,6 @@
             this.tsslCommon.Size = new System.Drawing.Size(35, 17);
             this.tsslCommon.Text = "Ready";
             // 
-            // tsmiPlayList
-            // 
-            this.tsmiPlayList.Name = "tsmiPlayList";
-            this.tsmiPlayList.Size = new System.Drawing.Size(154, 22);
-            this.tsmiPlayList.Text = "服务器媒体列表";
-            this.tsmiPlayList.Click += new System.EventHandler(this.tsmiPlayList_Click);
-            // 
             // frmLiveTV
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
@@ -231,7 +231,7 @@
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "frmLiveTV";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "E-Learning Push Player";
+            this.Text = "教育视频播放器";
             this.Load += new System.EventHandler(this.frmLiveTV_Load);
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.frmLiveTV_FormClosed);
             this.menuStrip1.ResumeLayout(false);
