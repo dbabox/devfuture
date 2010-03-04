@@ -107,6 +107,31 @@ namespace DevFuture.Common.Security
 
         }
 
+
+        /// <summary>
+        /// 获取主板ID
+        /// </summary>
+        public static string GetMPID()
+        {
+
+            StringBuilder sb = new StringBuilder();
+            ManagementObjectCollection mbsList = null;
+            ManagementObjectSearcher mbs = new ManagementObjectSearcher("Select * From Win32_BaseBoard");
+            mbsList = mbs.Get();
+            foreach (ManagementObject mo in mbsList)
+            {
+                Console.WriteLine("{0},{1}", mo["SerialNumber"].GetType(),
+                   mo["SerialNumber"].ToString());
+                sb.Append(mo["SerialNumber"].ToString());
+                sb.Append("/");
+
+            }
+            sb.Remove(sb.Length - 1, 1);
+            return sb.ToString();
+        }
+
+      
+
         /// <summary>
         /// 本机认证
         /// 当使用客户机绑定模式时，客户端软件与硬件绑定。Vender将提供客户端软件授权码(使用Vender的私钥签名客户机器码)，
@@ -143,7 +168,7 @@ namespace DevFuture.Common.Security
             using (RSACryptoServiceProvider rsa = new RSACryptoServiceProvider())
             {
                 rsa.FromXmlString(publicRSAKey1024);
-                string hid = GetHID();
+                string hid = GetMPID();
 #if LOG_ENABLE
                 if (log.IsInfoEnabled) log.InfoFormat("硬件ID:{0}", hid);
 #endif
