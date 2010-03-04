@@ -116,18 +116,15 @@ namespace DevFuture.Common.Security
 
             StringBuilder sb = new StringBuilder();
             ManagementObjectCollection mbsList = null;
-            ManagementObjectSearcher mbs = new ManagementObjectSearcher("Select * From Win32_BaseBoard");
-            mbsList = mbs.Get();
-            foreach (ManagementObject mo in mbsList)
+            using (ManagementObjectSearcher mbs = new ManagementObjectSearcher("Select * From    Win32_processor"))
             {
-                Console.WriteLine("{0},{1}", mo["SerialNumber"].GetType(),
-                   mo["SerialNumber"].ToString());
-                sb.Append(mo["SerialNumber"].ToString());
-                sb.Append("/");
-
+                mbsList = mbs.Get();
+                foreach (ManagementObject mo in mbsList)
+                {
+                    sb.Append(mo["ProcessorID"].ToString());
+                }
             }
-            sb.Remove(sb.Length - 1, 1);
-            return sb.ToString();
+           return  sb.ToString() ;
         }
 
       
