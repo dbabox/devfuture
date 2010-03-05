@@ -6,6 +6,7 @@ using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
 using DF.WinUI.CustomComponent;
+using System.Reflection;
 
  
 
@@ -18,11 +19,13 @@ namespace DF.WinUI.TreeEditor
         {
             InitializeComponent();
 
-            Dictionary<String, String> providerDic = new Dictionary<string, string>();
+            Dictionary<String, String> providerDic = new Dictionary<string, string>(3);
             providerDic.Add("SQL Server", "System.Data.SqlClient");
-            providerDic.Add("Oracle", "Oracle.DataAccess.Client");
+            providerDic.Add("Oracle-Microsoft", "System.Data.OracleClient");
+            //企业库不支持ODP.NET
+            //providerDic.Add("ODP.NET", "Oracle.DataAccess.Client");
 
-
+            //Assembly.LoadFile(Environment.CurrentDirectory+ "\\Oracle.DataAccess.dll");
             BindingSource bs = new BindingSource(providerDic, null);
             comboBox1.DataSource = bs;
             comboBox1.DisplayMember = "Key";

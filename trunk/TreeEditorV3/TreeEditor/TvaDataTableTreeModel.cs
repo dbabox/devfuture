@@ -442,7 +442,7 @@ namespace DF.WinUI.CustomComponent
        
         public Da4Schema(ISchema schema_)
         {
-            schema = schema_;
+            schema = schema_;            
             DbProviderFactory f = DbProviderFactories.GetFactory(schema.ProviderName);
             db = new GenericDatabase(schema.ConnectionString, f);
             AutoGenerateCmd();
@@ -491,13 +491,23 @@ namespace DF.WinUI.CustomComponent
                     Trace.TraceInformation("Add sql：{0}", sqlCmd_Add);
                     #endregion
                     cmdAdd = db.GetSqlStringCommand(sqlCmd_Add);
-                 
 
+                    string colDataTypeName = null;
+                    if (schema.ProviderName == "System.Data.OracleClient")
+                    {
+                        colDataTypeName = "DataType";
+                    }
+                    else
+                    {
+                        colDataTypeName = "DataTypeName";
+                    }
                     string typename = null;
                     for (int i = 0; i < dt.Rows.Count; i++)
                     {
                         colName = dt.Rows[i]["ColumnName"].ToString();
-                        typename = dt.Rows[i]["DataTypeName"].ToString();
+
+                        typename = dt.Rows[i][colDataTypeName].ToString();
+
                         Trace.TraceInformation("{0}:列名：{1},类型:{2}", i, colName, typename);                        
                         db.AddInParameter(cmdAdd, colName, TypeMap(typename));
 
