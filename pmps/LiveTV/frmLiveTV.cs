@@ -308,6 +308,12 @@ namespace LiveTV
             }
             
         }
+
+        private void frmLiveTV_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            //增强用户体验，因为关闭带ActiveX的窗体可能比较耗时
+            this.Hide();
+        }
         
     }
 }

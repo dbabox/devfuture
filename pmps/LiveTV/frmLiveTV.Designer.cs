@@ -13,7 +13,8 @@
         /// <param name="disposing">如果应释放托管资源，为 true；否则为 false。</param>
         protected override void Dispose(bool disposing)
         {
-            Player.close();        
+            Player.close();
+            Player.Dispose();
             Player = null;
             if (disposing && (components != null))
             {
@@ -236,6 +237,7 @@
             this.Text = "教育视频播放器";
             this.Load += new System.EventHandler(this.frmLiveTV_Load);
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.frmLiveTV_FormClosed);
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.frmLiveTV_FormClosing);
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.Player)).EndInit();
