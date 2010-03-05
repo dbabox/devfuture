@@ -53,7 +53,7 @@ namespace LiveTV
 
       
 
-        public void LoadServerURLFromCfg()
+        public bool LoadServerURLFromCfg()
         {
             string path = System.IO.Path.Combine(startup_path, CFG_FILE_NAME);
             System.IO.FileInfo fi = new System.IO.FileInfo(path);
@@ -66,7 +66,9 @@ namespace LiveTV
                     pmps_base_url = sr.ReadLine();
                     broadcast_url = sr.ReadLine();
                 }
+                return true;
             }
+            return false;
         }
 
         public void SaveServerURLCfg()

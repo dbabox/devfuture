@@ -40,8 +40,10 @@ namespace LiveTV
             ping = new System.Net.NetworkInformation.Ping();
             ping.PingCompleted += new System.Net.NetworkInformation.PingCompletedEventHandler(ping_PingCompleted);
             labelSampleLink.Text = String.Empty;
-           
+
         }
+
+        #region Ping œ‡πÿ
         void ping_PingCompleted(object sender, System.Net.NetworkInformation.PingCompletedEventArgs e)
         {
             if (e.Cancelled && ping!=null)
@@ -128,10 +130,10 @@ namespace LiveTV
         }
 
         private void btnCancel_Click(object sender, EventArgs e)
-        {
-           
+        {           
             this.Close();
         }
+        #endregion
 
         private void btnSave_Click(object sender, EventArgs e)
         {
@@ -148,20 +150,23 @@ namespace LiveTV
 
         private void frmMMSServer_Load(object sender, EventArgs e)
         {
-            cfg.LoadServerURLFromCfg();
             textBoxPingLog.Clear();
-            textBoxBase_Url.Text = cfg.Pmps_Base_Url;
-            if (!String.IsNullOrEmpty(cfg.Video_Proto))
-            {
-                comboBoxProto.SelectedItem = cfg.Video_Proto;
-            }
-            if (cfg.Video_Proto == "FILE")
-            {
-                textBoxVieo_Url.Text = cfg.Broadcast_Url.Substring(8);
-            }
-            else
-            {
-                textBoxVieo_Url.Text = cfg.Broadcast_Url.Substring( cfg.Video_Proto.Length+3);
+            if (cfg.LoadServerURLFromCfg())
+            {                
+                textBoxBase_Url.Text = cfg.Pmps_Base_Url;
+                if (!String.IsNullOrEmpty(cfg.Video_Proto))
+                {
+                    comboBoxProto.SelectedItem = cfg.Video_Proto;
+                }
+                if (cfg.Video_Proto == "FILE")
+                {
+                    textBoxVieo_Url.Text = cfg.Broadcast_Url.Substring(8);
+                }
+                else
+                {
+                    textBoxVieo_Url.Text = cfg.Broadcast_Url.Substring(cfg.Video_Proto.Length + 3);
+                }
+                UpdateBroadcastUrl();
             }
 
            

@@ -227,19 +227,22 @@ namespace LiveTV
         {            
             try
             {
-                cfg.LoadServerURLFromCfg();
+                if (cfg.LoadServerURLFromCfg() == false)
+                {
+                    MessageBox.Show("加载服务器配置失败，请先设置媒体服务器！",
+                      "提示", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
             }
             catch (Exception ex)
             {
-                MessageBox.Show("加载服务器配置失败，重新安装应用程序可以解决问题！\r\n" + ex.Message,
-                    "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(String.Format("加载服务器配置异常:{0}\r\n\r\n建议重新安装本程序。", ex.Message), "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
             }
 
             try
-            {
-                Player.URL=cfg.Broadcast_Url;
-                
-
+            {               
+                PlayUrl(cfg.Broadcast_Url);
                 if (Player.Error.errorCount > 0)
                 {
                     //发生了错误
@@ -249,9 +252,7 @@ namespace LiveTV
                 {
                     tsmiPlayMMSServer.Enabled = false;
                 }
-#if ENABLE_CHECK_TIME
-                timer1.Start();
-#endif
+ 
 
             }
             catch (Exception ex)
@@ -286,9 +287,8 @@ namespace LiveTV
             }
 
 
-            frmPlayList frm = new frmPlayList(cfg,this);
+            frmPlayList frm = new frmPlayList(cfg, this);
             frm.Location = new Point(this.Location.X + this.Width, this.Location.Y);
-            
             frm.Show();
         }
 

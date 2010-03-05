@@ -75,7 +75,6 @@
             this.textBoxBase_Url.Name = "textBoxBase_Url";
             this.textBoxBase_Url.Size = new System.Drawing.Size(345, 23);
             this.textBoxBase_Url.TabIndex = 7;
-            this.textBoxBase_Url.Text = "192.168.0.11";
             // 
             // label1
             // 
@@ -102,7 +101,6 @@
             this.textBoxVieo_Url.Name = "textBoxVieo_Url";
             this.textBoxVieo_Url.Size = new System.Drawing.Size(345, 23);
             this.textBoxVieo_Url.TabIndex = 10;
-            this.textBoxVieo_Url.Text = "/LiveTV/Show.asf";
             this.textBoxVieo_Url.Leave += new System.EventHandler(this.textBoxVieo_Url_Leave);
             // 
             // label3

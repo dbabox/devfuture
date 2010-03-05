@@ -15,6 +15,7 @@ namespace LiveTV
         protected frmPlayList()
         {
             InitializeComponent();
+            
         }
         MMSServerCFG cfg;
         private readonly List<Pmps.Common.MoMediaservindex> mediaList = new List<Pmps.Common.MoMediaservindex>();
@@ -33,7 +34,8 @@ namespace LiveTV
             medialLV.GenerateAspectGetters();
             objectListView1.SetObjects(mediaList);
             objectListView1.MouseDoubleClick += new MouseEventHandler(objectListView1_MouseDoubleClick);
-
+            //2010-3-5 按要求隐藏了描述列
+            
             btnRefreshList_Click(null, null);
         }
 
@@ -89,7 +91,7 @@ namespace LiveTV
 
         private void InitWs()
         {
-             string url = String.Format("http://{0}/Pmps.asmx", cfg.Pmps_Base_Url);
+            string url = String.Format("http://{0}/Pmps.asmx", cfg.Pmps_Base_Url);
             try
             {
                 //从服务器获取最新的播放列表
