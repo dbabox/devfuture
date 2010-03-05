@@ -46,8 +46,7 @@
                         | System.Windows.Forms.AnchorStyles.Right)));
             this.objectListView1.BackColor = System.Drawing.SystemColors.InactiveCaptionText;
             this.objectListView1.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-            this.olvColMediaName,
-            this.olvColDecription});
+            this.olvColMediaName});
             this.objectListView1.Cursor = System.Windows.Forms.Cursors.Default;
             this.objectListView1.EmptyListMsg = "服务器未发布任何媒体。";
             this.objectListView1.EmptyListMsgFont = new System.Drawing.Font("宋体", 12F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
@@ -68,14 +67,16 @@
             this.olvColMediaName.AspectName = "Url";
             this.olvColMediaName.HeaderFont = null;
             this.olvColMediaName.Text = "名称";
-            this.olvColMediaName.Width = 200;
+            this.olvColMediaName.Width = 420;
             // 
             // olvColDecription
             // 
             this.olvColDecription.AspectName = "Description";
+            this.olvColDecription.DisplayIndex = 1;
             this.olvColDecription.FillsFreeSpace = true;
             this.olvColDecription.HeaderFont = null;
             this.olvColDecription.IsTileViewColumn = true;
+            this.olvColDecription.IsVisible = false;
             this.olvColDecription.Text = "说明";
             this.olvColDecription.Width = 220;
             // 
