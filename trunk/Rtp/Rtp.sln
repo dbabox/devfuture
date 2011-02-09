@@ -1,0 +1,48 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 9.00
+# Visual Studio 2005
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rtp.Driver", "Rtp.Driver\Rtp.Driver.csproj", "{E3E1BE5E-C6B6-4907-86F9-A6188DF4AD8B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RtpCli", "RtpCli\RtpCli.csproj", "{7CC2CAAD-576F-4EE8-9905-DEB40D9708AF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RtpGui", "RtpGui\RtpGui.csproj", "{F3C3AA74-1E2E-42B7-B193-E161D428C49E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rtp.NunitTest", "Rtp.NunitTest\Rtp.NunitTest.csproj", "{2755E94D-9B09-4D6E-8B4E-A993417BF8E8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RtpTool", "RtpTool\RtpTool.csproj", "{66D0C0F0-EE78-4526-A9BC-E98DB1AC66C6}"
+EndProject
+Global
+	GlobalSection(SubversionScc) = preSolution
+		Svn-Managed = True
+		Manager = AnkhSVN - Subversion Support for Visual Studio
+	EndGlobalSection
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{E3E1BE5E-C6B6-4907-86F9-A6188DF4AD8B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E3E1BE5E-C6B6-4907-86F9-A6188DF4AD8B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E3E1BE5E-C6B6-4907-86F9-A6188DF4AD8B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E3E1BE5E-C6B6-4907-86F9-A6188DF4AD8B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7CC2CAAD-576F-4EE8-9905-DEB40D9708AF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7CC2CAAD-576F-4EE8-9905-DEB40D9708AF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7CC2CAAD-576F-4EE8-9905-DEB40D9708AF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7CC2CAAD-576F-4EE8-9905-DEB40D9708AF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F3C3AA74-1E2E-42B7-B193-E161D428C49E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F3C3AA74-1E2E-42B7-B193-E161D428C49E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F3C3AA74-1E2E-42B7-B193-E161D428C49E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F3C3AA74-1E2E-42B7-B193-E161D428C49E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2755E94D-9B09-4D6E-8B4E-A993417BF8E8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2755E94D-9B09-4D6E-8B4E-A993417BF8E8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2755E94D-9B09-4D6E-8B4E-A993417BF8E8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2755E94D-9B09-4D6E-8B4E-A993417BF8E8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{66D0C0F0-EE78-4526-A9BC-E98DB1AC66C6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{66D0C0F0-EE78-4526-A9BC-E98DB1AC66C6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{66D0C0F0-EE78-4526-A9BC-E98DB1AC66C6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{66D0C0F0-EE78-4526-A9BC-E98DB1AC66C6}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

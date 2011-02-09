@@ -1,0 +1,96 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.50727</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{E3E1BE5E-C6B6-4907-86F9-A6188DF4AD8B}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Rtp.Driver</RootNamespace>
+    <AssemblyName>Rtp.Driver</AssemblyName>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="SharpPrivacyLibrary, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Lib\Release\SharpPrivacyLibrary.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="BCDEncoding.cs" />
+    <Compile Include="CardIO\FileMapCosIO.cs" />
+    <Compile Include="CardIO\ICosIO.cs" />
+    <Compile Include="CardIO\ICpuIO.cs" />
+    <Compile Include="CardIO\IM1IO.cs" />
+    <Compile Include="CardIO\ISamIO.cs" />
+    <Compile Include="CardIO\IUltralightIO.cs" />
+    <Compile Include="Command\CommandBuff.cs" />
+    <Compile Include="Command\CommandCloseReader.cs" />
+    <Compile Include="Command\CommandCompose.cs" />
+    <Compile Include="Command\CommandContext.cs" />
+    <Compile Include="Command\CommandCpuApdu.cs" />
+    <Compile Include="Command\CommandDate.cs" />
+    <Compile Include="Command\CommandDateTime.cs" />
+    <Compile Include="Command\CommandDes.cs" />
+    <Compile Include="Command\CommandDiversify.cs" />
+    <Compile Include="Command\CommandHelp.cs" />
+    <Compile Include="Command\CommandKey16MAC.cs" />
+    <Compile Include="Command\CommandKey08MAC.cs" />
+    <Compile Include="Command\CommandMacOff.cs" />
+    <Compile Include="Command\CommandMacOn.cs" />
+    <Compile Include="Command\CommandOpenReader.cs" />
+    <Compile Include="Command\CommandAdd.cs" />
+    <Compile Include="Command\CommandPause.cs" />
+    <Compile Include="Command\CommandRequestCard.cs" />
+    <Compile Include="Command\CommandSamApdu.cs" />
+    <Compile Include="Command\CommandSamReset.cs" />
+    <Compile Include="Command\CommandSamParameter.cs" />
+    <Compile Include="Command\CommandSamSlot.cs" />
+    <Compile Include="Command\CommandSet.cs" />
+    <Compile Include="Command\CommandSub.cs" />
+    <Compile Include="Command\CommandTargetHeader.cs" />
+    <Compile Include="Command\CommandTime.cs" />
+    <Compile Include="Command\CommandTripDes.cs" />
+    <Compile Include="Command\ICommand.cs" />
+    <Compile Include="Command\CommandResetReader.cs" />
+    <Compile Include="RfidReader\NMDcic32.cs" />
+    <Compile Include="RfidReader\NMDcrf32V8.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RfidReader\IRfid.cs" />
+    <Compile Include="RfidReader\NMRsimM361.cs" />
+    <Compile Include="RfidReader\NMTrf32.cs" />
+    <Compile Include="RfidReader\RfidBase.cs" />
+    <Compile Include="RfidReader\RfidD8U.cs" />
+    <Compile Include="RfidReader\RfidT10N.cs" />
+    <Compile Include="RtpCore.cs" />
+    <Compile Include="Utility.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
