@@ -4,6 +4,10 @@ using System.Text;
 
 namespace Rtp.Driver.Command
 {
+    /// <summary>
+    /// DES¼ÓÃÜº¯Êý£º
+    /// {DES(init8,key8)}
+    /// </summary>
     public class CommandDes:ICommand
     {
         

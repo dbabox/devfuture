@@ -7,6 +7,7 @@ namespace Rtp.Driver.Command
     /// <summary>
     /// SAM SLOT ##
     /// eg:SAM SLOT C0
+    /// 设定当前要操作的SAM卡插槽号。
     /// </summary>
     public class CommandSamSlot:ICommand
     {

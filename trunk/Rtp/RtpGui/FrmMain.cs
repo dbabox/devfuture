@@ -45,7 +45,15 @@ namespace Rtp.Gui
             #endregion                         
 
             rf = new RfidD8U();
-            rf.Open();
+            int rc= rf.Open();
+            if (rc > 0)
+            {
+                tsslRequest.Text = String.Format("读卡器就绪：{0}", rf.DeviceVersion());                
+            }
+            else
+            {
+                tsslRequest.Text = "打开读卡器失败！";
+            }
             ctx= new CommandContext(rf);
 
             rf.CpuRequest += new EventHandler<Rtp.Driver.CardIO.CpuRequestEventArgs>(rf_CpuRequest);
@@ -139,11 +147,19 @@ namespace Rtp.Gui
             }
             if (sender.Equals(btnSaveCmd) || sender.Equals(tsmiSave))
             {
+                FileInfo fi = new FileInfo(scriptFile);
+                if (fi.Exists && fi.Name==scriptFile)
+                {
+                    if (MessageBox.Show( String.Format("{0}文件已存在，您希望覆盖此文件吗？", fi.FullName),
+                        "提示",MessageBoxButtons.YesNo,MessageBoxIcon.Question) == DialogResult.No)
+                        return;
+                }
                 using (System.IO.StreamWriter sw = new StreamWriter(new System.IO.FileStream(scriptFile, FileMode.Create, FileAccess.Write)))
                 {
                     sw.Write(textBoxCmd.Text);
                     sw.Close();
                     tsslRequest.Text = DateTime.Now.ToString();
+                    scriptFile = fi.FullName;
                     tsslResponse.Text = "脚本已保存到"+scriptFile;
                 }
                 return;
@@ -210,6 +226,13 @@ namespace Rtp.Gui
             if (sender.Equals(tsmiAbout))
             {
 
+                return;
+            }
+            if (sender.Equals(tsmiNew))
+            {
+                scriptFile = "NewScript.his";
+                textBoxCmd.Clear();
+                tsslResponse.Text = String.Format("新建了脚本{0}",scriptFile);
                 return;
             }
 

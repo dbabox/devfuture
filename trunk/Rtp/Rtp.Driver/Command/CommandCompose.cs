@@ -5,7 +5,8 @@ using System.Text;
 namespace Rtp.Driver.Command
 {
     /// <summary>
-    /// 组合命令
+    /// 组合操作符/。它用于执行连续几个同类指令。如：00 A4 00 02 3F 00/10 01/00 19
+    /// 要求后续组合的部分可完全替换前面的部分，且替换的部分要相等。
     /// </summary>
     public class CommandCompose:ICommand
     {

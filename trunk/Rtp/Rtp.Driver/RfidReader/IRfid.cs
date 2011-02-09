@@ -54,6 +54,12 @@ namespace Rtp.Driver.RfidReader
         /// <returns>物理卡号低4字节的字符串表示。</returns>
         string Request(out CardPhysicalType cpt);
 
+        /// <summary>
+        /// 获取设备版本号
+        /// </summary>
+        /// <returns></returns>
+        string DeviceVersion();
+
 
 
     }

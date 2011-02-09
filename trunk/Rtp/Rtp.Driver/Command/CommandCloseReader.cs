@@ -4,10 +4,13 @@ using System.Text;
 
 namespace Rtp.Driver.Command
 {
+    /// <summary>
+    /// CLOSE READER 操作。关闭当前读卡器。
+    /// </summary>
     public class CommandCloseReader:ICommand
     {
        
-
+        
         public CommandCloseReader()
         {
             

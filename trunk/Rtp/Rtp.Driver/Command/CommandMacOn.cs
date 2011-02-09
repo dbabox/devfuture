@@ -4,6 +4,9 @@ using System.Text;
 
 namespace Rtp.Driver.Command
 {
+    /// <summary>
+    /// 启用COS指令线路保护。
+    /// </summary>
     public class CommandMacOn:ICommand
     {
         

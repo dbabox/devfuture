@@ -5,7 +5,8 @@ using System.Text;
 namespace Rtp.Driver.Command
 {
     /// <summary>
-    /// 带参数操作 Add GV,xx
+    /// 带参数操作 Add GV,xx 
+    /// 第一个参数是全局变量的名字，第二个是16进制整数值。
     /// eg: Add CARD_BLANCE,BE
     /// 当字节数组表示一个整数时，采用低字节高位的规则。
     /// </summary>

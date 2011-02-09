@@ -4,6 +4,9 @@ using System.Text;
 
 namespace Rtp.Driver.Command
 {
+    /// <summary>
+    /// 命令头处理。如：$SAM1< 00 A4... 
+    /// </summary>
     public class CommandTargetHeader:ICommand
     {
         
