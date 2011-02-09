@@ -4,6 +4,9 @@ using System.Text;
 
 namespace Rtp.Driver.Command
 {
+    /// <summary>
+    /// ÔİÍ£ÃüÁî
+    /// </summary>
     public class CommandPause:ICommand
     {
         

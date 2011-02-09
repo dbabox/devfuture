@@ -4,6 +4,9 @@ using System.Text;
 
 namespace Rtp.Driver.Command
 {
+    /// <summary>
+    /// HELP命令。打印帮助。
+    /// </summary>
     public class CommandHelp:ICommand
     {
         
@@ -28,7 +31,7 @@ namespace Rtp.Driver.Command
             System.Diagnostics.Trace.TraceInformation("{DES(RN8,KEY8} \t:DES加密");
             System.Diagnostics.Trace.TraceInformation("{TripDES(RN8,KEY16)} \t:3DES加密.");
             System.Diagnostics.Trace.TraceInformation("$VAR_NAME \t:取变量.");
-            System.Diagnostics.Trace.TraceInformation("Diversify($KM,$SEED) \t:使用密钥KM，分散因子SEED，计算出分散密钥.");
+            System.Diagnostics.Trace.TraceInformation("Diversify($KM,$SEED) \t:使用密钥KM(16字节)，分散因子SEED，计算出分散密钥.");
             System.Diagnostics.Trace.TraceInformation("XX XX/XX XX \t:组合COS指令，如00 A4 00 00 02 3F 00/10 01 /00 19");
             System.Diagnostics.Trace.TraceInformation("SET [GVNAME[=GVVALUE]]|ALL \t:显示和设置全局变量值.");
             System.Diagnostics.Trace.TraceInformation("PAUSE \t:暂停，用户按任意键继续，可在脚本中插入调试断点.");

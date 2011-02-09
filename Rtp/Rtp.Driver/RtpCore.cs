@@ -25,7 +25,7 @@ namespace Rtp.Driver
         /// <summary>
         /// 带参数的操作，操作是可以再脚本中独立使用的关键字.
         /// </summary>
-        public const string ARG_OPERATION = "SET,SAM SLOT,SAM PARA,BUFF,ADD,SUB";
+        public const string ARG_OPERATION = "SET,SAM SLOT,SAM PARA,BUFF,ADD,SUB,PRINT";
         /// <summary>
         /// 不带参数的操作
         /// </summary>
@@ -140,6 +140,10 @@ namespace Rtp.Driver
 
             CommandSub csub = new CommandSub();
             commandEngine.Add(csub.CommandName, csub);
+
+            CommandPrint cprt = new CommandPrint();
+            commandEngine.Add(cprt.CommandName, cprt);
+
 
             #endregion
 

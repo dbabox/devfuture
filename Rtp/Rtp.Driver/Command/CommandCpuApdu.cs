@@ -9,6 +9,9 @@ using System.Text;
 
 namespace Rtp.Driver.Command
 {
+    /// <summary>
+    /// ÷¥––CPUø®COS÷∏¡Ó°£
+    /// </summary>
     public class CommandCpuApdu:ICommand
     {
         

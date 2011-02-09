@@ -4,6 +4,9 @@ using System.Text;
 
 namespace Rtp.Driver.Command
 {
+    /// <summary>
+    /// ´ò¿ª¶Á¿¨Æ÷OPEN READER²Ù×÷¡£
+    /// </summary>
     public class CommandOpenReader:ICommand
     {
         

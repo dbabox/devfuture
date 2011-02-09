@@ -4,6 +4,9 @@ using System.Text;
 
 namespace Rtp.Driver.Command
 {
+    /// <summary>
+    /// 设置环境变量命令。
+    /// </summary>
     public class CommandSet:ICommand
     {
         

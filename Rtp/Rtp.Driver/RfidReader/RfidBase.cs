@@ -166,7 +166,7 @@ namespace Rtp.Driver.RfidReader
         public abstract int DeviceReset();
         public abstract bool IsOpened();
         public abstract string Request(out CardPhysicalType cpt);
-        
+        public abstract string DeviceVersion();
         #endregion
 
         #region IDisposable ≥…‘±

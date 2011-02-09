@@ -4,6 +4,11 @@ using System.Text;
 
 namespace Rtp.Driver.Command
 {
+    /// <summary>
+    /// 密钥分散函数：
+    /// {DIVERSIFY(KEY16,SEED) }
+    /// 结果保存到ctx的rbuff中。
+    /// </summary>
     public class CommandDiversify:ICommand
     {
         

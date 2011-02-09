@@ -46,24 +46,25 @@ namespace Rtp.Gui
             this.tsslResponse = new System.Windows.Forms.ToolStripStatusLabel();
             this.tsslAsciiResponse = new System.Windows.Forms.ToolStripStatusLabel();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
-            this.splitContainer1 = new System.Windows.Forms.SplitContainer();
-            this.btnClearLog = new System.Windows.Forms.Button();
-            this.btnSaveCmd = new System.Windows.Forms.Button();
-            this.btnViewCmdLog = new System.Windows.Forms.Button();
-            this.btnOpenFile = new System.Windows.Forms.Button();
-            this.btnSaveAs = new System.Windows.Forms.Button();
             this.tsmiFile = new System.Windows.Forms.ToolStripMenuItem();
-            this.tsmiCommand = new System.Windows.Forms.ToolStripMenuItem();
             this.tsmiOpen = new System.Windows.Forms.ToolStripMenuItem();
             this.tsmiSave = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.tsmiSaveAs = new System.Windows.Forms.ToolStripMenuItem();
+            this.tsmiCommand = new System.Windows.Forms.ToolStripMenuItem();
             this.tsmiRun = new System.Windows.Forms.ToolStripMenuItem();
             this.tsmiClearLog = new System.Windows.Forms.ToolStripMenuItem();
             this.tsmiViewCmdHis = new System.Windows.Forms.ToolStripMenuItem();
             this.tsmiHelp = new System.Windows.Forms.ToolStripMenuItem();
             this.tsmiScriptHelp = new System.Windows.Forms.ToolStripMenuItem();
             this.tsmiAbout = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+            this.splitContainer1 = new System.Windows.Forms.SplitContainer();
+            this.btnClearLog = new System.Windows.Forms.Button();
+            this.btnSaveCmd = new System.Windows.Forms.Button();
+            this.btnViewCmdLog = new System.Windows.Forms.Button();
+            this.btnOpenFile = new System.Windows.Forms.Button();
+            this.btnSaveAs = new System.Windows.Forms.Button();
+            this.tsmiNew = new System.Windows.Forms.ToolStripMenuItem();
             this.statusStrip1.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -152,6 +153,98 @@ namespace Rtp.Gui
             this.menuStrip1.TabIndex = 6;
             this.menuStrip1.Text = "menuStrip1";
             // 
+            // tsmiFile
+            // 
+            this.tsmiFile.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.tsmiNew,
+            this.tsmiOpen,
+            this.tsmiSave,
+            this.toolStripSeparator1,
+            this.tsmiSaveAs});
+            this.tsmiFile.Name = "tsmiFile";
+            this.tsmiFile.Size = new System.Drawing.Size(77, 20);
+            this.tsmiFile.Text = "文件(&File)";
+            // 
+            // tsmiOpen
+            // 
+            this.tsmiOpen.Name = "tsmiOpen";
+            this.tsmiOpen.Size = new System.Drawing.Size(152, 22);
+            this.tsmiOpen.Text = "打开(&Open)";
+            this.tsmiOpen.Click += new System.EventHandler(this.btnExcute_Click);
+            // 
+            // tsmiSave
+            // 
+            this.tsmiSave.Name = "tsmiSave";
+            this.tsmiSave.Size = new System.Drawing.Size(152, 22);
+            this.tsmiSave.Text = "保存脚本(F4)";
+            this.tsmiSave.Click += new System.EventHandler(this.btnExcute_Click);
+            // 
+            // toolStripSeparator1
+            // 
+            this.toolStripSeparator1.Name = "toolStripSeparator1";
+            this.toolStripSeparator1.Size = new System.Drawing.Size(149, 6);
+            // 
+            // tsmiSaveAs
+            // 
+            this.tsmiSaveAs.Name = "tsmiSaveAs";
+            this.tsmiSaveAs.Size = new System.Drawing.Size(152, 22);
+            this.tsmiSaveAs.Text = "另存为...";
+            this.tsmiSaveAs.Click += new System.EventHandler(this.btnExcute_Click);
+            // 
+            // tsmiCommand
+            // 
+            this.tsmiCommand.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.tsmiRun,
+            this.tsmiClearLog,
+            this.tsmiViewCmdHis});
+            this.tsmiCommand.Name = "tsmiCommand";
+            this.tsmiCommand.Size = new System.Drawing.Size(95, 20);
+            this.tsmiCommand.Text = "命令(&Command)";
+            // 
+            // tsmiRun
+            // 
+            this.tsmiRun.Name = "tsmiRun";
+            this.tsmiRun.Size = new System.Drawing.Size(136, 22);
+            this.tsmiRun.Text = "执行(F5)";
+            this.tsmiRun.Click += new System.EventHandler(this.btnExcute_Click);
+            // 
+            // tsmiClearLog
+            // 
+            this.tsmiClearLog.Name = "tsmiClearLog";
+            this.tsmiClearLog.Size = new System.Drawing.Size(136, 22);
+            this.tsmiClearLog.Text = "清除日志";
+            this.tsmiClearLog.Click += new System.EventHandler(this.btnExcute_Click);
+            // 
+            // tsmiViewCmdHis
+            // 
+            this.tsmiViewCmdHis.Name = "tsmiViewCmdHis";
+            this.tsmiViewCmdHis.Size = new System.Drawing.Size(136, 22);
+            this.tsmiViewCmdHis.Text = "COS命令历史";
+            this.tsmiViewCmdHis.Click += new System.EventHandler(this.btnExcute_Click);
+            // 
+            // tsmiHelp
+            // 
+            this.tsmiHelp.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.tsmiScriptHelp,
+            this.tsmiAbout});
+            this.tsmiHelp.Name = "tsmiHelp";
+            this.tsmiHelp.Size = new System.Drawing.Size(77, 20);
+            this.tsmiHelp.Text = "帮助(&Help)";
+            // 
+            // tsmiScriptHelp
+            // 
+            this.tsmiScriptHelp.Name = "tsmiScriptHelp";
+            this.tsmiScriptHelp.Size = new System.Drawing.Size(118, 22);
+            this.tsmiScriptHelp.Text = "脚本语法";
+            this.tsmiScriptHelp.Click += new System.EventHandler(this.btnExcute_Click);
+            // 
+            // tsmiAbout
+            // 
+            this.tsmiAbout.Name = "tsmiAbout";
+            this.tsmiAbout.Size = new System.Drawing.Size(118, 22);
+            this.tsmiAbout.Text = "关于";
+            this.tsmiAbout.Click += new System.EventHandler(this.btnExcute_Click);
+            // 
             // splitContainer1
             // 
             this.splitContainer1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
@@ -227,96 +320,12 @@ namespace Rtp.Gui
             this.btnSaveAs.UseVisualStyleBackColor = true;
             this.btnSaveAs.Click += new System.EventHandler(this.btnExcute_Click);
             // 
-            // tsmiFile
+            // tsmiNew
             // 
-            this.tsmiFile.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.tsmiOpen,
-            this.tsmiSave,
-            this.toolStripSeparator1,
-            this.tsmiSaveAs});
-            this.tsmiFile.Name = "tsmiFile";
-            this.tsmiFile.Size = new System.Drawing.Size(77, 20);
-            this.tsmiFile.Text = "文件(&File)";
-            // 
-            // tsmiCommand
-            // 
-            this.tsmiCommand.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.tsmiRun,
-            this.tsmiClearLog,
-            this.tsmiViewCmdHis});
-            this.tsmiCommand.Name = "tsmiCommand";
-            this.tsmiCommand.Size = new System.Drawing.Size(95, 20);
-            this.tsmiCommand.Text = "命令(&Command)";
-            // 
-            // tsmiOpen
-            // 
-            this.tsmiOpen.Name = "tsmiOpen";
-            this.tsmiOpen.Size = new System.Drawing.Size(152, 22);
-            this.tsmiOpen.Text = "打开(&Open)";
-            this.tsmiOpen.Click += new System.EventHandler(this.btnExcute_Click);
-            // 
-            // tsmiSave
-            // 
-            this.tsmiSave.Name = "tsmiSave";
-            this.tsmiSave.Size = new System.Drawing.Size(152, 22);
-            this.tsmiSave.Text = "保存脚本(F4)";
-            this.tsmiSave.Click += new System.EventHandler(this.btnExcute_Click);
-            // 
-            // tsmiSaveAs
-            // 
-            this.tsmiSaveAs.Name = "tsmiSaveAs";
-            this.tsmiSaveAs.Size = new System.Drawing.Size(152, 22);
-            this.tsmiSaveAs.Text = "另存为...";
-            this.tsmiSaveAs.Click += new System.EventHandler(this.btnExcute_Click);
-            // 
-            // tsmiRun
-            // 
-            this.tsmiRun.Name = "tsmiRun";
-            this.tsmiRun.Size = new System.Drawing.Size(152, 22);
-            this.tsmiRun.Text = "执行(F5)";
-            this.tsmiRun.Click += new System.EventHandler(this.btnExcute_Click);
-            // 
-            // tsmiClearLog
-            // 
-            this.tsmiClearLog.Name = "tsmiClearLog";
-            this.tsmiClearLog.Size = new System.Drawing.Size(152, 22);
-            this.tsmiClearLog.Text = "清除日志";
-            this.tsmiClearLog.Click += new System.EventHandler(this.btnExcute_Click);
-            // 
-            // tsmiViewCmdHis
-            // 
-            this.tsmiViewCmdHis.Name = "tsmiViewCmdHis";
-            this.tsmiViewCmdHis.Size = new System.Drawing.Size(152, 22);
-            this.tsmiViewCmdHis.Text = "COS命令历史";
-            this.tsmiViewCmdHis.Click += new System.EventHandler(this.btnExcute_Click);
-            // 
-            // tsmiHelp
-            // 
-            this.tsmiHelp.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.tsmiScriptHelp,
-            this.tsmiAbout});
-            this.tsmiHelp.Name = "tsmiHelp";
-            this.tsmiHelp.Size = new System.Drawing.Size(77, 20);
-            this.tsmiHelp.Text = "帮助(&Help)";
-            // 
-            // tsmiScriptHelp
-            // 
-            this.tsmiScriptHelp.Name = "tsmiScriptHelp";
-            this.tsmiScriptHelp.Size = new System.Drawing.Size(152, 22);
-            this.tsmiScriptHelp.Text = "脚本语法";
-            this.tsmiScriptHelp.Click += new System.EventHandler(this.btnExcute_Click);
-            // 
-            // tsmiAbout
-            // 
-            this.tsmiAbout.Name = "tsmiAbout";
-            this.tsmiAbout.Size = new System.Drawing.Size(152, 22);
-            this.tsmiAbout.Text = "关于";
-            this.tsmiAbout.Click += new System.EventHandler(this.btnExcute_Click);
-            // 
-            // toolStripSeparator1
-            // 
-            this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(149, 6);
+            this.tsmiNew.Name = "tsmiNew";
+            this.tsmiNew.Size = new System.Drawing.Size(152, 22);
+            this.tsmiNew.Text = "新建(&New)";
+            this.tsmiNew.Click += new System.EventHandler(this.btnExcute_Click);
             // 
             // FrmMain
             // 
@@ -379,6 +388,7 @@ namespace Rtp.Gui
         private ToolStripMenuItem tsmiScriptHelp;
         private ToolStripMenuItem tsmiAbout;
         private ToolStripSeparator toolStripSeparator1;
+        private ToolStripMenuItem tsmiNew;
     }
 }
 

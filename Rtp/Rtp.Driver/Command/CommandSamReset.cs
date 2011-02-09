@@ -4,6 +4,9 @@ using System.Text;
 
 namespace Rtp.Driver.Command
 {
+    /// <summary>
+    /// SAM¿¨¸´Î»SAM RESET¡£
+    /// </summary>
     public class CommandSamReset:ICommand
     {
                 

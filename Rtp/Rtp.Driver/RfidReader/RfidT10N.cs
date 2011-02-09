@@ -193,6 +193,13 @@ namespace Rtp.Driver.RfidReader
             return String.Empty;
         }
 
+        public override string DeviceVersion()
+        {
+            byte[] buff = new byte[4];
+            NMTrf32.dc_getver(icdev, buff);
+            return Utility.ByteArrayToHexStr(buff, 4, "");
+        }
+
         public override int CPU_Reset(out byte rlen, byte[] rbuff)
         {
             rlen = 0;

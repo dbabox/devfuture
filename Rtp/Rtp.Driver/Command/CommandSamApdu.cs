@@ -4,6 +4,9 @@ using System.Text;
 
 namespace Rtp.Driver.Command
 {
+    /// <summary>
+    /// 执行SAM卡指令。实际脚本中，是用命令头来决定后续COS指令时针对SAM卡还是CPU卡的。
+    /// </summary>
     public class CommandSamApdu:ICommand
     {
           

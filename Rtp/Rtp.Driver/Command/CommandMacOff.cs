@@ -4,6 +4,9 @@ using System.Text;
 
 namespace Rtp.Driver.Command
 {
+    /// <summary>
+    /// 关闭命令的MAC自动计算功能。当COS指令需要线路保护时使用。
+    /// </summary>
     public class CommandMacOff:ICommand
     {
         

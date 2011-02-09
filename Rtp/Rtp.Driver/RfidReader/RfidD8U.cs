@@ -159,6 +159,14 @@ namespace Rtp.Driver.RfidReader
             return String.Empty;
         }
 
+
+        public override string DeviceVersion()
+        {
+            byte[] ver = new byte[3];
+            NMDcrf32V8.dc_getver(icdev, ver);           
+            return Utility.ByteArrayToHexStr(ver,2,"");
+        }
+
         #endregion
 
         #region ICpuIO ≥…‘±

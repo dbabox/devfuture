@@ -5,6 +5,9 @@ using Rtp.Driver.RfidReader;
 
 namespace Rtp.Driver.Command
 {
+    /// <summary>
+    /// REQUEST CARD «Î«Û“ª’≈ø®°£º¥—∞ø®°£
+    /// </summary>
     public class CommandRequestCard:ICommand
     {
         

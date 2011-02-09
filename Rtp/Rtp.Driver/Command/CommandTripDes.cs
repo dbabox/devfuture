@@ -4,6 +4,9 @@ using System.Text;
 
 namespace Rtp.Driver.Command
 {
+    /// <summary>
+    /// 3DES¼ÓÃÜº¯Êý¡£{TripDES(data,KEY16) }
+    /// </summary>
     public class CommandTripDes:ICommand
     {     
         /// <summary>

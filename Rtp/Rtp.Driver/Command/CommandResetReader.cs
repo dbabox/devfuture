@@ -4,6 +4,9 @@ using System.Text;
 
 namespace Rtp.Driver.Command
 {
+    /// <summary>
+    /// ÷ÿ÷√∂¡ø®∆˜…Ë±∏°£
+    /// </summary>
     public class CommandResetReader:ICommand
     {
         
