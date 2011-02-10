@@ -22,18 +22,18 @@ namespace Rtp.Gui
         private RfidBase rf =null;
         private CommandContext ctx = null;
         private RtpCore rtp = null;
-        private TextWriter _writer = null;
+        
         private const string USER_REG_KEY_LAST_SCRIPT_FILE = "LastScriptFile";
         private string scriptFile;
 
-        public FrmMain()
+        private string readerType;
+
+        public FrmMain(string readerType_)
         {
             InitializeComponent();
+            readerType = readerType_;
             this.Text = String.Format("RFID 脚本环境 V{0}", System.Reflection.Assembly.GetExecutingAssembly().GetName().Version);
-
-
             textBoxTraceListener = new TextBoxTraceListener(textBoxLog);
-        
             System.Diagnostics.Trace.Listeners.Add(textBoxTraceListener);
 
             #region CopyRight
@@ -42,9 +42,23 @@ namespace Rtp.Gui
                 DateTime.Now.ToLocalTime(), Environment.NewLine);
             System.Diagnostics.Trace.TraceInformation("Copyright (c) 1999, 2011, SIASUN.  All rights reserved.");
             System.Diagnostics.Trace.TraceInformation("-------------------------------------------------------{0}", Environment.NewLine);
-            #endregion                         
+            #endregion                                    
 
-            rf = new RfidD8U();
+            scriptFile = Application.UserAppDataRegistry.GetValue(USER_REG_KEY_LAST_SCRIPT_FILE) as string;
+            if (string.IsNullOrEmpty(scriptFile)) scriptFile = "NewScript.his";
+            #region RF 环境初始化
+            if (readerType == "D8U")
+            {
+                rf = new RfidD8U();
+            }
+            else if (readerType == "T10N")
+            {
+                rf = new RfidT10N();
+            }
+            else
+            {
+                throw new ArgumentException("无效的读卡器类型");
+            }
             int rc= rf.Open();
             if (rc > 0)
             {
@@ -54,25 +68,19 @@ namespace Rtp.Gui
             {
                 tsslRequest.Text = "打开读卡器失败！";
             }
-            ctx= new CommandContext(rf);
-
+            
             rf.CpuRequest += new EventHandler<Rtp.Driver.CardIO.CpuRequestEventArgs>(rf_CpuRequest);
             rf.CpuResponse += new EventHandler<Rtp.Driver.CardIO.CpuResponseEventArgs>(rf_CpuResponse);
             rf.SamRequest += new EventHandler<Rtp.Driver.CardIO.SamRequestEventArgs>(rf_SamRequest);
             rf.SamResponse += new EventHandler<Rtp.Driver.CardIO.SamResponseEventArgs>(rf_SamResponse);
-
+            #endregion
+            ctx = new CommandContext(rf);
             rtp = new RtpCore(ctx);
             rtp.CommandExcuter("HELP");
-
-            #region 截获控制台输出
-            _writer = new TextBoxStreamWriter(textBoxLog);
-            Console.SetOut(_writer);
-            #endregion
-
-            scriptFile = Application.UserAppDataRegistry.GetValue(USER_REG_KEY_LAST_SCRIPT_FILE) as string;
-            if (string.IsNullOrEmpty(scriptFile)) scriptFile = "NewScript.his";
             
-            
+
+
+
         }
 
         void rf_SamResponse(object sender, Rtp.Driver.CardIO.SamResponseEventArgs e)

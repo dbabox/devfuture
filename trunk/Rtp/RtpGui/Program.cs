@@ -14,7 +14,14 @@ namespace Rtp.Gui
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new FrmMain());
+            using (FrmOpenReader frm = new FrmOpenReader())
+            {
+                if (frm.ShowDialog() == DialogResult.OK)
+                {
+                    Application.Run(new FrmMain(frm.SelectedReader));
+                }
+            }
+            
         }
     }
 }
