@@ -15,8 +15,11 @@ namespace Rtp.Driver.RfidReader
     {
         private const int USB_PORT = 100;
         private const uint BAUD = 115200;
-        private readonly ushort BEEP_MSEC = 2;              //蜂鸣时长 2m 
-        private const byte COS_CMD_TIME_OUT = 7;
+        private readonly ushort BEEP_MSEC = 5;              //蜂鸣时长 2m 
+        /// <summary>
+        /// COS指令执行超时时间，至少10ms
+        /// </summary>
+        private const byte COS_CMD_TIME_OUT = 16;
         private const byte FG = 56;
 
         private int icdev;
