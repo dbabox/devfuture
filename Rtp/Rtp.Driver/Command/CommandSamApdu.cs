@@ -38,7 +38,7 @@ namespace Rtp.Driver.Command
                 }
                 ctx.rc = ctx.Rfid.SAM_APDU(ctx.Rfid.CurrentSamSlot,
                     ctx.slen, ctx.sbuff, ref ctx.rlen, ctx.rbuff);
-                System.Diagnostics.Trace.TraceInformation("SYS>> SAM_APDU RC={0}", ctx.rc);
+                ctx.ReportMessage("SYS>> SAM_APDU RC={0}", ctx.rc);
                 return ctx.rc == 0 && Utility.IsSwSuccess(ctx.rlen, ctx.rbuff);
             }
             else

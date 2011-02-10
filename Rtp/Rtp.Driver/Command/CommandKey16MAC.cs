@@ -21,13 +21,13 @@ namespace Rtp.Driver.Command
                 string[] ps = par.Split(',');
                 if (ps.Length != 3)
                 {
-                    System.Diagnostics.Trace.TraceError("{0} parameters format error.", commandBody);
+                    ctx.ReportMessage("{0} parameters format error.", commandBody);
                     return false;
                 }
                 ctx.rlen=(byte)Utility.HexStrToByteArray(ps[0], ref ctx.rbuff);
                 if (ctx.rlen == 0)
                 {
-                    System.Diagnostics.Trace.TraceError("data={0} length is wrong!", ps[0]);
+                    ctx.ReportMessage("data={0} length is wrong!", ps[0]);
                     return false;
                 }
                 byte[] data = new byte[ctx.rlen];
@@ -36,7 +36,7 @@ namespace Rtp.Driver.Command
                 ctx.rlen = (byte)Utility.HexStrToByteArray(ps[1], ref ctx.rbuff);
                 if (ctx.rlen != 16)
                 {
-                    System.Diagnostics.Trace.TraceError("Key16={0} length is wrong!",ps[1]);
+                    ctx.ReportMessage("Key16={0} length is wrong!",ps[1]);
                     return false;
                 }
                 byte[] key16 = new byte[16];
@@ -46,7 +46,7 @@ namespace Rtp.Driver.Command
                 ctx.rlen=(byte)Utility.HexStrToByteArray(ps[2],ref ctx.rbuff);
                 if(ctx.rlen!=8) 
                 {
-                    System.Diagnostics.Trace.TraceError("init8={0} length is wrong!",ps[2]);
+                    ctx.ReportMessage("init8={0} length is wrong!",ps[2]);
                     return false;
                 }
                 byte[] init8=new byte[8];

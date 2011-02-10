@@ -18,7 +18,7 @@ namespace Rtp.Gui
             {
                 if (frm.ShowDialog() == DialogResult.OK)
                 {
-                    Application.Run(new FrmMain(frm.SelectedReader));
+                    Application.Run(new FrmMain(frm.SelectedReader,frm.EnableDebug));
                 }
             }
             

@@ -30,7 +30,7 @@ namespace Rtp.Driver.Command
                     return ctx.Rfid.SAM_SetSlot(slot)==0;
                 }
             }
-            System.Diagnostics.Trace.TraceInformation("SYS>> Current SAM Slot is 0x{0,2:X2}", ctx.Rfid.CurrentSamSlot);
+            ctx.ReportMessage("SYS>> Current SAM Slot is 0x{0,2:X2}", ctx.Rfid.CurrentSamSlot);
             return false;
         }
 

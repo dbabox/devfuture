@@ -172,7 +172,7 @@ namespace Rtp.Driver
                 || line.StartsWith("REM")) return true;
             if (line.StartsWith("BREAK"))
             {
-                System.Diagnostics.Trace.TraceWarning("SYS>> User break the script.");
+                ctx.ReportMessage("SYS>> User break the script.");
                 return false;
             }
             #endregion
@@ -194,23 +194,23 @@ namespace Rtp.Driver
                         {
                             ++lineNO;
                             cmd = cmd.Trim();
-                            if (cmd.Length > 0) System.Diagnostics.Trace.TraceInformation("FIL>> LN{0}: {1}",lineNO,cmd);
+                            if (cmd.Length > 0) ctx.ReportMessage("FIL>> LN{0}: {1}",lineNO,cmd);
                            
                             if (!CommandExcuter(cmd))
                             {
-                                System.Diagnostics.Trace.TraceError("ERR>> CommandExcuter failed at Line {0}: {1}", lineNO, cmd);
+                                ctx.ReportMessage("ERR>> CommandExcuter failed at Line {0}: {1}", lineNO, cmd);
                                 scriptRunResult = false;
                                 break;
                             }
 
                         }
                         TimeSpan ts = DateTime.Now - dtstart;
-                        System.Diagnostics.Trace.TraceInformation("SYS>> 脚本执行完成，共耗时:{0}ms", ts.TotalMilliseconds);
+                        ctx.ReportMessage("SYS>> 脚本执行完成，共耗时:{0}ms", ts.TotalMilliseconds);
                     }
                 }
                 else
                 {
-                    System.Diagnostics.Trace.TraceInformation("SYS>> !号必须接脚本文件名.Eg:!C:\\cpu.txt");
+                    ctx.ReportMessage("SYS>> !号必须接脚本文件名.Eg:!C:\\cpu.txt");
                     scriptRunResult = false;
                 }
                 return scriptRunResult;
@@ -222,14 +222,14 @@ namespace Rtp.Driver
             string calCmdL1;
             if (!AnalyzeOperatorGV(line, out calCmdL1))
             {
-                System.Diagnostics.Trace.TraceError("ERR>> Command format error:{0}, GV error.", line);
+                ctx.ReportMessage("ERR>> Command format error:{0}, GV error.", line);
                 return false;
             }
             //变量替换完成后，执行命令块执行功能
             string calCmdL2;
             if (!ExcuteFunctionBlock(calCmdL1, out calCmdL2))
             {
-                System.Diagnostics.Trace.TraceError("ERR>> Command format error:{0}, ExcuteFunctionBlock error.", calCmdL1);
+                ctx.ReportMessage("ERR>> Command format error:{0}, ExcuteFunctionBlock error.", calCmdL1);
                 return false;
             }
             line = calCmdL2;//至此，语句中无$，无{}，无()
@@ -259,7 +259,7 @@ namespace Rtp.Driver
                 int coslen = Utility.HexStrToByteArray(cos, ref cosbuff);
                 if (coslen >= 2) //获取COS描述
                 {
-                    System.Diagnostics.Trace.TraceInformation("SYS>> {0}", cosIO.GetDescription(cosbuff[0], cosbuff[1]));
+                    ctx.ReportMessage("SYS>> {0}", cosIO.GetDescription(cosbuff[0], cosbuff[1]));
                     return true;
                 }
             }
@@ -325,31 +325,31 @@ namespace Rtp.Driver
                         //默认的全局变量SBUFF,RBUFF
                         if (gv == "SBUFF")
                         {
-                            System.Diagnostics.Trace.TraceInformation("SYS>> Get sbuff value as GV.");
+                            ctx.ReportMessage("SYS>> Get sbuff value as GV.");
                             cmd = cmd.Replace(gvClause, Utility.ByteArrayToHexStr(ctx.sbuff, ctx.slen));
-                            System.Diagnostics.Trace.TraceInformation("SYS>> CMD={0}", cmd);
+                            ctx.ReportMessage("SYS>> CMD={0}", cmd);
                             continue;
                         }
                         if (gv == "RBUFF")
                         {
-                            System.Diagnostics.Trace.TraceInformation("SYS>> Get rbuff value as GV.");
+                            ctx.ReportMessage("SYS>> Get rbuff value as GV.");
                             cmd = cmd.Replace(gvClause, Utility.ByteArrayToHexStr(ctx.rbuff, ctx.rlen));
-                            System.Diagnostics.Trace.TraceInformation("SYS>> CMD={0}", cmd);
+                            ctx.ReportMessage("SYS>> CMD={0}", cmd);
                             continue;
                         }
 
                         //找到一个全局变量
                         if (ctx.GVDIC.ContainsKey(gv))
                         {
-                            System.Diagnostics.Trace.TraceInformation("SYS>> {0} = {1} ", gv, ctx.GVDIC[gv]);
+                            ctx.ReportMessage("SYS>> {0} = {1} ", gv, ctx.GVDIC[gv]);
                             //使用这个变量替换原来的语句
                             cmd = cmd.Replace(gvClause, ctx.GVDIC[gv]);
-                            System.Diagnostics.Trace.TraceInformation("SYS>> CMD={0}", cmd);
+                            ctx.ReportMessage("SYS>> CMD={0}", cmd);
                             continue;
                         }
                         else
                         {
-                            System.Diagnostics.Trace.TraceError("ERR>> {0} 未知！", gv);
+                            ctx.ReportMessage("ERR>> {0} 未知！", gv);
                             return false;
                         }
                     }
@@ -383,7 +383,7 @@ namespace Rtp.Driver
                 rkhIdx = cmdIn.IndexOf('}');
                 funcBlock = cmdIn.Substring(lkhIdx, rkhIdx + 1 - lkhIdx);
                 statementBody = funcBlock.Substring(1, funcBlock.Length - 2).Trim();
-                System.Diagnostics.Trace.TraceInformation("SYS>> 计算:{0}", funcBlock);
+                ctx.ReportMessage("SYS>> 计算:{0}", funcBlock);
 
                 //分解其中的语句
                 lxkhIdx = cmdIn.IndexOf('(', lkhIdx); //左小括号
@@ -402,7 +402,7 @@ namespace Rtp.Driver
                     
                     //如果不是无参函数 语句块中是明文                    
                     #region 明文COS指令
-                    System.Diagnostics.Trace.TraceInformation("SYS>> Statemants Block is plain cos instructor.");                   
+                    ctx.ReportMessage("SYS>> Statemants Block is plain cos instructor.");                   
                     if (commandEngine[ctx.CmdTarget].execute(statementBody, ctx)) //若语句执行成功
                     {
                         //用执行结果替换
@@ -418,11 +418,11 @@ namespace Rtp.Driver
                 #region 函数块执行
                 if (lxkhIdx < 0 || rxkhIdx < lxkhIdx)
                 {
-                    System.Diagnostics.Trace.TraceError("ERR>> Statemants Block format is incorrect.");
+                    ctx.ReportMessage("ERR>> Statemants Block format is incorrect.");
                     return false;
                 }
                 string funcName = cmdIn.Substring(lkhIdx + 1, lxkhIdx - lkhIdx - 1).Trim().ToUpper();//知道了函数名
-                System.Diagnostics.Trace.TraceInformation("SYS>> Function Name:{0}", funcName);
+                ctx.ReportMessage("SYS>> Function Name:{0}", funcName);
                 //带参数函数执行
                 if (commandEngine.ContainsKey(funcName) && commandEngine[funcName].execute(statementBody, ctx))
                 {
@@ -432,7 +432,7 @@ namespace Rtp.Driver
                 }
                 else
                 {
-                    System.Diagnostics.Trace.TraceError("ERR>> unknown command :{0}.",cmdIn);
+                    ctx.ReportMessage("ERR>> unknown command :{0}.",cmdIn);
                     return false;
                 }
 

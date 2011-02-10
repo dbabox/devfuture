@@ -24,7 +24,7 @@ namespace Rtp.Driver.Command
                 string[] args = par.Split(',');
                 if (args.Length == 3)
                 {
-                    System.Diagnostics.Trace.TraceInformation("Get buff vallue to GV:{0}", commandBody);
+                    ctx.ReportMessage("Get buff vallue to GV:{0}", commandBody);
                     int offset = 0;
                     int length = 0;
                     if (int.TryParse(args[0], System.Globalization.NumberStyles.HexNumber, null, out offset)
@@ -40,31 +40,31 @@ namespace Rtp.Driver.Command
                         {
                             ctx.GVDIC.Add(gvkey, Utility.ByteArrayToHexStr(buff, offset, length, ""));
                         }
-                        System.Diagnostics.Trace.TraceInformation("{0}={1}", gvkey, ctx.GVDIC[gvkey]);
+                        ctx.ReportMessage("{0}={1}", gvkey, ctx.GVDIC[gvkey]);
                         return true;
                     }
                    
                 }
                 else if (args.Length == 2)
                 {
-                    System.Diagnostics.Trace.TraceInformation("set buff vallue :{0}", commandBody);
+                    ctx.ReportMessage("set buff vallue :{0}", commandBody);
                     int offset = 0;
                     if (int.TryParse(args[0], System.Globalization.NumberStyles.HexNumber, null, out offset)
                         && (ctx.rlen = (byte)Utility.HexStrToByteArray(args[1], ref ctx.rbuff)) > 0)
                     {
                         if ((offset + ctx.rlen) > BUFF_LEN)
                         {
-                            System.Diagnostics.Trace.TraceError("CommandBuff:command format error: value too long! {0}", commandBody);
+                            ctx.ReportMessage("CommandBuff:command format error: value too long! {0}", commandBody);
                             return false;
                         }
                         Array.Copy(ctx.rbuff, 0, buff, offset, ctx.rlen);
-                        System.Diagnostics.Trace.TraceInformation("BUFF={0}", Utility.ByteArrayToHexStr(buff, offset + ctx.rlen));
+                        ctx.ReportMessage("BUFF={0}", Utility.ByteArrayToHexStr(buff, offset + ctx.rlen));
                         return true;
                     }
                 }              
              
             }
-            System.Diagnostics.Trace.TraceError("CommandBuff:command format error:{0}", commandBody);
+            ctx.ReportMessage("CommandBuff:command format error:{0}", commandBody);
             return false;
         }
 

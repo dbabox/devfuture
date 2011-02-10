@@ -10,8 +10,11 @@ using Rtp.Driver.RfidReader;
 
 namespace Rtp.Driver.Command
 {
+    public delegate void ReceiveContxtMessage(string message);
+
     public class CommandContext
     {
+        private const int BUFF_LEN = 128;
         /// <summary>
         /// 默认命令上下文，必须绑定到一个rfid。
         /// </summary>
@@ -21,16 +24,11 @@ namespace Rtp.Driver.Command
             gVDic = new Dictionary<string, string>();
             gVDic.Add("CARD_RAND_8BYTE", "00 00 00 00 00 00 00 00 ");
             gVDic.Add("CARD_RAND_4BYTE", "00 00 00 00 ");
-            gVDic.Add("MAC_KEY", "FF FF FF FF FF FF FF FF ");//FM1208-43 JSB CPU卡的初始密钥为16个F。
-            gVDic.Add("CPU_CCK", "FF FF FF FF FF FF FF FF ");//FM1208-43 JSB CPU卡的初始主控密钥为16个F。
 
             slen = 0;
             rlen = 0;
-            sbuff = new byte[128];
-            rbuff = new byte[128];
-
-            //加载COS描述文件
-            //cosIO = new FileMapCosIO().ReadCosFile("default.cos");
+            sbuff = new byte[BUFF_LEN];
+            rbuff = new byte[BUFF_LEN];             
         }
 
         /// <summary>
@@ -170,7 +168,31 @@ namespace Rtp.Driver.Command
             return true;
         }
 
-      
+
+        ReceiveContxtMessage _recvCtxMsg;
+
+        public ReceiveContxtMessage RecvCtxMsg
+        {
+            get { return _recvCtxMsg; }
+            set { _recvCtxMsg = value; }
+        }
+
+        public void ReportMessage(string message)
+        {
+            if (_recvCtxMsg != null)
+                _recvCtxMsg(message);
+            else
+                System.Diagnostics.Trace.TraceInformation(message);
+        }
+
+        public void ReportMessage(string format,params object[] args)
+        {
+            if (_recvCtxMsg != null) 
+                _recvCtxMsg(String.Format(format, args));
+            else 
+                System.Diagnostics.Trace.TraceInformation(format, args);
+            
+        }
 
     }
 }

@@ -29,7 +29,7 @@ namespace Rtp.Driver.Command
                 {
                     return 0==ctx.Rfid.SAM_SetPara(slot, cpupro, cputu);
                 }
-                System.Diagnostics.Trace.TraceWarning("Command {0} format incorrect.The correct format is SAM PARA slot,cpupro:协议(T=0/1),cpuetu:波特率(9600/115200).", commandBody);
+                ctx.ReportMessage("Command {0} format incorrect.The correct format is SAM PARA slot,cpupro:协议(T=0/1),cpuetu:波特率(9600/115200).", commandBody);
                 return false;
             }
             return false;

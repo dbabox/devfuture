@@ -31,6 +31,7 @@
             this.comboBoxReaders = new System.Windows.Forms.ComboBox();
             this.btnOK = new System.Windows.Forms.Button();
             this.btnCancel = new System.Windows.Forms.Button();
+            this.checkBoxEnableDebug = new System.Windows.Forms.CheckBox();
             this.SuspendLayout();
             // 
             // comboBoxReaders
@@ -43,7 +44,7 @@
             // 
             // btnOK
             // 
-            this.btnOK.Location = new System.Drawing.Point(90, 86);
+            this.btnOK.Location = new System.Drawing.Point(90, 110);
             this.btnOK.Name = "btnOK";
             this.btnOK.Size = new System.Drawing.Size(75, 23);
             this.btnOK.TabIndex = 1;
@@ -53,7 +54,7 @@
             // 
             // btnCancel
             // 
-            this.btnCancel.Location = new System.Drawing.Point(202, 86);
+            this.btnCancel.Location = new System.Drawing.Point(202, 110);
             this.btnCancel.Name = "btnCancel";
             this.btnCancel.Size = new System.Drawing.Size(75, 23);
             this.btnCancel.TabIndex = 1;
@@ -61,11 +62,23 @@
             this.btnCancel.UseVisualStyleBackColor = true;
             this.btnCancel.Click += new System.EventHandler(this.btnCancel_Click);
             // 
+            // checkBoxEnableDebug
+            // 
+            this.checkBoxEnableDebug.AutoSize = true;
+            this.checkBoxEnableDebug.Location = new System.Drawing.Point(50, 64);
+            this.checkBoxEnableDebug.Name = "checkBoxEnableDebug";
+            this.checkBoxEnableDebug.Size = new System.Drawing.Size(72, 16);
+            this.checkBoxEnableDebug.TabIndex = 2;
+            this.checkBoxEnableDebug.Text = "调试模式";
+            this.checkBoxEnableDebug.UseVisualStyleBackColor = true;
+            // 
             // FrmOpenReader
             // 
+            this.AcceptButton = this.btnOK;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(378, 155);
+            this.Controls.Add(this.checkBoxEnableDebug);
             this.Controls.Add(this.btnCancel);
             this.Controls.Add(this.btnOK);
             this.Controls.Add(this.comboBoxReaders);
@@ -74,6 +87,7 @@
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "打开读卡器";
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
@@ -82,5 +96,6 @@
         private System.Windows.Forms.ComboBox comboBoxReaders;
         private System.Windows.Forms.Button btnOK;
         private System.Windows.Forms.Button btnCancel;
+        private System.Windows.Forms.CheckBox checkBoxEnableDebug;
     }
 }

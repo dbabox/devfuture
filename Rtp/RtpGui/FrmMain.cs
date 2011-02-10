@@ -28,20 +28,24 @@ namespace Rtp.Gui
 
         private string readerType;
 
-        public FrmMain(string readerType_)
+        public FrmMain(string readerType_,bool enableDebug_)
         {
             InitializeComponent();
             readerType = readerType_;
             this.Text = String.Format("RFID 脚本环境 V{0}", System.Reflection.Assembly.GetExecutingAssembly().GetName().Version);
-            textBoxTraceListener = new TextBoxTraceListener(textBoxLog);
-            System.Diagnostics.Trace.Listeners.Add(textBoxTraceListener);
+            if (enableDebug_)
+            {
+                textBoxTraceListener = new TextBoxTraceListener(textBoxLog);
+                System.Diagnostics.Trace.Listeners.Add(textBoxTraceListener);
+            }
 
             #region CopyRight
-            System.Diagnostics.Trace.TraceInformation("RFID Test Platform:Release {0} Production on {1}{2}",
+            textBoxLog.AppendText(String.Format("RFID Test Platform:Release {0} Production on {1}{2}",
                 System.Reflection.Assembly.GetExecutingAssembly().GetName().Version,
-                DateTime.Now.ToLocalTime(), Environment.NewLine);
-            System.Diagnostics.Trace.TraceInformation("Copyright (c) 1999, 2011, SIASUN.  All rights reserved.");
-            System.Diagnostics.Trace.TraceInformation("-------------------------------------------------------{0}", Environment.NewLine);
+                DateTime.Now.ToLocalTime(), Environment.NewLine));
+            textBoxLog.AppendText("Copyright (c) 1999, 2011, SIASUN.  All rights reserved.");
+            textBoxLog.AppendText(Environment.NewLine);
+            textBoxLog.AppendText(String.Format("-------------------------------------------------------{0}", Environment.NewLine));
             #endregion                                    
 
             scriptFile = Application.UserAppDataRegistry.GetValue(USER_REG_KEY_LAST_SCRIPT_FILE) as string;
@@ -58,16 +62,7 @@ namespace Rtp.Gui
             else
             {
                 throw new ArgumentException("无效的读卡器类型");
-            }
-            int rc= rf.Open();
-            if (rc > 0)
-            {
-                tsslRequest.Text = String.Format("读卡器就绪：{0}", rf.DeviceVersion());                
-            }
-            else
-            {
-                tsslRequest.Text = "打开读卡器失败！";
-            }
+            }          
             
             rf.CpuRequest += new EventHandler<Rtp.Driver.CardIO.CpuRequestEventArgs>(rf_CpuRequest);
             rf.CpuResponse += new EventHandler<Rtp.Driver.CardIO.CpuResponseEventArgs>(rf_CpuResponse);
@@ -75,17 +70,21 @@ namespace Rtp.Gui
             rf.SamResponse += new EventHandler<Rtp.Driver.CardIO.SamResponseEventArgs>(rf_SamResponse);
             #endregion
             ctx = new CommandContext(rf);
+            ctx.RecvCtxMsg = new ReceiveContxtMessage(DisplayContextMessage);
             rtp = new RtpCore(ctx);
-            rtp.CommandExcuter("HELP");
             
 
+        }
 
-
+        void DisplayContextMessage(string message)
+        {
+            textBoxLog.AppendText(message);
+            textBoxLog.AppendText(Environment.NewLine);
         }
 
         void rf_SamResponse(object sender, Rtp.Driver.CardIO.SamResponseEventArgs e)
         {
-            System.Diagnostics.Trace.TraceInformation(String.Format("{2}>>{0}|{1}", e.ResponseString, rtp.CosIO.GetDescription(e.Sw), ctx.CmdTarget));
+            textBoxLog.AppendText(String.Format("{2}>>{0}|{1}{3}", e.ResponseString, rtp.CosIO.GetDescription(e.Sw), ctx.CmdTarget,Environment.NewLine));
             tsslResponse.Text = e.ResponseString;
             tsslAsciiResponse.Text = Utility.ByteArrayToAsciiString(ctx.rlen, ctx.rbuff);
             cmdHistory.Add(String.Format("{2}>> {0}\t[{1}]", e.ResponseString,rtp.CosIO.GetDescription(e.Sw) , ctx.CmdTarget));
@@ -101,14 +100,14 @@ namespace Rtp.Gui
 
         void rf_SamRequest(object sender, Rtp.Driver.CardIO.SamRequestEventArgs e)
         {
-            System.Diagnostics.Trace.TraceInformation(String.Format("{2}<<{0}|{1}", e.Cmdstr, rtp.CosIO.GetDescription(e.Cmd), ctx.CmdTarget));
+            textBoxLog.AppendText(String.Format("{2}<<{0}|{1}{3}", e.Cmdstr, rtp.CosIO.GetDescription(e.Cmd), ctx.CmdTarget,Environment.NewLine));
             tsslRequest.Text = e.Cmdstr;
             cmdHistory.Add(String.Format("{2}<< {0}\t[{1}]", e.Cmdstr, rtp.CosIO.GetDescription(e.Cmd), ctx.CmdTarget));         
         }
 
         void rf_CpuResponse(object sender, Rtp.Driver.CardIO.CpuResponseEventArgs e)
         {
-            System.Diagnostics.Trace.TraceInformation(String.Format("{2}>>{0}|{1}", e.ResponseString, rtp.CosIO.GetDescription(e.Sw), ctx.CmdTarget));
+            textBoxLog.AppendText(String.Format("{2}>>{0}|{1}{3}", e.ResponseString, rtp.CosIO.GetDescription(e.Sw), ctx.CmdTarget,Environment.NewLine));
             tsslResponse.Text = e.ResponseString;
             tsslAsciiResponse.Text = Utility.ByteArrayToAsciiString(ctx.rlen, ctx.rbuff);
             cmdHistory.Add(String.Format("{2}>> {0}\t[{1}]", e.ResponseString, rtp.CosIO.GetDescription(e.Sw), ctx.CmdTarget));
@@ -124,7 +123,7 @@ namespace Rtp.Gui
 
         void rf_CpuRequest(object sender, Rtp.Driver.CardIO.CpuRequestEventArgs e)
         {
-            System.Diagnostics.Trace.TraceInformation(String.Format("{2}<<{0}|{1}", e.Cmdstr, rtp.CosIO.GetDescription(e.Cmd), ctx.CmdTarget));
+            textBoxLog.AppendText(String.Format("{2}<<{0}|{1}{3}", e.Cmdstr, rtp.CosIO.GetDescription(e.Cmd), ctx.CmdTarget,Environment.NewLine));
             tsslRequest.Text = e.Cmdstr;
             cmdHistory.Add(String.Format("{2}<< {0}\t[{1}]", e.Cmdstr, rtp.CosIO.GetDescription(e.Cmd), ctx.CmdTarget));           
         }
@@ -135,7 +134,7 @@ namespace Rtp.Gui
             if (sender.Equals(btnExcute)||sender.Equals(tsmiRun))
             {
                 DateTime dtstart=DateTime.Now;
-                Trace.TraceInformation("开始执行脚本:{0}", dtstart);
+                textBoxLog.AppendText(String.Format("开始执行脚本:{0}", dtstart));
                 foreach (string l in textBoxCmd.Lines)
                 {
                     if (l.Length > 0)
@@ -145,7 +144,7 @@ namespace Rtp.Gui
                     }
                 }
                 TimeSpan ts=DateTime.Now-dtstart;
-                Trace.TraceInformation("脚本执行完成:{0},共耗时:{1}毫秒.", dtstart,ts.TotalMilliseconds);
+                textBoxLog.AppendText(String.Format("脚本执行完成:{0},共耗时:{1}毫秒.", dtstart,ts.TotalMilliseconds));
                 return;
             }
             if (sender.Equals(btnClearLog) || sender.Equals(tsmiClearLog))
@@ -311,6 +310,20 @@ namespace Rtp.Gui
                     tsslResponse.Text = String.Format("自动加载脚本文件{0}", scriptFile);
                 }
             }
+
+            if (rf != null)
+            {
+                int rc = rf.Open();
+                if (rc > 0)
+                {
+                    tsslRequest.Text = String.Format("读卡器就绪：{0}", rf.DeviceVersion());
+                }
+                else
+                {
+                    tsslRequest.Text = "打开读卡器失败！";
+                }
+            }
+            rtp.CommandExcuter("HELP");//显示帮助信息
            
         }
 
