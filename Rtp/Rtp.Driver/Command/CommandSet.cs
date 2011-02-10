@@ -27,7 +27,7 @@ namespace Rtp.Driver.Command
                 if (equIdx < 0) //没有=号，则显示该变量的值
                 {
                     string partname = commandBody.Substring(3, commandBody.Length - 3).Trim().ToUpper();
-                    if (partname == "ALL")
+                    if (String.IsNullOrEmpty(partname))
                     {
                         System.Diagnostics.Trace.TraceInformation("GVDIC:---------BEGIN-----------");
                         foreach (string key in ctx.GVDIC.Keys)
@@ -36,21 +36,21 @@ namespace Rtp.Driver.Command
                         }
                         System.Diagnostics.Trace.TraceInformation("GVDIC:---------END-----------");
                     }
-                    else if (ctx.GVDIC.ContainsKey(partname))
-                    {
-                        System.Diagnostics.Trace.TraceInformation("GV>> {0}={1}", partname, ctx.GVDIC[partname]);
-                    }
-                    else if (partname == "SBUFF")
-                    {
-                        System.Diagnostics.Trace.TraceInformation("GV>> {0}={1}", partname, Utility.ByteArrayToHexStr(ctx.sbuff,ctx.slen));
-                    }
-                    else if (partname == "RBUFF")
-                    {
-                        System.Diagnostics.Trace.TraceInformation("GV>> {0}={1}", partname, Utility.ByteArrayToHexStr(ctx.rbuff, ctx.rlen));
-                    }
                     else
                     {
-                        System.Diagnostics.Trace.TraceInformation("SYS>> {0} is not a GV", partname);
+                        int okPartName = 0;
+                        foreach (string key in ctx.GVDIC.Keys) //前缀匹配模式
+                        {
+                            if (key.StartsWith(partname))
+                            {
+                                System.Diagnostics.Trace.TraceInformation("GV>> {0}={1}", key, ctx.GVDIC[key]);
+                                ++okPartName;
+                            }
+                        }
+                        if (okPartName == 0)
+                        {
+                            System.Diagnostics.Trace.TraceInformation("SYS>> {0} is not a GV", partname);
+                        }
                     }
                     return true;
                 }

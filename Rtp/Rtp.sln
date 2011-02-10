@@ -1,6 +1,6 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 9.00
-# Visual Studio 2005
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rtp.Driver", "Rtp.Driver\Rtp.Driver.csproj", "{E3E1BE5E-C6B6-4907-86F9-A6188DF4AD8B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RtpCli", "RtpCli\RtpCli.csproj", "{7CC2CAAD-576F-4EE8-9905-DEB40D9708AF}"
