@@ -35,18 +35,19 @@ namespace Rtp.Driver.Command
                     //¸½¼ÓMAC
                     if (!ctx.AppandMac())
                     {
-                        System.Diagnostics.Trace.TraceError("ERR: AppandMac failed.");
+                        ctx.ReportMessage("ERR: AppandMac failed.");
                         return false;
                     }
 
                 }
+                ctx.ReportMessage("SYS>> CommandBody={0}", commandBody);
                 ctx.rc = ctx.Rfid.CPU_APDU(ctx.slen, ctx.sbuff, ref ctx.rlen, ctx.rbuff);
-                System.Diagnostics.Trace.TraceInformation("SYS>> CPU_APDU RC={0}", ctx.rc);
+                ctx.ReportMessage("SYS>> CPU_APDU RC={0}", ctx.rc);
                 return ctx.rc==0 && Utility.IsSwSuccess(ctx.rlen, ctx.rbuff);
             }
             else
             {
-                System.Diagnostics.Trace.TraceError("ERR: Command format incorrect:{0}.", commandBody);
+                ctx.ReportMessage("ERR: Command format incorrect:{0}.", commandBody);
                 return false;
             }
             #endregion

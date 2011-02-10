@@ -29,12 +29,12 @@ namespace Rtp.Driver.Command
                     string partname = commandBody.Substring(3, commandBody.Length - 3).Trim().ToUpper();
                     if (String.IsNullOrEmpty(partname))
                     {
-                        System.Diagnostics.Trace.TraceInformation("GVDIC:---------BEGIN-----------");
+                        ctx.ReportMessage("GVDIC:---------BEGIN-----------");
                         foreach (string key in ctx.GVDIC.Keys)
                         {
-                            System.Diagnostics.Trace.TraceInformation("GV>> {0}={1}", key, ctx.GVDIC[key]);
+                            ctx.ReportMessage("GV>> {0}={1}", key, ctx.GVDIC[key]);
                         }
-                        System.Diagnostics.Trace.TraceInformation("GVDIC:---------END-----------");
+                        ctx.ReportMessage("GVDIC:---------END-----------");
                     }
                     else
                     {
@@ -43,13 +43,13 @@ namespace Rtp.Driver.Command
                         {
                             if (key.StartsWith(partname))
                             {
-                                System.Diagnostics.Trace.TraceInformation("GV>> {0}={1}", key, ctx.GVDIC[key]);
+                                ctx.ReportMessage("GV>> {0}={1}", key, ctx.GVDIC[key]);
                                 ++okPartName;
                             }
                         }
                         if (okPartName == 0)
                         {
-                            System.Diagnostics.Trace.TraceInformation("SYS>> {0} is not a GV", partname);
+                            ctx.ReportMessage("SYS>> {0} is not a GV", partname);
                         }
                     }
                     return true;
@@ -60,7 +60,7 @@ namespace Rtp.Driver.Command
                 string gvName = commandBody.Substring(3, equIdx - 3).Trim().ToUpper();
                 string gvValue = commandBody.Substring(equIdx + 1, commandBody.Length - equIdx - 1).Trim().ToUpper();
 
-                System.Diagnostics.Trace.TraceInformation("SYS>> GV={0},Value={1}", gvName, gvValue);
+                ctx.ReportMessage("SYS>> GV={0},Value={1}", gvName, gvValue);
 
                 if (ctx.GVDIC.ContainsKey(gvName))
                 {

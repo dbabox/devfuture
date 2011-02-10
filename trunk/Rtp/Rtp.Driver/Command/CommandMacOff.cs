@@ -23,7 +23,7 @@ namespace Rtp.Driver.Command
         public bool execute(string commandBody, CommandContext ctx)
         {
             ctx.IsMacOn = false;
-            System.Diagnostics.Trace.TraceInformation("SYS>> Turn OFF MAC");
+            ctx.ReportMessage("SYS>> Turn OFF MAC");
             return true;
         }
 

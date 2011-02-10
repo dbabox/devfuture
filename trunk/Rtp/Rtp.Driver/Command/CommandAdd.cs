@@ -22,19 +22,19 @@ namespace Rtp.Driver.Command
                 string[] pars = par.Split(',');
                 if (pars.Length != 2)
                 {
-                    System.Diagnostics.Trace.TraceError("CommandAdd:{0} format error.", commandBody);
+                    ctx.ReportMessage("CommandAdd:{0} format error.", commandBody);
                     return false;
                 }
                 string gvkey = pars[0].Trim().ToUpper();
                 if (!ctx.GVDIC.ContainsKey(gvkey))
                 {
-                    System.Diagnostics.Trace.TraceError("CommandAdd:{0} format error.GV parameter is not valid.", commandBody);
+                    ctx.ReportMessage("CommandAdd:{0} format error.GV parameter is not valid.", commandBody);
                     return false;
                 }
                 ctx.rlen = (byte)Utility.HexStrToByteArray(ctx.GVDIC[gvkey], ref ctx.rbuff);
                 if (ctx.rlen > 5 || ctx.rlen == 0)
                 {
-                    System.Diagnostics.Trace.TraceError("CommandAdd:{0} GV={1} to big.", commandBody, ctx.GVDIC[gvkey]);
+                    ctx.ReportMessage("CommandAdd:{0} GV={1} to big.", commandBody, ctx.GVDIC[gvkey]);
                     return false;
                 }
                 int toAdd = 0;
@@ -49,7 +49,7 @@ namespace Rtp.Driver.Command
                 int addvalue = 0;
                 if (!int.TryParse(addstr, System.Globalization.NumberStyles.HexNumber, null, out addvalue))
                 {
-                    System.Diagnostics.Trace.TraceError("CommandAdd:{0} format error.", commandBody);
+                    ctx.ReportMessage("CommandAdd:{0} format error.", commandBody);
                     return false;
                 }
                 toAdd += addvalue; //
@@ -59,7 +59,7 @@ namespace Rtp.Driver.Command
                     toAdd >>= 8;
                 }
                 ctx.GVDIC[gvkey] = Utility.ByteArrayToHexStr(ctx.rbuff, ctx.rlen);
-                System.Diagnostics.Trace.TraceInformation("{0}={1}", gvkey, ctx.GVDIC[gvkey]);
+                ctx.ReportMessage("{0}={1}", gvkey, ctx.GVDIC[gvkey]);
                 return true;
 
                 

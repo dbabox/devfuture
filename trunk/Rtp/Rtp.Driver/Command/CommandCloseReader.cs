@@ -21,7 +21,7 @@ namespace Rtp.Driver.Command
         public bool execute(string commandBody, CommandContext ctx)
         {
             int rc = ctx.Rfid.Close();
-            System.Diagnostics.Trace.TraceInformation("SYS>> CLOSE READER RC={0}", rc);
+            ctx.ReportMessage("SYS>> CLOSE READER RC={0}", rc);
             
             return rc==0;
         }

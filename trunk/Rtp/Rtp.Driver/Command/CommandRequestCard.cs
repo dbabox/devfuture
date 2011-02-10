@@ -26,7 +26,7 @@ namespace Rtp.Driver.Command
             #region 寻卡
             CardPhysicalType cpt = CardPhysicalType.Unknown;           
             string snr = ctx.Rfid.Request(out cpt);
-            System.Diagnostics.Trace.TraceInformation("CARD>> {0} / {1}", snr, cpt);
+            ctx.ReportMessage("CARD>> {0} / {1}", snr, cpt);
             if (cpt != CardPhysicalType.Unknown)
             {
                 if (cpt == CardPhysicalType.CPU_TypeA
@@ -36,12 +36,12 @@ namespace Rtp.Driver.Command
                     ctx.rc = ctx.Rfid.CPU_Reset(out ctx.rlen, ctx.rbuff);
                     if (ctx.rc == 0)
                     {
-                        System.Diagnostics.Trace.TraceInformation("CARD>> ATS={0}", Utility.ByteArrayToHexStr(ctx.rbuff, ctx.rlen));
+                        ctx.ReportMessage("CARD>> ATS={0}", Utility.ByteArrayToHexStr(ctx.rbuff, ctx.rlen));
                         return true;
                     }
                     else
                     {
-                        System.Diagnostics.Trace.TraceInformation("SYS>> CPU RESET RC={0}", ctx.rc);
+                        ctx.ReportMessage("SYS>> CPU RESET RC={0}", ctx.rc);
                         return false;
                     }
                     //至此CPU卡寻卡复位完毕

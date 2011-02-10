@@ -23,7 +23,7 @@ namespace Rtp.Driver.Command
         public bool execute(string commandBody, CommandContext ctx)
         {
             int rc = ctx.Rfid.DeviceReset();
-            System.Diagnostics.Trace.TraceInformation("SYS>> RESET READER RC={0}", rc);
+            ctx.ReportMessage("SYS>> RESET READER RC={0}", rc);
             return rc==0;
         }
 

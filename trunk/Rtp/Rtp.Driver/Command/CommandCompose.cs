@@ -30,7 +30,7 @@ namespace Rtp.Driver.Command
                 ctx.rc = ctx.Rfid.CPU_APDU(ctx.slen, ctx.sbuff, ref ctx.rlen, ctx.rbuff);
                 if (ctx.rc != 0 || Utility.IsSwSuccess(ctx.rlen, ctx.rbuff) == false)
                 {
-                    System.Diagnostics.Trace.TraceError("ERR>> Command[0] failed:{0}", Utility.ByteArrayToHexStr(ctx.sbuff, ctx.slen));
+                    ctx.ReportMessage("ERR>> Command[0] failed:{0}", Utility.ByteArrayToHexStr(ctx.sbuff, ctx.slen));
                     return false;
                 }
                 byte[] parv = new byte[ctx.slen]; //后续的部分指令组合子
@@ -40,7 +40,7 @@ namespace Rtp.Driver.Command
                     parlen = Utility.HexStrToByteArray(cmdarr[i], ref parv);
                     if (parlen <= 0 || parlen > ctx.slen)
                     {
-                        System.Diagnostics.Trace.TraceError("ERR>> Command format incorrect:{0}", commandBody);
+                        ctx.ReportMessage("ERR>> Command format incorrect:{0}", commandBody);
                         return false;
                     }
                     Array.Copy(parv, 0, ctx.sbuff, ctx.slen - parlen, parlen);
@@ -48,12 +48,12 @@ namespace Rtp.Driver.Command
                     ctx.rc = ctx.Rfid.CPU_APDU(ctx.slen, ctx.sbuff, ref ctx.rlen, ctx.rbuff);
                     if (ctx.rc != 0 || !Utility.IsSwSuccess(ctx.rlen, ctx.rbuff))
                     {
-                        System.Diagnostics.Trace.TraceError("ERR>> Command[{0}] failed:{1}", i, Utility.ByteArrayToHexStr(ctx.sbuff, ctx.slen));
+                        ctx.ReportMessage("ERR>> Command[{0}] failed:{1}", i, Utility.ByteArrayToHexStr(ctx.sbuff, ctx.slen));
                         return false;
                     }
                     else
                     {
-                        System.Diagnostics.Trace.TraceInformation("SYS>> Command[{0}] success:{1}", i, Utility.ByteArrayToHexStr(ctx.sbuff, ctx.slen));
+                        ctx.ReportMessage("SYS>> Command[{0}] success:{1}", i, Utility.ByteArrayToHexStr(ctx.sbuff, ctx.slen));
                         //继续执行
                     }
                 }

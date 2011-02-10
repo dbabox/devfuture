@@ -18,6 +18,14 @@ namespace Rtp.Gui
                 return comboBoxReaders.SelectedValue as string;
             }
         }
+
+        public bool EnableDebug
+        {
+            get
+            {
+                return checkBoxEnableDebug.Checked;
+            }
+        }
         public FrmOpenReader()
         {
             InitializeComponent();

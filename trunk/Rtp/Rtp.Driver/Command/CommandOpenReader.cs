@@ -22,7 +22,7 @@ namespace Rtp.Driver.Command
         public bool execute(string commandBody, CommandContext ctx)
         {
             int rc = ctx.Rfid.Open();
-            System.Diagnostics.Trace.TraceInformation("SYS>> OPEN READER RC={0}", rc);
+            ctx.ReportMessage("SYS>> OPEN READER RC={0}", rc);
             return rc > 0;
         }
 

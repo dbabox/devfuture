@@ -57,17 +57,7 @@ namespace Rtp.Driver.CardIO
                     }
 
                 }
-                //自动备份
-                if (cosDic.Count > 0)
-                {
-                    using (System.IO.StreamWriter sw = new System.IO.StreamWriter(file + ".bak", false, Encoding.UTF8))
-                    {
-                        foreach (ushort k in cosDic.Keys)
-                        {
-                            sw.WriteLine("{0,4:X}|{1}", k, cosDic[k]);
-                        }
-                    }
-                }
+           
                 System.Diagnostics.Trace.TraceInformation("Cos [{0}] Cmd 初始化完毕!", CosName);
 
             }

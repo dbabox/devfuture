@@ -35,7 +35,7 @@ namespace Rtp.Driver.Command
                 }
                 else
                 {
-                    System.Diagnostics.Trace.TraceError("ERR>>{0} format incorrect.", commandBody);
+                    ctx.ReportMessage("ERR>>{0} format incorrect.", commandBody);
                     return false;
                 }
             }
