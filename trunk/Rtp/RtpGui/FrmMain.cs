@@ -218,14 +218,21 @@ namespace Rtp.Gui
             #region 菜单响应
             if (sender.Equals(tsmiScriptHelp))
             {
-                //显示脚本语法帮助
-
+                if (System.IO.File.Exists("help.rtf"))
+                {
+                    //显示脚本语法帮助
+                    System.Diagnostics.Process.Start("help.rtf");
+                }
+                else
+                {
+                    MessageBox.Show("帮助文件缺失，请参考：http://code.google.com/p/devfuture 网站文档.", "提示", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
                 return;
             }
 
             if (sender.Equals(tsmiAbout))
             {
-
+                MessageBox.Show("RFID 脚本开发环境.\r\n\r\n 版权所有(c) SIASUN 2000-2011", "关于", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return;
             }
             if (sender.Equals(tsmiNew))
