@@ -72,6 +72,12 @@
     <Compile Include="FrmMain.Designer.cs">
       <DependentUpon>FrmMain.cs</DependentUpon>
     </Compile>
+    <Compile Include="FrmOpenReader.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FrmOpenReader.Designer.cs">
+      <DependentUpon>FrmOpenReader.cs</DependentUpon>
+    </Compile>
     <Compile Include="FrmTextView.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -83,6 +89,9 @@
     <EmbeddedResource Include="FrmMain.resx">
       <SubType>Designer</SubType>
       <DependentUpon>FrmMain.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FrmOpenReader.resx">
+      <DependentUpon>FrmOpenReader.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="FrmTextView.resx">
       <DependentUpon>FrmTextView.cs</DependentUpon>

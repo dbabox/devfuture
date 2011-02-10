@@ -1,3 +1,8 @@
+/*
+ * 将流输出到TextBox。
+ * 
+ * 
+ * */
 using System;
 using System.Collections.Generic;
 using System.Text;
