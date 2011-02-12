@@ -47,14 +47,17 @@ namespace Rtp.Gui
             this.tsslAsciiResponse = new System.Windows.Forms.ToolStripStatusLabel();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.tsmiFile = new System.Windows.Forms.ToolStripMenuItem();
+            this.tsmiNew = new System.Windows.Forms.ToolStripMenuItem();
             this.tsmiOpen = new System.Windows.Forms.ToolStripMenuItem();
             this.tsmiSave = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.tsmiSaveAs = new System.Windows.Forms.ToolStripMenuItem();
             this.tsmiCommand = new System.Windows.Forms.ToolStripMenuItem();
             this.tsmiRun = new System.Windows.Forms.ToolStripMenuItem();
-            this.tsmiClearLog = new System.Windows.Forms.ToolStripMenuItem();
             this.tsmiViewCmdHis = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
+            this.tsmiClearLog = new System.Windows.Forms.ToolStripMenuItem();
+            this.tsmiSaveLog = new System.Windows.Forms.ToolStripMenuItem();
             this.tsmiHelp = new System.Windows.Forms.ToolStripMenuItem();
             this.tsmiScriptHelp = new System.Windows.Forms.ToolStripMenuItem();
             this.tsmiAbout = new System.Windows.Forms.ToolStripMenuItem();
@@ -64,7 +67,6 @@ namespace Rtp.Gui
             this.btnViewCmdLog = new System.Windows.Forms.Button();
             this.btnOpenFile = new System.Windows.Forms.Button();
             this.btnSaveAs = new System.Windows.Forms.Button();
-            this.tsmiNew = new System.Windows.Forms.ToolStripMenuItem();
             this.statusStrip1.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -75,7 +77,7 @@ namespace Rtp.Gui
             // btnExcute
             // 
             this.btnExcute.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.btnExcute.Location = new System.Drawing.Point(84, 405);
+            this.btnExcute.Location = new System.Drawing.Point(84, 403);
             this.btnExcute.Name = "btnExcute";
             this.btnExcute.Size = new System.Drawing.Size(69, 33);
             this.btnExcute.TabIndex = 1;
@@ -112,9 +114,9 @@ namespace Rtp.Gui
             this.tsslRequest,
             this.tsslResponse,
             this.tsslAsciiResponse});
-            this.statusStrip1.Location = new System.Drawing.Point(0, 441);
+            this.statusStrip1.Location = new System.Drawing.Point(0, 437);
             this.statusStrip1.Name = "statusStrip1";
-            this.statusStrip1.Size = new System.Drawing.Size(696, 22);
+            this.statusStrip1.Size = new System.Drawing.Size(696, 26);
             this.statusStrip1.TabIndex = 0;
             this.statusStrip1.Text = "statusStrip1";
             // 
@@ -122,7 +124,7 @@ namespace Rtp.Gui
             // 
             this.tsslRequest.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.tsslRequest.Name = "tsslRequest";
-            this.tsslRequest.Size = new System.Drawing.Size(47, 17);
+            this.tsslRequest.Size = new System.Drawing.Size(41, 21);
             this.tsslRequest.Text = "命令...";
             // 
             // tsslResponse
@@ -130,14 +132,14 @@ namespace Rtp.Gui
             this.tsslResponse.BorderSides = ((System.Windows.Forms.ToolStripStatusLabelBorderSides)((System.Windows.Forms.ToolStripStatusLabelBorderSides.Left | System.Windows.Forms.ToolStripStatusLabelBorderSides.Right)));
             this.tsslResponse.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.tsslResponse.Name = "tsslResponse";
-            this.tsslResponse.Size = new System.Drawing.Size(533, 17);
+            this.tsslResponse.Size = new System.Drawing.Size(544, 21);
             this.tsslResponse.Spring = true;
             this.tsslResponse.Text = "响应:....";
             // 
             // tsslAsciiResponse
             // 
             this.tsslAsciiResponse.Name = "tsslAsciiResponse";
-            this.tsslAsciiResponse.Size = new System.Drawing.Size(101, 17);
+            this.tsslAsciiResponse.Size = new System.Drawing.Size(96, 21);
             this.tsslAsciiResponse.Text = "ASCII格式响应...";
             this.tsslAsciiResponse.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
@@ -149,7 +151,7 @@ namespace Rtp.Gui
             this.tsmiHelp});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(696, 24);
+            this.menuStrip1.Size = new System.Drawing.Size(696, 25);
             this.menuStrip1.TabIndex = 6;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -162,32 +164,39 @@ namespace Rtp.Gui
             this.toolStripSeparator1,
             this.tsmiSaveAs});
             this.tsmiFile.Name = "tsmiFile";
-            this.tsmiFile.Size = new System.Drawing.Size(77, 20);
+            this.tsmiFile.Size = new System.Drawing.Size(71, 21);
             this.tsmiFile.Text = "文件(&File)";
+            // 
+            // tsmiNew
+            // 
+            this.tsmiNew.Name = "tsmiNew";
+            this.tsmiNew.Size = new System.Drawing.Size(145, 22);
+            this.tsmiNew.Text = "新建(&New)";
+            this.tsmiNew.Click += new System.EventHandler(this.btnExcute_Click);
             // 
             // tsmiOpen
             // 
             this.tsmiOpen.Name = "tsmiOpen";
-            this.tsmiOpen.Size = new System.Drawing.Size(152, 22);
+            this.tsmiOpen.Size = new System.Drawing.Size(145, 22);
             this.tsmiOpen.Text = "打开(&Open)";
             this.tsmiOpen.Click += new System.EventHandler(this.btnExcute_Click);
             // 
             // tsmiSave
             // 
             this.tsmiSave.Name = "tsmiSave";
-            this.tsmiSave.Size = new System.Drawing.Size(152, 22);
+            this.tsmiSave.Size = new System.Drawing.Size(145, 22);
             this.tsmiSave.Text = "保存脚本(F4)";
             this.tsmiSave.Click += new System.EventHandler(this.btnExcute_Click);
             // 
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(149, 6);
+            this.toolStripSeparator1.Size = new System.Drawing.Size(142, 6);
             // 
             // tsmiSaveAs
             // 
             this.tsmiSaveAs.Name = "tsmiSaveAs";
-            this.tsmiSaveAs.Size = new System.Drawing.Size(152, 22);
+            this.tsmiSaveAs.Size = new System.Drawing.Size(145, 22);
             this.tsmiSaveAs.Text = "另存为...";
             this.tsmiSaveAs.Click += new System.EventHandler(this.btnExcute_Click);
             // 
@@ -195,32 +204,46 @@ namespace Rtp.Gui
             // 
             this.tsmiCommand.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.tsmiRun,
+            this.tsmiViewCmdHis,
+            this.toolStripSeparator2,
             this.tsmiClearLog,
-            this.tsmiViewCmdHis});
+            this.tsmiSaveLog});
             this.tsmiCommand.Name = "tsmiCommand";
-            this.tsmiCommand.Size = new System.Drawing.Size(95, 20);
+            this.tsmiCommand.Size = new System.Drawing.Size(112, 21);
             this.tsmiCommand.Text = "命令(&Command)";
             // 
             // tsmiRun
             // 
             this.tsmiRun.Name = "tsmiRun";
-            this.tsmiRun.Size = new System.Drawing.Size(136, 22);
+            this.tsmiRun.Size = new System.Drawing.Size(152, 22);
             this.tsmiRun.Text = "执行(F5)";
             this.tsmiRun.Click += new System.EventHandler(this.btnExcute_Click);
-            // 
-            // tsmiClearLog
-            // 
-            this.tsmiClearLog.Name = "tsmiClearLog";
-            this.tsmiClearLog.Size = new System.Drawing.Size(136, 22);
-            this.tsmiClearLog.Text = "清除日志";
-            this.tsmiClearLog.Click += new System.EventHandler(this.btnExcute_Click);
             // 
             // tsmiViewCmdHis
             // 
             this.tsmiViewCmdHis.Name = "tsmiViewCmdHis";
-            this.tsmiViewCmdHis.Size = new System.Drawing.Size(136, 22);
+            this.tsmiViewCmdHis.Size = new System.Drawing.Size(152, 22);
             this.tsmiViewCmdHis.Text = "COS命令历史";
             this.tsmiViewCmdHis.Click += new System.EventHandler(this.btnExcute_Click);
+            // 
+            // toolStripSeparator2
+            // 
+            this.toolStripSeparator2.Name = "toolStripSeparator2";
+            this.toolStripSeparator2.Size = new System.Drawing.Size(149, 6);
+            // 
+            // tsmiClearLog
+            // 
+            this.tsmiClearLog.Name = "tsmiClearLog";
+            this.tsmiClearLog.Size = new System.Drawing.Size(152, 22);
+            this.tsmiClearLog.Text = "清除日志";
+            this.tsmiClearLog.Click += new System.EventHandler(this.btnExcute_Click);
+            // 
+            // tsmiSaveLog
+            // 
+            this.tsmiSaveLog.Name = "tsmiSaveLog";
+            this.tsmiSaveLog.Size = new System.Drawing.Size(152, 22);
+            this.tsmiSaveLog.Text = "保存日志";
+            this.tsmiSaveLog.Click += new System.EventHandler(this.btnExcute_Click);
             // 
             // tsmiHelp
             // 
@@ -228,20 +251,20 @@ namespace Rtp.Gui
             this.tsmiScriptHelp,
             this.tsmiAbout});
             this.tsmiHelp.Name = "tsmiHelp";
-            this.tsmiHelp.Size = new System.Drawing.Size(77, 20);
+            this.tsmiHelp.Size = new System.Drawing.Size(79, 21);
             this.tsmiHelp.Text = "帮助(&Help)";
             // 
             // tsmiScriptHelp
             // 
             this.tsmiScriptHelp.Name = "tsmiScriptHelp";
-            this.tsmiScriptHelp.Size = new System.Drawing.Size(118, 22);
+            this.tsmiScriptHelp.Size = new System.Drawing.Size(124, 22);
             this.tsmiScriptHelp.Text = "脚本语法";
             this.tsmiScriptHelp.Click += new System.EventHandler(this.btnExcute_Click);
             // 
             // tsmiAbout
             // 
             this.tsmiAbout.Name = "tsmiAbout";
-            this.tsmiAbout.Size = new System.Drawing.Size(118, 22);
+            this.tsmiAbout.Size = new System.Drawing.Size(124, 22);
             this.tsmiAbout.Text = "关于";
             this.tsmiAbout.Click += new System.EventHandler(this.btnExcute_Click);
             // 
@@ -268,7 +291,7 @@ namespace Rtp.Gui
             // btnClearLog
             // 
             this.btnClearLog.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.btnClearLog.Location = new System.Drawing.Point(312, 405);
+            this.btnClearLog.Location = new System.Drawing.Point(312, 403);
             this.btnClearLog.Name = "btnClearLog";
             this.btnClearLog.Size = new System.Drawing.Size(69, 33);
             this.btnClearLog.TabIndex = 8;
@@ -279,7 +302,7 @@ namespace Rtp.Gui
             // btnSaveCmd
             // 
             this.btnSaveCmd.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.btnSaveCmd.Location = new System.Drawing.Point(160, 405);
+            this.btnSaveCmd.Location = new System.Drawing.Point(160, 403);
             this.btnSaveCmd.Name = "btnSaveCmd";
             this.btnSaveCmd.Size = new System.Drawing.Size(69, 33);
             this.btnSaveCmd.TabIndex = 8;
@@ -290,7 +313,7 @@ namespace Rtp.Gui
             // btnViewCmdLog
             // 
             this.btnViewCmdLog.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.btnViewCmdLog.Location = new System.Drawing.Point(387, 405);
+            this.btnViewCmdLog.Location = new System.Drawing.Point(387, 403);
             this.btnViewCmdLog.Name = "btnViewCmdLog";
             this.btnViewCmdLog.Size = new System.Drawing.Size(69, 33);
             this.btnViewCmdLog.TabIndex = 8;
@@ -301,7 +324,7 @@ namespace Rtp.Gui
             // btnOpenFile
             // 
             this.btnOpenFile.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.btnOpenFile.Location = new System.Drawing.Point(9, 405);
+            this.btnOpenFile.Location = new System.Drawing.Point(9, 403);
             this.btnOpenFile.Name = "btnOpenFile";
             this.btnOpenFile.Size = new System.Drawing.Size(69, 33);
             this.btnOpenFile.TabIndex = 8;
@@ -312,20 +335,13 @@ namespace Rtp.Gui
             // btnSaveAs
             // 
             this.btnSaveAs.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.btnSaveAs.Location = new System.Drawing.Point(235, 405);
+            this.btnSaveAs.Location = new System.Drawing.Point(235, 403);
             this.btnSaveAs.Name = "btnSaveAs";
             this.btnSaveAs.Size = new System.Drawing.Size(69, 33);
             this.btnSaveAs.TabIndex = 8;
             this.btnSaveAs.Text = "另存脚本\r\n";
             this.btnSaveAs.UseVisualStyleBackColor = true;
             this.btnSaveAs.Click += new System.EventHandler(this.btnExcute_Click);
-            // 
-            // tsmiNew
-            // 
-            this.tsmiNew.Name = "tsmiNew";
-            this.tsmiNew.Size = new System.Drawing.Size(152, 22);
-            this.tsmiNew.Text = "新建(&New)";
-            this.tsmiNew.Click += new System.EventHandler(this.btnExcute_Click);
             // 
             // FrmMain
             // 
@@ -389,6 +405,8 @@ namespace Rtp.Gui
         private ToolStripMenuItem tsmiAbout;
         private ToolStripSeparator toolStripSeparator1;
         private ToolStripMenuItem tsmiNew;
+        private ToolStripSeparator toolStripSeparator2;
+        private ToolStripMenuItem tsmiSaveLog;
     }
 }
 

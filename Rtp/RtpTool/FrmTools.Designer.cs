@@ -262,6 +262,7 @@ namespace RtpTool
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.SizableToolWindow;
             this.Name = "FrmTools";
             this.Text = "RFID 脚本执行工具";
+            this.Load += new System.EventHandler(this.FrmTools_Load);
             ((System.ComponentModel.ISupportInitialize)(this.nudInterval)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudCycTimes)).EndInit();
             this.ResumeLayout(false);

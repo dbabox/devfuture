@@ -14,7 +14,7 @@ namespace RtpTool
 {
     public partial class FrmTools : Form
     {
-        private TextBoxTraceListener textBoxTraceListener;
+        //private TextBoxTraceListener textBoxTraceListener;
         private RfidBase rf = null;
         private CommandContext ctx = null;
         private RtpCore rtp = null;
@@ -28,21 +28,23 @@ namespace RtpTool
             InitializeComponent();
 
             this.Text = String.Format("RFID 脚本执行工具 V{0}", System.Reflection.Assembly.GetExecutingAssembly().GetName().Version);
-            textBoxTraceListener = new TextBoxTraceListener(textBoxLog);
+            //textBoxTraceListener = new TextBoxTraceListener(textBoxLog);
 
-            System.Diagnostics.Trace.Listeners.Add(textBoxTraceListener);
+            //System.Diagnostics.Trace.Listeners.Add(textBoxTraceListener);
 
             #region CopyRight
-            System.Diagnostics.Trace.TraceInformation("RFID Test Platform:Release {0} Production on {1}{2}",
+            textBoxLog.AppendText(String.Format("RFID Test Platform:Release {0} Production on {1}{2}",
                 System.Reflection.Assembly.GetExecutingAssembly().GetName().Version,
-                DateTime.Now.ToLocalTime(), Environment.NewLine);
-            System.Diagnostics.Trace.TraceInformation("Copyright (c) 1999, 2011, SIASUN.  All rights reserved.");
-            System.Diagnostics.Trace.TraceInformation("-------------------------------------------------------{0}", Environment.NewLine);
+                DateTime.Now.ToLocalTime(), Environment.NewLine));
+            textBoxLog.AppendText("Copyright (c) 1999, 2011, SIASUN.  All rights reserved.");
+            textBoxLog.AppendText(String.Format("{0}-------------------------------------------------------{0}", Environment.NewLine));
             #endregion
 
+
             rf = new RfidD8U();
-            rf.Open();
+            
             ctx = new CommandContext(rf);
+            ctx.RecvCtxMsg = new ReceiveContxtMessage(DisplayContextMessage);
 
             rtp = new RtpCore(ctx);
             rtp.CommandExcuter("HELP");
@@ -54,6 +56,12 @@ namespace RtpTool
             btnPause.Enabled = false;
             btnStop.Enabled = false;
             labelExe.Text = String.Empty;
+        }
+
+        void DisplayContextMessage(string message)
+        {
+            textBoxLog.AppendText(message);
+            textBoxLog.AppendText(Environment.NewLine);
         }
 
         private void btnStart_Click(object sender, EventArgs e)
@@ -110,7 +118,7 @@ namespace RtpTool
         {
             using (OpenFileDialog sfd = new OpenFileDialog())
             {
-                sfd.Filter = "txt;isu;rfid;log;his|*.txt;*.isu;*.rfid;*.his|All files (*.*)|*.*";
+                sfd.Filter = "txt;isu;rfid;log;his;rfs|*.txt;*.isu;*.rfid;*.his;*.rfs|All files (*.*)|*.*";
                 if (sfd.ShowDialog(this) == DialogResult.OK)
                 {
                     textBoxScriptOnece.Text = sfd.FileName;                   
@@ -128,6 +136,11 @@ namespace RtpTool
                     textBoxScriptCyc.Text = sfd.FileName;
                 }
             }
+        }
+
+        private void FrmTools_Load(object sender, EventArgs e)
+        {
+            rf.Open();
         }
     }
 }

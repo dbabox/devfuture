@@ -183,7 +183,7 @@ namespace Rtp.Gui
             {
                 using (OpenFileDialog sfd = new OpenFileDialog())
                 {                   
-                    sfd.Filter = "txt;isu;rfid;log;his|*.txt;*.isu;*.rfid;*.his|All files (*.*)|*.*";
+                    sfd.Filter = "txt;isu;rfid;log;his;rfs|*.txt;*.isu;*.rfid;*.his;*.rfs|All files (*.*)|*.*";
                     if (sfd.ShowDialog(this) == DialogResult.OK)
                     {
                      
@@ -203,7 +203,7 @@ namespace Rtp.Gui
             {
                 using (SaveFileDialog sfd = new SaveFileDialog())
                 {
-                    sfd.Filter = "RFID脚本文件(*.his)|*.his|脚本文件(txt;isu;rfid;log;his)|*.txt;*.isu;*.rfid;*.log;*.his|All files (*.*)|*.*";
+                    sfd.Filter = "RFID脚本文件(*.rfs)|*.rfs|脚本文件(txt;rfs;rfid;log;his)|*.txt;*.rfs;*.rfid;*.log;*.his|All files (*.*)|*.*";
           
                     if (sfd.ShowDialog(this) == DialogResult.OK)
                     {                 
@@ -223,6 +223,23 @@ namespace Rtp.Gui
             #endregion
 
             #region 菜单响应
+            if (sender.Equals(tsmiSaveLog))
+            {
+                using (SaveFileDialog sfd = new SaveFileDialog())
+                {
+                    sfd.DefaultExt = ".log";
+                    sfd.Filter = "日志文件|*.log";
+                    if (sfd.ShowDialog(this) == DialogResult.OK)
+                    {
+                        string path = sfd.FileName;
+                        using (System.IO.StreamWriter sw = new StreamWriter(path))
+                        {
+                            sw.Write(textBoxLog.Text);
+                        }
+                    }
+                }
+                return;
+            }
             if (sender.Equals(tsmiScriptHelp))
             {
                 if (System.IO.File.Exists("help.rtf"))
@@ -324,8 +341,10 @@ namespace Rtp.Gui
                 }
             }
             rtp.CommandExcuter("HELP");//显示帮助信息
-           
+            
         }
+
+        
 
          
 
