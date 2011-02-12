@@ -82,10 +82,19 @@ namespace Rtp.Driver.CardIO
             if (cosDic.ContainsKey(cmd)) return cosDic[cmd];
             UInt16 tmp = 0;
             foreach (UInt16 k in cosDic.Keys)
-            {
+            {                
                 tmp = (UInt16)(k ^ cmd);
-                if (tmp < 0xF) return cosDic[k].Replace("x", String.Format("{0,1:X1}", tmp));
-                if (tmp < 0xFF) return cosDic[k].Replace("xx", String.Format("0x{0,2:X2}", tmp));
+                if (tmp < 0x00FF)
+                {
+                    if (cosDic[k].Contains("xx"))
+                    {
+                        return cosDic[k].Replace("xx", String.Format("0x{0,2:X2}", tmp));
+                    }
+                    else
+                    {
+                        return cosDic[k].Replace("x", String.Format("{0,1:X1}", tmp));
+                    }
+                }               
             }
             return "Î´Öª´úÂë×Ö";
         }

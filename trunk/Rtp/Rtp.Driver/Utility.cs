@@ -1053,11 +1053,17 @@ namespace Rtp.Driver
             string[] strs = line.Split('|');
             if (strs != null && strs.Length == 2)
             {
+                string code = strs[0].Trim().Replace('x','0').Replace('X','0');
+
                 UInt16 cmd = 0;
-                if (UInt16.TryParse(strs[0].Trim(), System.Globalization.NumberStyles.AllowHexSpecifier, null, out cmd))
+                if (UInt16.TryParse(code, System.Globalization.NumberStyles.HexNumber, null, out cmd))
                 {
                     kvp = new KeyValuePair<UInt16, string>(cmd, strs[1].Trim());
                     return true;
+                }
+                else
+                {
+                    System.Diagnostics.Trace.TraceError("{0}无法解析成COS状态字或命令码", line);
                 }
             }
             else
@@ -1193,7 +1199,12 @@ namespace Rtp.Driver
         /// <returns></returns>
         public static bool IsSwSuccess(byte rlen, byte[] rbuff)
         {
-            return (rlen >= 2 && rbuff[rlen - 2] == 0x90 && rbuff[rlen - 1] == 0x00);
+            return
+                (rlen >= 2) && (
+                (rbuff[rlen - 2] == 0x90 && rbuff[rlen - 1] == 0x00)
+                || (rbuff[rlen - 2] == 0x61 && rbuff[rlen - 1] >0)
+                );
+
         }
 
 
