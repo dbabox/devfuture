@@ -109,7 +109,7 @@ namespace Rtp.Driver.Command
             byte cla = sbuff[0];
             if ((cla & 0x0F) != 0x04)
             {
-                Console.WriteLine("WARN:[AppandMac] 要加MAC的命令的CLA必须左半字节为0x04.");
+                ReportMessage("WARN:[AppandMac] 要加MAC的命令的CLA必须左半字节为0x04.");
                 return true;
             }
             byte lc = sbuff[4];
@@ -130,7 +130,7 @@ namespace Rtp.Driver.Command
             
             if (rc != 0)
             {
-                Console.WriteLine("ERROR:GetChallenge RC={0}", rc);
+                ReportMessage("ERROR:GetChallenge RC={0}", rc);
                 return false;
             }
             Array.Copy(rbuff, init, 8);

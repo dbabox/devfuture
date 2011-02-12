@@ -229,7 +229,7 @@ namespace Rtp.Driver.RfidReader
             {
                 Trace.TraceInformation("dc_cpureset success: rlen={0},databuff={1}",
                     rlen, Utility.ByteArrayToHexStr(rbuff, rlen));
-                OnCpuResponse(rlen, rbuff);
+                OnSamResponse(slot, rlen, rbuff);
             }
             else
             {

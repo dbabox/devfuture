@@ -25,11 +25,11 @@ namespace Rtp.Driver
         /// <summary>
         /// 带参数的操作，操作是可以再脚本中独立使用的关键字.
         /// </summary>
-        public const string ARG_OPERATION = "SET,SAM SLOT,SAM PARA,BUFF,ADD,SUB,PRINT";
+        public const string ARG_OPERATION = "SET,SAM SLOT,SAM PARA,BUFF,ADD,SUB,PRINT,SAM RESET";
         /// <summary>
         /// 不带参数的操作
         /// </summary>
-        public const string NONE_ARG_OPRATION = "HELP,OPEN READER,CLOSE READER,RESET READER,REQUEST CARD,MAC ON,MAC OFF,SAM RESET"; //PAUSE
+        public const string NONE_ARG_OPRATION = "HELP,OPEN READER,CLOSE READER,RESET READER,REQUEST CARD,MAC ON,MAC OFF"; //PAUSE
         /// <summary>
         /// 带参数函数。函数只能在块中调用。
         /// </summary>
@@ -217,38 +217,39 @@ namespace Rtp.Driver
             }
             #endregion
              
-            #region 行命令预处理 变量，函数先执行
+            #region 行命令预处理 变量，函数先执行，带<的COS指令先指向
             //不论什么命令，总是先处理$，然后处理{}           
             string calCmdL1;
-            if (!AnalyzeOperatorGV(line, out calCmdL1))
+            if (!AnalyzeOperatorGV(line, out calCmdL1)) //所有变量替换完成
             {
                 ctx.ReportMessage("ERR>> Command format error:{0}, GV error.", line);
                 return false;
             }
             //变量替换完成后，执行命令块执行功能
             string calCmdL2;
-            if (!ExcuteFunctionBlock(calCmdL1, out calCmdL2))
+            if (!ExcuteFunctionBlock(calCmdL1, out calCmdL2)) //所有函数执行完成
             {
                 ctx.ReportMessage("ERR>> Command format error:{0}, ExcuteFunctionBlock error.", calCmdL1);
                 return false;
             }
             line = calCmdL2;//至此，语句中无$，无{}，无()
-            //先处理目标头
             if (line.Contains(TARGET_HEADER))
             {
-                int idx = line.IndexOf(TARGET_HEADER); 
-                if (!commandEngine[TARGET_HEADER].execute(line.Substring(0, idx),ctx)) return false;
-                //成功才继续
-                if (idx == (line.Length - 1)) return true;//切换完成
-                line = line.Substring(idx + 1, line.Length - idx - 1);//只包含了命令体
+                //先处理目标头
+                string calCmdL3;
+                //优先执行
+                if (!AnalyzeRedirect(calCmdL2, out calCmdL3))
+                {
+                    ctx.ReportMessage("ERR>> Command format error:{0}, AnalyzeRedirect error.", line);
+                    return false;
+                }
+                //已设置命令目标
+                return commandEngine[ctx.CmdTarget].execute(calCmdL3, ctx); 
             }
-            else
-            {
-                ctx.CmdTarget = "CPU";//不含的话自动重置为CPU
-            }
+            //至此，语句中无$，无{}，无(),无<
             #endregion
 
-            #region 直接执行命令
+            #region 直接命令
             //组合命令直接执行
             if (line.Contains(COMPOSE)) return commandEngine[COMPOSE].execute(line, ctx); //组合命令不允许重定向，故最先执行
             //DESC命令与COS相关，在RTPCORE中直接执行
@@ -265,7 +266,7 @@ namespace Rtp.Driver
             }
             #endregion
 
-            #region 执行line
+            #region 无参操作和前缀操作
             //无参数操作
             if (noneArgOperation.Contains(line)) return commandEngine[line].execute(line, ctx);
 
@@ -274,11 +275,16 @@ namespace Rtp.Driver
             {
                 if (line.StartsWith(ao)) return commandEngine[ao].execute(line, ctx);
             }
+            #endregion
+ 
+            
            
+
+
             
             //普通COS命令
             return commandEngine[ctx.CmdTarget].execute(line, ctx);            
-            #endregion
+            
         }
 
         #endregion
@@ -288,7 +294,7 @@ namespace Rtp.Driver
         //符号解析优先级为：$号最优先，{}其次
         //=================================================
         /// <summary>
-        /// 本函数将命令中的$符号子句全部解析完成
+        /// 本函数将命令中的$符号子句全部解析完成，如$MAC_EKY会被替换成真正的二进制值；
         /// </summary>
         /// <param name="cmd"></param>
         /// <returns></returns>
@@ -360,6 +366,36 @@ namespace Rtp.Driver
         }
 
         /// <summary>
+        /// 分析重定向语句，必须在GV分析之后，COS指令指向之前进行。
+        /// 如:$SAM0 < 80 CA 00 00 09 $SA_CODE
+        /// </summary>
+        /// <param name="line"></param>
+        /// <param name="cmd"></param>
+        /// <returns></returns>
+        public bool AnalyzeRedirect(string line, out string cmd)
+        {
+            cmd = line;
+            if (line.Contains(TARGET_HEADER))//包含重定向语句
+            {
+                int idx = line.IndexOf(TARGET_HEADER);
+                //执行切换命令目标的指令，目前支持指向SAM卡或者CPU卡
+                if (!commandEngine[TARGET_HEADER].execute(line.Substring(0, idx), ctx)) return false;
+                //成功才继续
+                if (idx == (line.Length - 1))
+                {
+                    ctx.ReportMessage("{0}切换命令目标成功，但后续无COS指令.", line);
+                    return false;//切换完成
+                }
+                cmd = line.Substring(idx + 1, line.Length - idx - 1);//只包含了命令体
+            }
+            else
+            {
+                ctx.CmdTarget = "CPU";//不含的话自动重置为CPU
+            }
+            return true;
+        }
+
+        /// <summary>
         /// 执行函数计算块{}.目前仅支持DES/TripDES计算。
         /// </summary>
         /// <param name="cmd"></param>
@@ -402,7 +438,15 @@ namespace Rtp.Driver
                     
                     //如果不是无参函数 语句块中是明文                    
                     #region 明文COS指令
-                    ctx.ReportMessage("SYS>> Statemants Block is plain cos instructor.");                   
+                    ctx.ReportMessage("SYS>> Statemants Block is plain cos instructor.");
+                    //先处理目标头
+                    string calCmdL3;
+                    if (!AnalyzeRedirect(statementBody, out calCmdL3))
+                    {
+                        ctx.ReportMessage("ERR>> Command format error:{0}, AnalyzeRedirect error.", statementBody);
+                        return false;
+                    }
+                    statementBody = calCmdL3;//至此，语句中无$，无{}，无(),无<
                     if (commandEngine[ctx.CmdTarget].execute(statementBody, ctx)) //若语句执行成功
                     {
                         //用执行结果替换

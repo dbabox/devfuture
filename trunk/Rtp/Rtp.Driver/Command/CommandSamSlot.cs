@@ -27,7 +27,16 @@ namespace Rtp.Driver.Command
                     System.Globalization.NumberStyles.HexNumber, null, out slot))
                 {
                     //转成正确的格式了
-                    return ctx.Rfid.SAM_SetSlot(slot)==0;
+                    if (ctx.Rfid.SAM_SetSlot(slot) == 0)
+                    {
+                        ctx.ReportMessage("SYS>> Current SAM Slot is 0x{0,2:X2}", ctx.Rfid.CurrentSamSlot);
+                        return true;
+                    }
+                    else
+                    {
+                        ctx.ReportMessage("ERR>>Command ERROR: {0} ", commandBody);
+                        return false;
+                    }
                 }
             }
             ctx.ReportMessage("SYS>> Current SAM Slot is 0x{0,2:X2}", ctx.Rfid.CurrentSamSlot);

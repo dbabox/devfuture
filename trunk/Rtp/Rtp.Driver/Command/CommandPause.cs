@@ -23,7 +23,7 @@ namespace Rtp.Driver.Command
 
         public bool execute(string commandBody, CommandContext ctx)
         {
-            Console.WriteLine("Press any key to continue the script.");
+            ctx.ReportMessage("Press any key to continue the script.");
             Console.Read();
 
             //TODO:GUI程序应有不同的实现

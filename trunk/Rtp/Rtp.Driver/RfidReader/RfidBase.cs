@@ -204,7 +204,15 @@ namespace Rtp.Driver.RfidReader
             set
             {
                 if (currentSamSlot == value) return;
-                SAM_SetSlot(value);
+                if (SAM_SetSlot(value) == 0)
+                {
+                    currentSamSlot = value;
+                }
+                else
+                {
+                    currentSamSlot = 0;
+                    Trace.TraceError("SET SAM Slot to {0} failed.", value);
+                }
             }
           
         }

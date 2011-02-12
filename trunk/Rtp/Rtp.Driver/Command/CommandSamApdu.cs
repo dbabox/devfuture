@@ -31,7 +31,7 @@ namespace Rtp.Driver.Command
                     //¸½¼ÓMAC
                     if (!ctx.AppandMac())
                     {
-                        Console.WriteLine("ERR: AppandMac failed.");
+                        ctx.ReportMessage("ERR: AppandMac failed.");
                         return false;
                     }
 
@@ -43,7 +43,7 @@ namespace Rtp.Driver.Command
             }
             else
             {
-                Console.WriteLine("ERR: Command format incorrect:{0}.", commandBody);
+                ctx.ReportMessage("ERR: Command format incorrect:{0}.", commandBody);
                 return false;
             }
            
