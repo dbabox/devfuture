@@ -316,7 +316,7 @@ namespace Rtp.Driver
                 while ((gvIdx = cmd.IndexOf('$')) >= 0)
                 {
                     //ÕÒ½áÊø·û                    
-                    gvEnd = cmd.IndexOfAny(new char[] { ' ', '\r', '\n', ')', '<', ',', ';', '|' } , gvIdx);
+                    gvEnd = cmd.IndexOfAny(new char[] { ' ', '\r', '\n', ')', '<', ',', ';', '|','}','\t' } , gvIdx);
 
                     if (gvEnd == -1)
                     {

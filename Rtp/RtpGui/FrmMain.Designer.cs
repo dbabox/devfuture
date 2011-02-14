@@ -124,15 +124,15 @@ namespace Rtp.Gui
             // 
             this.tsslRequest.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.tsslRequest.Name = "tsslRequest";
-            this.tsslRequest.Size = new System.Drawing.Size(41, 21);
-            this.tsslRequest.Text = "命令...";
+            this.tsslRequest.Size = new System.Drawing.Size(32, 21);
+            this.tsslRequest.Text = "就绪";
             // 
             // tsslResponse
             // 
             this.tsslResponse.BorderSides = ((System.Windows.Forms.ToolStripStatusLabelBorderSides)((System.Windows.Forms.ToolStripStatusLabelBorderSides.Left | System.Windows.Forms.ToolStripStatusLabelBorderSides.Right)));
             this.tsslResponse.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.tsslResponse.Name = "tsslResponse";
-            this.tsslResponse.Size = new System.Drawing.Size(544, 21);
+            this.tsslResponse.Size = new System.Drawing.Size(522, 21);
             this.tsslResponse.Spring = true;
             this.tsslResponse.Text = "响应:....";
             // 
@@ -215,33 +215,33 @@ namespace Rtp.Gui
             // tsmiRun
             // 
             this.tsmiRun.Name = "tsmiRun";
-            this.tsmiRun.Size = new System.Drawing.Size(152, 22);
+            this.tsmiRun.Size = new System.Drawing.Size(149, 22);
             this.tsmiRun.Text = "执行(F5)";
             this.tsmiRun.Click += new System.EventHandler(this.btnExcute_Click);
             // 
             // tsmiViewCmdHis
             // 
             this.tsmiViewCmdHis.Name = "tsmiViewCmdHis";
-            this.tsmiViewCmdHis.Size = new System.Drawing.Size(152, 22);
+            this.tsmiViewCmdHis.Size = new System.Drawing.Size(149, 22);
             this.tsmiViewCmdHis.Text = "COS命令历史";
             this.tsmiViewCmdHis.Click += new System.EventHandler(this.btnExcute_Click);
             // 
             // toolStripSeparator2
             // 
             this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(149, 6);
+            this.toolStripSeparator2.Size = new System.Drawing.Size(146, 6);
             // 
             // tsmiClearLog
             // 
             this.tsmiClearLog.Name = "tsmiClearLog";
-            this.tsmiClearLog.Size = new System.Drawing.Size(152, 22);
+            this.tsmiClearLog.Size = new System.Drawing.Size(149, 22);
             this.tsmiClearLog.Text = "清除日志";
             this.tsmiClearLog.Click += new System.EventHandler(this.btnExcute_Click);
             // 
             // tsmiSaveLog
             // 
             this.tsmiSaveLog.Name = "tsmiSaveLog";
-            this.tsmiSaveLog.Size = new System.Drawing.Size(152, 22);
+            this.tsmiSaveLog.Size = new System.Drawing.Size(149, 22);
             this.tsmiSaveLog.Text = "保存日志";
             this.tsmiSaveLog.Click += new System.EventHandler(this.btnExcute_Click);
             // 
