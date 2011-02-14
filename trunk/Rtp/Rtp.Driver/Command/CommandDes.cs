@@ -41,13 +41,21 @@ namespace Rtp.Driver.Command
             string key8Str = commandBody.Substring(dhIdx + 1, rxkhIdx - dhIdx - 1);
             byte[] key8 = new byte[8];
             Utility.HexStrToByteArray(key8Str, ref key8);
-
-            //执行DES加密
-            Utility.DesBlockEncrypt(key8, init8, System.Security.Cryptography.CipherMode.ECB, ref ctx.rbuff);
-            ctx.rlen = 8; //加密结果只取8字节
+            int rc = -1;
+            try
+            {
+                //执行DES加密
+                rc = Utility.DesBlockEncrypt(key8, init8, System.Security.Cryptography.CipherMode.ECB, ref ctx.rbuff);
+                ctx.rlen = 8; //加密结果只取8字节
+            }
+            catch (Exception ex)
+            {
+                rc = -1;
+                ctx.RecvCtxMsg(ex.Message);
+            }
             #endregion
             //至此函数计算完毕，结果保存在ctx的rbuff中.
-            return true;
+            return rc>=8;
         }
       
         public string CommandName

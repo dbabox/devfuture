@@ -37,12 +37,22 @@ namespace Rtp.Driver.Command
             Array.Clear(ctx.rbuff, 0, ctx.rbuff.Length);
             //密钥 16 字节            
             byte[] key16 = new byte[16];
-            Utility.HexStrToByteArray(key16Str, ref key16);          
-            //执行DES加密
-            Utility.TripDesBlockEncrypt(key16, data, System.Security.Cryptography.CipherMode.ECB, ref ctx.rbuff);
-            ctx.rlen = (byte)data.Length; 
+            Utility.HexStrToByteArray(key16Str, ref key16);
+            int rc = -1;
+            try
+            {
+                //执行DES加密
+                rc=Utility.TripDesBlockEncrypt(key16, data, System.Security.Cryptography.CipherMode.ECB, ref ctx.rbuff);
+                ctx.rlen = (byte)data.Length;
+            }
+            catch (Exception ex)
+            {
+                rc = -1;
+                ctx.ReportMessage(ex.Message);
+            }
+
             #endregion
-            return true;
+            return rc>=0;
         }
 
         public string CommandName

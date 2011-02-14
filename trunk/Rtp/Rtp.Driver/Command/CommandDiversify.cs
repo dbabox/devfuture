@@ -44,11 +44,20 @@ namespace Rtp.Driver.Command
 
             byte[] seed = new byte[ctx.slen];
             Array.Copy(ctx.sbuff, seed, ctx.slen);
-            Utility.PBOC_Diversify64(km, seed, ref ctx.rbuff);//得到16字节的分散结果
-            ctx.rlen = 16;
+            int rc = -1;
+            try
+            {
+                rc=Utility.PBOC_Diversify64(km, seed, ref ctx.rbuff);//得到16字节的分散结果
+                ctx.rlen = 16;
+            }
+            catch (Exception ex)
+            {
+                ctx.ReportMessage(ex.Message);
+                rc = -1;
+            }
              
             #endregion
-            return true;
+            return rc==0;
         }
 
         public string CommandName
