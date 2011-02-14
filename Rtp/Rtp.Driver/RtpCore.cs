@@ -243,7 +243,7 @@ namespace Rtp.Driver
                     ctx.ReportMessage("ERR>> Command format error:{0}, AnalyzeRedirect error.", line);
                     return false;
                 }
-                if (calCmdL3.Trim().Length < 2)
+                if (calCmdL3.Trim().Length < 2) //仅执行切换的命令
                 {
                     return true;
                 }
@@ -388,9 +388,13 @@ namespace Rtp.Driver
                 if (idx == (line.Length - 1))
                 {
                     ctx.ReportMessage("{0}切换命令目标成功，但后续无COS指令.", line);
-                    return true;//切换完成
+                    cmd = String.Empty;
                 }
-                cmd = line.Substring(idx + 1, line.Length - idx - 1);//只包含了命令体
+                else
+                {
+                    cmd = line.Substring(idx + 1, line.Length - idx - 1).Trim();//只包含了命令体                    
+                }
+                return true;
             }
             else
             {

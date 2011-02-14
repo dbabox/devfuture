@@ -134,7 +134,7 @@ namespace Rtp.Gui
             if (sender.Equals(btnExcute)||sender.Equals(tsmiRun))
             {
                 DateTime dtstart=DateTime.Now;
-                textBoxLog.AppendText(String.Format("开始执行脚本:{0}", dtstart));
+                textBoxLog.AppendText(String.Format("开始执行脚本:{0}{1}.", dtstart,Environment.NewLine));
                 foreach (string l in textBoxCmd.Lines)
                 {
                     if (l.Length > 0)
@@ -144,7 +144,7 @@ namespace Rtp.Gui
                     }
                 }
                 TimeSpan ts=DateTime.Now-dtstart;
-                textBoxLog.AppendText(String.Format("脚本执行完成:{0},共耗时:{1}毫秒.", dtstart,ts.TotalMilliseconds));
+                textBoxLog.AppendText(String.Format("脚本执行完成:{0},共耗时:{1}毫秒.{2}", dtstart, ts.TotalMilliseconds, Environment.NewLine));
                 return;
             }
             if (sender.Equals(btnClearLog) || sender.Equals(tsmiClearLog))
