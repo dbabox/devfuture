@@ -43,8 +43,8 @@ namespace Rtp.Driver.Command
             //转成正确的格式了
             if ((rc = ctx.Rfid.SAM_Reset(slot, ref ctx.rlen, ctx.rbuff)) == 0)
             {
-                ctx.ReportMessage("{0} success:rlen=0x{1,2:X2},rbuff={2}", commandBody, ctx.rlen,
-                    Utility.ByteArrayToHexStr(ctx.rbuff, ctx.rlen));
+                ctx.ReportMessage("{0} success:rlen=0x{1,2:X2},rbuff={2},CurrentSamSlot={3,2:X2}", commandBody, ctx.rlen,
+                    Utility.ByteArrayToHexStr(ctx.rbuff, ctx.rlen),ctx.Rfid.CurrentSamSlot);
                 return true;
             }
             else

@@ -487,7 +487,7 @@ namespace Rtp.Driver.RfidReader
         ///databuffer: unsigned char*
         ///protocol: unsigned char
         [System.Runtime.InteropServices.DllImportAttribute("Trf32.dll", EntryPoint = "dc_cpuapdu_hex", CallingConvention = System.Runtime.InteropServices.CallingConvention.StdCall)]
-        public static extern int dc_cpuapdu_hex(int icdev, byte Cardtype, byte slen, System.IntPtr sendbuffer, System.IntPtr rlen, System.IntPtr databuffer, byte protocol);
+        public static extern int dc_cpuapdu_hex(int icdev, byte Cardtype, byte slen, byte[] sendbuffer, ref byte rlen, byte[] databuffer, byte protocol);
 
 
         /// Return Type: int
