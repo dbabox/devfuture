@@ -57,7 +57,10 @@ namespace Rtp.Gui
             }
             else if (readerType == "T10N")
             {
-                rf = new RfidT10N();
+                RfidT10N rfT10N = new RfidT10N();                
+                rfT10N.SamBaudrate = 4;
+                rfT10N.Volt = 3;
+                rf=rfT10N;
             }
             else
             {

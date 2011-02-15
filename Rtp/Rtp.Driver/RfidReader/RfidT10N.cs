@@ -31,14 +31,18 @@ namespace Rtp.Driver.RfidReader
         }
 
         private int port;
-
+        /// <summary>
+        /// 串口端口号,USB无效
+        /// </summary>
         public int Port
         {
             get { return port; }
             set { port = value; }
         }
         private uint baud;
-
+        /// <summary>
+        /// 串口波特率
+        /// </summary>
         public uint Baud
         {
             get { return baud; }
@@ -230,15 +234,36 @@ namespace Rtp.Driver.RfidReader
             return rc;
         }
 
-        public override int SAM_Reset(byte slot, ref byte rlen, byte[] dataBuff)
+       
+
+        /// </summary>
+        /// <param name="slot"></param>
+        /// <param name="rlen"></param>
+        /// <param name="dataBuff"></param>
+        /// <returns></returns>
+        public override int SAM_Reset(byte slot, ref byte rlen, byte[] rbuff)
         {
+            //currentSamSlot只能是:（0x0c表示附卡座,0x0d表示为SAM1,0x0e表示为SAM2,0x0f表示SAM3,0x10表示SAM4）
+            //而这里的参数slot:（1表示SIM1,2表示SIM2,3表示大卡座,4表示SIM3,5表示SIM4）
             if (currentSamSlot != slot) SAM_SetSlot(slot);
-            int rc = NMTrf32.dc_cpureset(icdev, slot, samBaudrate, volt, ref rlen, dataBuff, ref samProtocol);
+            /// <summary>
+            /// 说明:
+            ///CPU卡上电复位函数，复位后自动判断卡片协议。 
+            ///参数:
+            ///[in]  icdev  通讯设备标识符。  
+            ///[in]  cardtype  要操作的卡座号。（1表示SIM1,2表示SIM2,3表示大卡座,4表示SIM3,5表示SIM4）。 //注意和dc_setcpu参数值意义的不同。  
+            ///[in]  baudrate  1表示9600，2表示14400，3表示19200，4表示38400，5表示57600，6表示115200。  
+            ///[in]  Volt  2表示3.3V, 3表示5.0V。  
+            ///[out]  rlen  返回复位信息的长度。  
+            ///[out]  databuffer  存放返回的复位信息。  
+            ///[in]  protocol  返回卡片协议（0表示T = 0, 1表示 T = 1）。  
+            slot -= 12;
+            int rc = NMTrf32.dc_cpureset(icdev, slot,samBaudrate, volt, ref rlen, rbuff, ref samProtocol);
             if (rc == 0)
             {
                 Trace.TraceInformation("dc_cpureset success: rlen={0},databuff={1}",
-                    rlen, Utility.ByteArrayToHexStr(dataBuff, rlen));
-                OnCpuResponse(rlen, dataBuff);
+                    rlen, Utility.ByteArrayToHexStr(rbuff, rlen));
+                OnCpuResponse(rlen, rbuff);
             }
             else
             {
@@ -271,6 +296,7 @@ namespace Rtp.Driver.RfidReader
         {
             if (currentSamSlot != slot) SAM_SetSlot(slot);
             OnSamRequest(slot, slen, sbuff);
+             
             int rc = NMTrf32.dc_cpuapdu(icdev,slot, slen, sbuff, ref rlen, rbuff,samProtocol);
             if (rc == 0)
             {
@@ -292,14 +318,17 @@ namespace Rtp.Driver.RfidReader
         /// <returns></returns>
         public override int SAM_SetPara(byte slot, byte cpupro, byte cpuetu)
         {
-            Trace.TraceWarning("T10N not support set cpupro.");
+            Trace.TraceWarning("T10N not support set cpuprotocal.");
+            if (currentSamSlot != slot) SAM_SetSlot(slot);
             byte rlen=0;
             byte[] rbuff=new byte[64];
-            int rc=NMTrf32.dc_cpureset(icdev, slot, cpuetu, volt, ref rlen, rbuff, ref samProtocol);
+            slot -= 12;
+            int rc=NMTrf32.dc_cpureset(icdev,slot, cpuetu, volt, ref rlen, rbuff, ref samProtocol);
             if (rc == 0)
             {
                 samBaudrate = cpuetu;
             }
+            Trace.TraceInformation("T10N SAM_SetPara:RC={0}, RBUFF={1},samProtocol={2}",rc, Utility.ByteArrayToHexStr(rbuff, rlen), samProtocol);
             return rc;
         }
     }
