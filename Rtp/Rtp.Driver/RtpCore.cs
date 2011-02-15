@@ -18,6 +18,10 @@ namespace Rtp.Driver
     public class RtpCore
     {
         public const string STATEMENT_BLOCK = "{}";
+        /// <summary>
+        /// 重定向指令；
+        /// 
+        /// </summary>
         public const string TARGET_HEADER = "<";
   
         public const string COMPOSE = "/";
@@ -218,7 +222,7 @@ namespace Rtp.Driver
             }
             #endregion
              
-            #region 行命令预处理 变量，函数先执行，带<的COS指令先指向
+            //行命令预处理 变量，函数先执行，带<的COS指令先指向
             //不论什么命令，总是先处理$，然后处理{}           
             string calCmdL1;
             if (!AnalyzeOperatorGV(line, out calCmdL1)) //所有变量替换完成
@@ -234,6 +238,7 @@ namespace Rtp.Driver
                 return false;
             }
             line = calCmdL2;//至此，语句中无$，无{}，无()
+            #region 若是COS指令
             if (line.Contains(TARGET_HEADER))
             {
                 //先处理目标头
@@ -248,15 +253,13 @@ namespace Rtp.Driver
                 {
                     return true;
                 }
-                //已设置命令目标
-                return commandEngine[ctx.CmdTarget].execute(calCmdL3, ctx); 
+                line = calCmdL3;
+                return commandEngine[ctx.CmdTarget].execute(line, ctx); 
             }
-            //至此，语句中无$，无{}，无(),无<
+            
             #endregion
 
-            #region 直接命令
-            //组合命令直接执行
-            if (line.Contains(COMPOSE)) return commandEngine[COMPOSE].execute(line, ctx); //组合命令不允许重定向，故最先执行
+            #region DESC命令
             //DESC命令与COS相关，在RTPCORE中直接执行
             if (line.StartsWith("DESC "))
             {
@@ -271,7 +274,7 @@ namespace Rtp.Driver
             }
             #endregion
 
-            #region 无参操作和前缀操作
+            #region 无参系统调用和前缀系统调用
             //无参数操作
             if (noneArgOperation.Contains(line)) return commandEngine[line].execute(line, ctx);
 
@@ -280,13 +283,7 @@ namespace Rtp.Driver
             {
                 if (line.StartsWith(ao)) return commandEngine[ao].execute(line, ctx);
             }
-            #endregion
- 
-            
-           
-
-
-            
+            #endregion            
             //普通COS命令
             return commandEngine[ctx.CmdTarget].execute(line, ctx);            
             
