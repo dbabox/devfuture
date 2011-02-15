@@ -31,7 +31,7 @@ namespace Rtp.Driver.Command
                     //¸½¼ÓMAC
                     if (!ctx.AppandMac())
                     {
-                        ctx.ReportMessage("ERR: AppandMac failed.");
+                        ctx.ReportMessage("ERR>> AppandMac failed.");
                         return false;
                     }
 
@@ -39,7 +39,7 @@ namespace Rtp.Driver.Command
                 ctx.rc = ctx.Rfid.SAM_APDU(ctx.Rfid.CurrentSamSlot,
                     ctx.slen, ctx.sbuff, ref ctx.rlen, ctx.rbuff);
                 ctx.ReportMessage("SYS>> SAM_APDU RC={0}", ctx.rc);
-                return ctx.rc == 0 && Utility.IsSwSuccess(ctx.rlen, ctx.rbuff);
+                return (!ctx.IsBreakOnFailed) || (ctx.rc == 0 && Utility.IsSwSuccess(ctx.rlen, ctx.rbuff));
             }
             else
             {

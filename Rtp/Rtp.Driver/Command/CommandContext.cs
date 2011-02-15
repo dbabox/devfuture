@@ -49,27 +49,68 @@ namespace Rtp.Driver.Command
 
         #region 命令上下文成员
 
-        public int rc;//代表上一次操作的返回码
+        int executeMode=0x10;
+        /// <summary>
+        /// 执行模式:0x10=自动执行，失败则终止；0x20=单步执行，失败则终止； 0x30=按断点执行，失败则终止;
+        ///          0x11=自动执行，失败仍继续；0x21=单步执行，失败仍继续； 0x31=按断点执行，失败仍继续;
+        ///          默认模式为0x10
+        /// </summary>
+        public int ExecuteMode
+        {
+            get { return executeMode; }
+            set { 
+                executeMode = value;
+                isBreakOnFailed = (executeMode & 0x0F) == 0;
+            }
+        }
+
+        bool isBreakOnFailed = true;
+
+        public bool IsBreakOnFailed
+        {
+            get { return isBreakOnFailed; }            
+        }
+       
+        
+
+
+
+        /// <summary>
+        /// 代表上一次操作的返回码
+        /// </summary>
+        public int rc;
 
 
         bool isMacOn = false; 
-
+        /// <summary>
+        /// MAC自动计算是否启用
+        /// </summary>
         public bool IsMacOn
         {
             get { return isMacOn; }
             set { isMacOn = value; }
         }
-
-        public byte slen;        
+        /// <summary>
+        /// 发送长度
+        /// </summary>
+        public byte slen;
+        /// <summary>
+        /// 发送缓冲区
+        /// </summary>
         public byte[] sbuff;
-        public byte rlen;       
+        /// <summary>
+        /// 接收长度
+        /// </summary>
+        public byte rlen; 
+        /// <summary>
+        /// 接收缓冲区长度
+        /// </summary>
         public byte[] rbuff;
 
-       
- 
-
         Dictionary<string, string> gVDic;
-
+        /// <summary>
+        /// 全局变量字典
+        /// </summary>
         public Dictionary<string, string> GVDIC
         {
             get { return gVDic; }
@@ -77,7 +118,9 @@ namespace Rtp.Driver.Command
         }
 
         IRfid rfid;
-
+        /// <summary>
+        /// 当前使用的读卡器
+        /// </summary>
         public IRfid Rfid
         {
             get { return rfid; }
@@ -86,7 +129,7 @@ namespace Rtp.Driver.Command
 
         string cmdTarget="CPU";
         /// <summary>
-        /// 命令目标,可以是CPU,SAM ##。默认CPU。如果命令不指定对象，则为CPU。
+        /// 命令目标,可以是CPU,SAM 0x##。默认CPU。如果命令不指定对象，则为CPU。
         /// </summary>
         public string CmdTarget
         {
@@ -168,9 +211,14 @@ namespace Rtp.Driver.Command
             return true;
         }
 
-
+        #region 消息发布
+        /// <summary>
+        /// 消息发布委托
+        /// </summary>
         ReceiveContxtMessage _recvCtxMsg;
-
+        /// <summary>
+        /// 消息发布委托
+        /// </summary>
         public ReceiveContxtMessage RecvCtxMsg
         {
             get { return _recvCtxMsg; }
@@ -191,8 +239,10 @@ namespace Rtp.Driver.Command
                 _recvCtxMsg(String.Format(format, args));
             else 
                 System.Diagnostics.Trace.TraceInformation(format, args);
-            
+
         }
+        #endregion
+
 
     }
 }

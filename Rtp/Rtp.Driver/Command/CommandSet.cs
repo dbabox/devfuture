@@ -29,12 +29,12 @@ namespace Rtp.Driver.Command
                     string partname = commandBody.Substring(3, commandBody.Length - 3).Trim().ToUpper();
                     if (String.IsNullOrEmpty(partname))
                     {
-                        ctx.ReportMessage("GVDIC:---------BEGIN-----------");
+                        ctx.ReportMessage("SYS>>GVDIC:---------BEGIN-----------");
                         foreach (string key in ctx.GVDIC.Keys)
                         {
                             ctx.ReportMessage("GV>> {0}={1}", key, ctx.GVDIC[key]);
                         }
-                        ctx.ReportMessage("GVDIC:---------END-----------");
+                        ctx.ReportMessage("SYS>>GVDIC:---------END-----------");
                     }
                     else
                     {
@@ -43,7 +43,7 @@ namespace Rtp.Driver.Command
                         {
                             if (key.StartsWith(partname))
                             {
-                                ctx.ReportMessage("GV>> {0}={1}", key, ctx.GVDIC[key]);
+                                ctx.ReportMessage("SYS>>GV>> {0}={1}", key, ctx.GVDIC[key]);
                                 ++okPartName;
                             }
                         }

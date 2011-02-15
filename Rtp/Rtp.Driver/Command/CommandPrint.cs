@@ -20,7 +20,7 @@ namespace Rtp.Driver.Command
                     commandBody.Substring(CommandName.Length, commandBody.Length - CommandName.Length));
                 return true;
             }
-            ctx.ReportMessage("Print:command format error:{0}", commandBody);
+            ctx.ReportMessage("ERR>>Print:command format error:{0}", commandBody);
             return false;
         }
 

@@ -35,7 +35,7 @@ namespace Rtp.Driver.Command
                     //¸½¼ÓMAC
                     if (!ctx.AppandMac())
                     {
-                        ctx.ReportMessage("ERR: AppandMac failed.");
+                        ctx.ReportMessage("ERR>>System call failed: AppandMac failed.");
                         return false;
                     }
 
@@ -43,7 +43,7 @@ namespace Rtp.Driver.Command
                 ctx.ReportMessage("SYS>> CommandBody={0}", commandBody);
                 ctx.rc = ctx.Rfid.CPU_APDU(ctx.slen, ctx.sbuff, ref ctx.rlen, ctx.rbuff);
                 ctx.ReportMessage("SYS>> CPU_APDU RC={0}", ctx.rc);
-                return ctx.rc==0 && Utility.IsSwSuccess(ctx.rlen, ctx.rbuff);
+                return  (!ctx.IsBreakOnFailed) ||  (ctx.rc==0 && Utility.IsSwSuccess(ctx.rlen, ctx.rbuff));
             }
             else
             {

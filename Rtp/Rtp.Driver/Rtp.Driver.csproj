@@ -50,6 +50,12 @@
     <WarningLevel>4</WarningLevel>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>true</SignAssembly>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyOriginatorKeyFile>SIASUN.pfx</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="SharpPrivacyLibrary, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -67,6 +73,7 @@
     <Compile Include="CardIO\IM1IO.cs" />
     <Compile Include="CardIO\ISamIO.cs" />
     <Compile Include="CardIO\IUltralightIO.cs" />
+    <Compile Include="Command\CommandExecuteMode.cs" />
     <Compile Include="Command\CommandBuff.cs" />
     <Compile Include="Command\CommandCloseReader.cs" />
     <Compile Include="Command\CommandCompose.cs" />
@@ -131,6 +138,7 @@
     <None Include="help.rtf">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="SIASUN.pfx" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

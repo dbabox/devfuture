@@ -53,6 +53,12 @@
   <PropertyGroup>
     <StartupObject>RtpTool.Program</StartupObject>
   </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>true</SignAssembly>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyOriginatorKeyFile>..\Rtp.Driver\SIASUN.pfx</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Data" />
@@ -87,6 +93,9 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
+    <None Include="..\Rtp.Driver\SIASUN.pfx">
+      <Link>SIASUN.pfx</Link>
+    </None>
     <None Include="..\RtpCli\default.cos">
       <Link>default.cos</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

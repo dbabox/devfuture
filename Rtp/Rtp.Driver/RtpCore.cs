@@ -25,7 +25,7 @@ namespace Rtp.Driver
         /// <summary>
         /// 带参数的操作，操作是可以再脚本中独立使用的关键字.
         /// </summary>
-        public const string ARG_OPERATION = "SET,SAM SLOT,SAM PARA,BUFF,ADD,SUB,PRINT,SAM RESET";
+        public const string ARG_OPERATION = "SET,SAM SLOT,SAM PARA,BUFF,ADD,SUB,PRINT,SAM RESET,EXECUTE MODE";
         /// <summary>
         /// 不带参数的操作
         /// </summary>
@@ -144,7 +144,8 @@ namespace Rtp.Driver
             CommandPrint cprt = new CommandPrint();
             commandEngine.Add(cprt.CommandName, cprt);
 
-
+            CommandExecuteMode cem = new CommandExecuteMode();
+            commandEngine.Add(cem.CommandName, cem);
             #endregion
 
             noneArgOperation.AddRange(NONE_ARG_OPRATION.Split(','));
