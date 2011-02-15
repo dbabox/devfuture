@@ -5,7 +5,7 @@ using System.Text;
 namespace Rtp.Driver.Command
 {
     /// <summary>
-    /// 带参数操作 Add GV,xx 
+    /// 系统带参数操作。 Add GV,xx 
     /// 第一个参数是全局变量的名字，第二个是16进制整数值。
     /// eg: Add CARD_BLANCE,BE
     /// 当字节数组表示一个整数时，采用低字节高位的规则。
@@ -22,19 +22,19 @@ namespace Rtp.Driver.Command
                 string[] pars = par.Split(',');
                 if (pars.Length != 2)
                 {
-                    ctx.ReportMessage("CommandAdd:{0} format error.", commandBody);
+                    ctx.ReportMessage("ERR>>CommandAdd:{0} format error.", commandBody);
                     return false;
                 }
                 string gvkey = pars[0].Trim().ToUpper();
                 if (!ctx.GVDIC.ContainsKey(gvkey))
                 {
-                    ctx.ReportMessage("CommandAdd:{0} format error.GV parameter is not valid.", commandBody);
+                    ctx.ReportMessage("ERR>>CommandAdd:{0} format error.GV parameter is not valid.", commandBody);
                     return false;
                 }
                 ctx.rlen = (byte)Utility.HexStrToByteArray(ctx.GVDIC[gvkey], ref ctx.rbuff);
                 if (ctx.rlen > 5 || ctx.rlen == 0)
                 {
-                    ctx.ReportMessage("CommandAdd:{0} GV={1} to big.", commandBody, ctx.GVDIC[gvkey]);
+                    ctx.ReportMessage("ERR>>CommandAdd:{0} GV={1} to big.", commandBody, ctx.GVDIC[gvkey]);
                     return false;
                 }
                 int toAdd = 0;
@@ -49,7 +49,7 @@ namespace Rtp.Driver.Command
                 int addvalue = 0;
                 if (!int.TryParse(addstr, System.Globalization.NumberStyles.HexNumber, null, out addvalue))
                 {
-                    ctx.ReportMessage("CommandAdd:{0} format error.", commandBody);
+                    ctx.ReportMessage("ERR>>CommandAdd:{0} format error.", commandBody);
                     return false;
                 }
                 toAdd += addvalue; //
@@ -59,11 +59,12 @@ namespace Rtp.Driver.Command
                     toAdd >>= 8;
                 }
                 ctx.GVDIC[gvkey] = Utility.ByteArrayToHexStr(ctx.rbuff, ctx.rlen);
-                ctx.ReportMessage("{0}={1}", gvkey, ctx.GVDIC[gvkey]);
+                ctx.ReportMessage("SYS>>{0}={1}", gvkey, ctx.GVDIC[gvkey]);
                 return true;
 
                 
             }
+            ctx.ReportMessage("ERR>> Command is not ADD xxx:{0}", commandBody);
             return false;
         }
 

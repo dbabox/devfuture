@@ -49,7 +49,7 @@ namespace Rtp.Driver.Command
                     if (ctx.rc != 0 || !Utility.IsSwSuccess(ctx.rlen, ctx.rbuff))
                     {
                         ctx.ReportMessage("ERR>> Command[{0}] failed:{1}", i, Utility.ByteArrayToHexStr(ctx.sbuff, ctx.slen));
-                        return false;
+                        if(ctx.IsBreakOnFailed) return false;
                     }
                     else
                     {
@@ -57,6 +57,7 @@ namespace Rtp.Driver.Command
                         //继续执行
                     }
                 }
+                //全部成功执行，返回true
                 return true;
                 #endregion
             }

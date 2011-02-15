@@ -39,7 +39,8 @@ namespace Rtp.Driver.Command
                     }
                 }
             }
-            ctx.ReportMessage("SYS>> Current SAM Slot is 0x{0,2:X2}", ctx.Rfid.CurrentSamSlot);
+            ctx.ReportMessage("ERR>> System Call failed:{0}; Current SAM Slot is 0x{0,2:X2}.",
+                commandBody, ctx.Rfid.CurrentSamSlot);
             return false;
         }
 

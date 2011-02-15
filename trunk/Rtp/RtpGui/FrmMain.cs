@@ -256,7 +256,9 @@ namespace Rtp.Gui
 
             if (sender.Equals(tsmiAbout))
             {
-                MessageBox.Show("RFID 脚本开发环境.\r\n\r\n 版权所有(c) SIASUN 2000-2011", "关于", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBox.Show(String.Format("RFID 脚本开发环境 V{0}.\r\n\r\n 版权所有(c) SIASUN 2000-2011",
+                    System.Reflection.Assembly.GetExecutingAssembly().GetName().Version), 
+                    "关于", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return;
             }
             if (sender.Equals(tsmiNew))
