@@ -54,6 +54,7 @@ namespace Rtp.Driver.Command
                 else
                 {
                     //TODO:  对其他卡种的处理
+                    ctx.ReportMessage("ERR>>系统暂不支持出CPU、SAM卡之外的卡种.");
                     return false;
                 }
 

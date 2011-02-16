@@ -10,7 +10,7 @@ using Rtp.Driver.RfidReader;
 
 namespace Rtp.Driver.Command
 {
-    public delegate void ReceiveContxtMessage(string message);
+   
 
     public class CommandContext
     {
