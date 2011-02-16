@@ -28,6 +28,7 @@ using System.Runtime.InteropServices;
 //      次版本 
 //      内部版本号
 //      修订号
-//
-[assembly: AssemblyVersion("3.5.11.216")]
+//第3位表示当前日期自2000年1月1日以来的天数。
+//第4位表示自0点0分0秒开始的秒数。
+[assembly: AssemblyVersion("3.5.*")]
 [assembly: AssemblyFileVersion("3.0.0.0")]
