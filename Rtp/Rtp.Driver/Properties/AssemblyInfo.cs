@@ -29,7 +29,9 @@ using System.Runtime.InteropServices;
 //      内部版本号
 //      修订号
 //
+//第3位表示当前日期自2000年1月1日以来的天数。
+//第4位表示自0点0分0秒开始的秒数。
 // 可以指定所有这些值，也可以使用“修订号”和“内部版本号”的默认值，
 // 方法是按如下所示使用“*”:
-[assembly: AssemblyVersion("3.5.11.216")]
+[assembly: AssemblyVersion("3.5.*")]
 [assembly: AssemblyFileVersion("3.0.0.0")]
