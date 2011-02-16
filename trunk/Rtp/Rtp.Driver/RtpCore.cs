@@ -29,11 +29,11 @@ namespace Rtp.Driver
         /// <summary>
         /// 带参数的操作，操作是可以再脚本中独立使用的关键字.
         /// </summary>
-        public const string ARG_OPERATION = "SET,SAM SLOT,SAM PARA,BUFF,ADD,SUB,PRINT,SAM RESET,EXECUTE MODE";
+        public const string ARG_OPERATION = "SET,SAMSLOT,SAMPARA,BUFF,ADD,SUB,PRINT,SAMRESET,EXECUTEMODE";
         /// <summary>
         /// 不带参数的操作
         /// </summary>
-        public const string NONE_ARG_OPRATION = "HELP,OPEN READER,CLOSE READER,RESET READER,REQUEST CARD,MAC ON,MAC OFF"; //PAUSE
+        public const string NONE_ARG_OPRATION = "HELP,OPENREADER,CLOSEREADER,RESETREADER,REQUESTCARD,MACON,MACOFF"; //PAUSE
         /// <summary>
         /// 带参数函数。函数只能在块中调用。
         /// </summary>

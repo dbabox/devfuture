@@ -23,6 +23,11 @@ namespace Rtp.Driver.Command
 
         public bool execute(string commandBody, CommandContext ctx)
         {
+            if (!commandBody.Equals(CommandName, StringComparison.OrdinalIgnoreCase))
+            {
+                ctx.ReportMessage("ERR>>{0} is not {2}.", commandBody, CommandName);
+                return false;
+            }
             #region Ñ°¿¨
             CardPhysicalType cpt = CardPhysicalType.Unknown;           
             string snr = ctx.Rfid.Request(out cpt);
@@ -60,7 +65,7 @@ namespace Rtp.Driver.Command
 
         public string CommandName
         {
-            get { return "REQUEST CARD"; }
+            get { return "REQUESTCARD"; }
         }
 
         #endregion

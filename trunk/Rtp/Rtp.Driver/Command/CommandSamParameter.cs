@@ -15,23 +15,25 @@ namespace Rtp.Driver.Command
 
         public bool execute(string commandBody, CommandContext ctx)
         {
-            if (commandBody.StartsWith(CommandName))
+            if (!commandBody.StartsWith(CommandName, StringComparison.OrdinalIgnoreCase))
             {
-                string par = commandBody.Substring(9, commandBody.Length - 9).Trim();
-                string[] pars = par.Split(',');
-                byte slot = 0;
-                byte cpupro = 0;
-                byte cputu = 0;
-                if (Byte.TryParse(pars[0], System.Globalization.NumberStyles.HexNumber, null, out slot)
-                    && Byte.TryParse(pars[1], System.Globalization.NumberStyles.HexNumber, null, out cpupro)
-                    && Byte.TryParse(pars[2], System.Globalization.NumberStyles.HexNumber, null, out cputu)
-                    )
-                {
-                    return 0==ctx.Rfid.SAM_SetPara(slot, cpupro, cputu);
-                }
-                ctx.ReportMessage("ERR>>Command {0} format incorrect.The correct format is SAM PARA slot,cpupro:协议(T=0/1),cpuetu:波特率(9600/115200).", commandBody);
+                ctx.ReportMessage("ERR>>Command format error:  {0}.", commandBody);
                 return false;
             }
+            string par = commandBody.Substring(CommandName.Length, commandBody.Length - CommandName.Length).Trim();
+            string[] pars = par.Split(',');
+            byte slot = 0;
+            byte cpupro = 0;
+            byte cputu = 0;
+            if (Byte.TryParse(pars[0], System.Globalization.NumberStyles.HexNumber, null, out slot)
+                && Byte.TryParse(pars[1], System.Globalization.NumberStyles.HexNumber, null, out cpupro)
+                && Byte.TryParse(pars[2], System.Globalization.NumberStyles.HexNumber, null, out cputu)
+                )
+            {
+                return 0 == ctx.Rfid.SAM_SetPara(slot, cpupro, cputu);
+            }
+            ctx.ReportMessage("ERR>>Command {0} format incorrect.The correct format is SAMPARA slot,cpupro:协议(T=0/1),cpuetu:波特率(9600/115200).", commandBody);
+          
             return false;
         }
 
@@ -41,7 +43,7 @@ namespace Rtp.Driver.Command
         /// </summary>
         public string CommandName
         {
-            get { return "SAM PARA"; }
+            get { return "SAMPARA"; }
         }
 
         #endregion
