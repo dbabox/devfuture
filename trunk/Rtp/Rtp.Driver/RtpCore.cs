@@ -15,6 +15,8 @@ using Rtp.Driver.Command;
 
 namespace Rtp.Driver
 {
+    public delegate void ReceiveContxtMessage(string message);
+
     public class RtpCore
     {
         public const string STATEMENT_BLOCK = "{}";
@@ -498,4 +500,108 @@ namespace Rtp.Driver
 
          
     }
+
+
+    public class TagMap
+    {
+        #region 系统操作映射 00
+        public const ushort SYS_OPENREADER = 0x0001;
+        public const ushort SYS_CLOSEREADER = 0x0002;
+        public const ushort SYS_RESETREADER = 0x0003;
+        public const ushort SYS_REQUESTCARD = 0x0004;
+        public const ushort SYS_MACON = 0x0005;
+        public const ushort SYS_MACOFF = 0x0006;
+        public const ushort SYS_SET = 0x0007;
+        public const ushort SYS_DESC = 0x0008;
+        public const ushort SYS_HELP = 0x0009;
+        public const ushort SYS_SAMSLOT = 0x000A;
+        public const ushort SYS_SAMRESET = 0x000B;
+        public const ushort SYS_SAMPARA = 0x000C;
+        public const ushort SYS_Add = 0x000D;
+        public const ushort SYS_SUB = 0x000E;
+        public const ushort SYS_BUFF = 0x000F;
+        public const ushort SYS_PRINT = 0x0010;
+        #endregion
+
+        #region CPU COS操作映射 01
+
+        public const ushort CPU_A = 0x0100;
+        public const ushort CPU_B = 0x0101;
+
+        #endregion
+
+        /// <summary>
+        /// SAM=02 XX(XX为slot号).
+        /// </summary>
+        public const ushort SAM_TAG_PREFIX = 0x0200;
+
+        #region 系统函数调用映射 03
+        public const ushort FNC_DES = 0x0301;
+        public const ushort FNC_3DES = 0x0302;
+        public const ushort FNC_DATE = 0x0303;
+        public const ushort FNC_TIME = 0x0304;
+        public const ushort FNC_DATETIME = 0x0305;
+        public const ushort FNC_DIVERSIFY = 0x0306;
+        public const ushort FNC_KEY08MAC = 0x0307;
+        public const ushort FNC_KEY16MAC = 0x0308;
+        #endregion
+        /// <summary>
+        /// VAR=04 XX 系统支持最多255个全局持久变量.
+        /// </summary>
+        public const ushort VAR_TAG_PREFIX = 0x0400;
+        /// <summary>
+        /// TLV模板字符
+        /// 例：FF[TAG][LENGTH]FF[TAG][LENGTH][CONTENT]
+        /// </summary>
+        public const byte TLV = 0xFF;
+    }
+
+    public class TLVItem
+    {
+        public const int VAR_BUFF_SIZE = 128;
+        public TLVItem()
+        {
+            var = new byte[VAR_BUFF_SIZE];
+            length = 0;
+            tag = 0;
+        }
+
+        public UInt32 tag;
+        public byte length;
+        public readonly byte[] var;
+
+        /// <summary>
+        /// Tag的高2字节。
+        /// Tag类别：SYS=00 XX(XX为系统调用代码),
+        /// CPU=01 XX(XX表示CPU类别，typeA, typeB等),
+        /// SAM=02 XX(XX为slot号),
+        /// FNC=03 XX(XX为函数代码),
+        /// VAR=04 XX 系统支持最多255个全局持久变量；
+        /// </summary>
+        public byte TagType
+        {
+            get
+            {
+                byte tagType=(byte)(tag >> 24);
+                return tagType;
+            }
+        }
+
+        /// <summary>       
+        /// Tag类别的尾字节。
+        /// </summary>
+        public byte TagSubType
+        {
+            get
+            {
+                byte tagType = (byte)(tag >> 16);
+                tagType &= 0x00FF;
+                return (byte)tagType;
+            }
+        }
+
+
+
+    }
+ 
 }
