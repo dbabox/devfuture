@@ -22,6 +22,12 @@ namespace Rtp.Driver.Command
 
         public bool execute(string commandBody, CommandContext ctx)
         {
+            if (!commandBody.Equals(CommandName, StringComparison.OrdinalIgnoreCase))
+            {
+                ctx.ReportMessage("ERR>>{0} is not {2}.", commandBody, CommandName);
+                return false;
+            }
+
             int rc = ctx.Rfid.DeviceReset();
             ctx.ReportMessage("SYS>> RESET READER RC={0}", rc);
             return rc==0;
@@ -29,7 +35,7 @@ namespace Rtp.Driver.Command
 
         public string CommandName
         {
-            get { return "RESET READER"; }
+            get { return "RESETREADER"; }
         }
 
         #endregion

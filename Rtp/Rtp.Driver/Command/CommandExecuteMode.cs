@@ -32,7 +32,7 @@ namespace Rtp.Driver.Command
 
         public string CommandName
         {
-            get { return "EXECUTE MODE"; }
+            get { return "EXECUTEMODE"; }
         }
     }
 }

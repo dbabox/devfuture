@@ -10,25 +10,25 @@ namespace Rtp.Driver.Command
     public class CommandMacOn:ICommand
     {
         
- 
-
-        public CommandMacOn()
-        {
-            
-        }
+  
 
         #region ICommand ³ÉÔ±
 
         public bool execute(string commandBody, CommandContext ctx)
         {
-            ctx.IsMacOn = true;
-            ctx.ReportMessage("SYS>> Turn ON MAC");
-            return true;
+            if (commandBody.Equals(CommandName, StringComparison.OrdinalIgnoreCase))
+            {
+                ctx.IsMacOn = true;
+                ctx.ReportMessage("SYS>> Turn ON MAC");
+                return true;
+            }
+            ctx.ReportMessage("ERR>>{0} is not {2}.", commandBody, CommandName);
+            return false;
         }
 
         public string CommandName
         {
-            get { return "MAC ON"; }
+            get { return "MACON"; }
         }
 
         #endregion

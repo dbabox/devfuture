@@ -17,7 +17,12 @@ namespace Rtp.Driver.Command
 
         public bool execute(string commandBody,CommandContext ctx)
         {
-            if (!commandBody.StartsWith(CommandName)) throw new ArgumentException(String.Format("{0}ÃüÁî¸ñÊ½´íÎó:{1}", CommandName, commandBody));
+
+            if (!commandBody.StartsWith(CommandName, StringComparison.OrdinalIgnoreCase))
+            {
+                ctx.ReportMessage("ERR>>Command format error:  {0}.", commandBody);
+                return false;
+            }
 
             if (commandBody.Length>CommandName.Length)
             {
@@ -46,7 +51,7 @@ namespace Rtp.Driver.Command
 
         public string CommandName
         {
-            get { return "SAM SLOT"; }
+            get { return "SAMSLOT"; }
         }
 
          

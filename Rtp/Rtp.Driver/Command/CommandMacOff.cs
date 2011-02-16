@@ -22,14 +22,19 @@ namespace Rtp.Driver.Command
 
         public bool execute(string commandBody, CommandContext ctx)
         {
-            ctx.IsMacOn = false;
-            ctx.ReportMessage("SYS>> Turn OFF MAC");
-            return true;
+            if (commandBody.Equals(CommandName, StringComparison.OrdinalIgnoreCase))
+            {
+                ctx.IsMacOn = false;
+                ctx.ReportMessage("SYS>> Turn OFF MAC");
+                return true;
+            }
+            ctx.ReportMessage("ERR>>{0} is not {2}.", commandBody, CommandName);
+            return false;
         }
 
         public string CommandName
         {
-            get { return "MAC OFF"; }
+            get { return "MACOFF"; }
         }
 
         #endregion

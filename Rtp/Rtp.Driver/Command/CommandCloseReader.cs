@@ -10,25 +10,24 @@ namespace Rtp.Driver.Command
     /// </summary>
     public class CommandCloseReader:ICommand
     {
-       
-        
-        public CommandCloseReader()
-        {
-            
-        }
-
+  
         #region ICommand ³ÉÔ±
 
         public bool execute(string commandBody, CommandContext ctx)
         {
-            int rc = ctx.Rfid.Close();
-            ctx.ReportMessage("SYS>> CLOSE READER RC={0}", rc);            
-            return rc==0;
+            if (commandBody.Equals(CommandName, StringComparison.OrdinalIgnoreCase))
+            {
+                int rc = ctx.Rfid.Close();
+                ctx.ReportMessage("SYS>> CLOSE READER RC={0}", rc);
+                return rc == 0;
+            }
+            ctx.ReportMessage("ERR>>{0} is not {2}.", commandBody, CommandName);
+            return false;
         }
 
         public string CommandName
         {
-            get { return "CLOSE READER"; }
+            get { return "CLOSEREADER"; }
         }
 
         #endregion

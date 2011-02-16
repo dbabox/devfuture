@@ -21,9 +21,13 @@ namespace Rtp.Driver.Command
 
         public bool execute(string commandBody, CommandContext ctx)
         {
-            if (!commandBody.StartsWith(CommandName)) throw new ArgumentException(String.Format("{0}ÃüÁî¸ñÊ½´íÎó:{1}", CommandName, commandBody));
-            byte slot = 0;
 
+            if (!commandBody.StartsWith(CommandName, StringComparison.OrdinalIgnoreCase))
+            {
+                ctx.ReportMessage("ERR>>Command format error:  {0}.", commandBody);
+                return false;
+            }
+            byte slot = 0;
             if (commandBody.Length > CommandName.Length)
             {
                 string slotStr = commandBody.Substring(CommandName.Length, commandBody.Length - CommandName.Length).Trim();
@@ -57,7 +61,7 @@ namespace Rtp.Driver.Command
 
         public string CommandName
         {
-            get { return "SAM RESET"; }
+            get { return "SAMRESET"; }
         }
 
        
