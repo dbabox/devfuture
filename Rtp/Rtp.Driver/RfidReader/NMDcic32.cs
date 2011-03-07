@@ -10,6 +10,34 @@ namespace Rtp.Driver.RfidReader
 
     internal sealed class NMDcic32
     {
+        public const short TypeNo_4406 = 0x02;
+        public const short TypeNo_4418_4428 = 0x04;
+        public const short TypeNo_4404 = 0x08;
+        /// <summary>
+        ///  CPU¿¨(Ö÷¿¨×°)
+        /// </summary>
+        public const short TypeNo_SAM0 = 0x0C;
+        /// <summary>
+        ///  SAM¿¨(¸½¿¨×ùÉÏ)
+        /// </summary>
+        public const short TypeNo_SAM_ATT = 0x0D;
+        /// <summary>
+        /// SAM¿¨(SAM1¿¨×ùÉÏ)
+        /// </summary>
+        public const short TypeNo_SAM1 = 0x0E;
+        /// <summary>
+        ///  SAM¿¨(SAM2¿¨×ùÉÏ)
+        /// </summary>
+        public const short TypeNo_SAM2 = 0x0F;
+        public const short TypeNo_4432_4442 = 0x10;
+        public const short TypeNo_101_102_103 = 0x20;
+        public const short TypeNo_24C01A_02_04_08_16 = 0x40;
+        public const short TypeNo_45DB041 = 0x41;
+        public const short TypeNo_SF1101 = 0x42;
+        public const short TypeNo_1604_1604B = 0xA0;
+        public const short TypeNo_24C64 = 0xC0;
+        public const short TypeNo_1608 = 0xD0;
+        public const short TypeNo_153 = 0xD1;
 
         /// Return Type: short
         ///key: char*
@@ -101,7 +129,7 @@ namespace Rtp.Driver.RfidReader
         ///idComDev: HANDLE->void*
         ///Ver: unsigned char*
         [System.Runtime.InteropServices.DllImportAttribute("dcic32.dll", EntryPoint = "IC_ReadVer", CallingConvention = System.Runtime.InteropServices.CallingConvention.StdCall)]
-        public static extern short IC_ReadVer(System.IntPtr idComDev, System.IntPtr Ver);
+        public static extern short IC_ReadVer(System.IntPtr idComDev,byte[] Ver);
 
 
         /// Return Type: short
@@ -200,7 +228,7 @@ namespace Rtp.Driver.RfidReader
         ///rlen: unsigned char*
         ///databuffer: unsigned char*
         [System.Runtime.InteropServices.DllImportAttribute("dcic32.dll", EntryPoint = "IC_CpuReset", CallingConvention = System.Runtime.InteropServices.CallingConvention.StdCall)]
-        public static extern short IC_CpuReset(System.IntPtr idComDev, System.IntPtr rlen, System.IntPtr databuffer);
+        public static extern short IC_CpuReset(System.IntPtr idComDev, ref byte rlen, byte[] rbuff);
 
 
         /// Return Type: short

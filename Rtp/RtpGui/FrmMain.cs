@@ -62,6 +62,10 @@ namespace Rtp.Gui
                 rfT10N.Volt = 3;
                 rf=rfT10N;
             }
+            else if (readerType == "D6U")
+            {
+                rf = new RfidT6U();
+            }
             else
             {
                 throw new ArgumentException("无效的读卡器类型");

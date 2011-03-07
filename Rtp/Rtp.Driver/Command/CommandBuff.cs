@@ -12,7 +12,7 @@ namespace Rtp.Driver.Command
     class CommandBuff:ICommand
     {
         const int BUFF_LEN = 256;
-        private byte[] buff = new byte[BUFF_LEN];
+        private readonly byte[] buff = new byte[BUFF_LEN];
 
         #region ICommand ≥…‘±
 
