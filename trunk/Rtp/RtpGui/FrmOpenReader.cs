@@ -32,6 +32,7 @@ namespace Rtp.Gui
 
             readersMap.Add("D8U", "D8读卡器USB接口版（D8U）");
             readersMap.Add("T10N", "T10N读卡器USB接口（T10N）");
+            readersMap.Add("D6U", "D6/T6接触式IC卡读卡器USB接口");
             BindingSource bs = new BindingSource();
             bs.DataSource = readersMap;
             comboBoxReaders.DisplayMember = "Value";

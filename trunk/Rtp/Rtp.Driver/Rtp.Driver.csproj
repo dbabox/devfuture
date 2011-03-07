@@ -114,6 +114,7 @@
     <Compile Include="RfidReader\RfidD8U.cs" />
     <Compile Include="RfidReader\RfidFM8201.cs" />
     <Compile Include="RfidReader\RfidT10N.cs" />
+    <Compile Include="RfidReader\RfidT6U.cs" />
     <Compile Include="RtpCompiler.cs" />
     <Compile Include="RtpCore.cs" />
     <Compile Include="Utility.cs" />
