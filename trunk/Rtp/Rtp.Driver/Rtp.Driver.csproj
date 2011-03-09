@@ -91,6 +91,10 @@
     <Compile Include="Command\CommandOpenReader.cs" />
     <Compile Include="Command\CommandAdd.cs" />
     <Compile Include="Command\CommandPause.cs" />
+    <Compile Include="Command\CommandPbocDesDecKey16.cs" />
+    <Compile Include="Command\CommandPbocDesDecKey8.cs" />
+    <Compile Include="Command\CommandPbocDesEncKey16.cs" />
+    <Compile Include="Command\CommandPbocDesEncKey8.cs" />
     <Compile Include="Command\CommandPrint.cs" />
     <Compile Include="Command\CommandRequestCard.cs" />
     <Compile Include="Command\CommandSamApdu.cs" />
