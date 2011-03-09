@@ -39,7 +39,7 @@ namespace Rtp.Driver
         /// <summary>
         /// 带参数函数。函数只能在块中调用。
         /// </summary>
-        public const string ARG_FUNCTION = "KEY16MAC,KEY08MAC,DES,TRIPDES,DIVERSIFY";
+        public const string ARG_FUNCTION = "KEY16MAC,KEY08MAC,DES,TRIPDES,DIVERSIFY,PBOCDESENCKEY16,PBOCDESENCKEY8,PBOCDESDECKEY16,PBOCDESDECKEY8";
         /// <summary>
         /// 无参数函数。
         /// </summary>
@@ -152,6 +152,18 @@ namespace Rtp.Driver
 
             CommandExecuteMode cem = new CommandExecuteMode();
             commandEngine.Add(cem.CommandName, cem);
+
+            CommandPbocDesEncKey8 cmdpbocEncKey8 = new CommandPbocDesEncKey8();
+            commandEngine.Add(cmdpbocEncKey8.CommandName, cmdpbocEncKey8);
+
+            CommandPbocDesEncKey16 cmdpbocEncKey16 = new CommandPbocDesEncKey16();
+            commandEngine.Add(cmdpbocEncKey16.CommandName, cmdpbocEncKey16);
+
+            CommandPbocDesDecKey16 cmdpbocDecKey16 = new CommandPbocDesDecKey16();
+            commandEngine.Add(cmdpbocDecKey16.CommandName, cmdpbocDecKey16);
+
+            CommandPbocDesDecKey8 cmdpbocDecKey8 = new CommandPbocDesDecKey8();
+            commandEngine.Add(cmdpbocDecKey8.CommandName, cmdpbocDecKey8);
             #endregion
 
             noneArgOperation.AddRange(NONE_ARG_OPRATION.Split(','));
