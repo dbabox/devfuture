@@ -142,16 +142,23 @@ namespace Rtp.Gui
             {
                 DateTime dtstart=DateTime.Now;
                 textBoxLog.AppendText(String.Format("开始执行脚本:{0}{1}.", dtstart,Environment.NewLine));
+                bool rc = false;
                 foreach (string l in textBoxCmd.Lines)
                 {
                     if (l.Length > 0)
                     {
-                        if (!rtp.CommandExcuter(l.Trim().ToUpper()))
+                        if (!(rc=rtp.CommandExcuter(l.Trim().ToUpper())))
+                        {
+                            int idx=textBoxCmd.Text.IndexOf(l);
+                            if (idx > 0) textBoxCmd.Select(idx, l.Length);
+                            MessageBox.Show(String.Format( "执行失败:位置{0},语句:{1}", idx, l),"错误",MessageBoxButtons.OK,MessageBoxIcon.Error);
+
                             break;
+                        }
                     }
                 }
                 TimeSpan ts=DateTime.Now-dtstart;
-                textBoxLog.AppendText(String.Format("脚本执行完成:{0},共耗时:{1}毫秒.{2}", dtstart, ts.TotalMilliseconds, Environment.NewLine));
+                textBoxLog.AppendText(String.Format("脚本执行完成:{0},共耗时:{1}毫秒.执行结果：{3}{2}", dtstart, ts.TotalMilliseconds, Environment.NewLine,rc?"成功":"失败"));
                 return;
             }
             if (sender.Equals(btnClearLog) || sender.Equals(tsmiClearLog))
