@@ -21,17 +21,14 @@ namespace Rtp.Driver.Command
 
         public bool execute(string commandBody, CommandContext ctx)
         {
-
-            if (!commandBody.StartsWith(CommandName, StringComparison.OrdinalIgnoreCase))
-            {
-                ctx.ReportMessage("ERR>>Command format error:  {0}.", commandBody);
-                return false;
-            }
             byte slot = 0;
-            if (commandBody.Length > CommandName.Length)
+            string slotStr = Utility.GetSubStringBetweenChars(commandBody, '(', ')').Trim();
+            if (String.IsNullOrEmpty(slotStr))
             {
-                string slotStr = commandBody.Substring(CommandName.Length, commandBody.Length - CommandName.Length).Trim();
-
+                slot = ctx.Rfid.CurrentSamSlot;
+            }
+            else
+            {
                 if (!Byte.TryParse(slotStr,
                     System.Globalization.NumberStyles.HexNumber, null, out slot))
                 {
@@ -39,10 +36,9 @@ namespace Rtp.Driver.Command
                     return false;
                 }
             }
-            else
-            {
-                slot = ctx.Rfid.CurrentSamSlot;
-            }
+
+             
+            
             int rc = 0;
             //转成正确的格式了
             if ((rc = ctx.Rfid.SAM_Reset(slot, ref ctx.rlen, ctx.rbuff)) == 0)

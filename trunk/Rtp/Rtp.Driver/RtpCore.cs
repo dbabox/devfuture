@@ -249,7 +249,7 @@ namespace Rtp.Driver
             if (calCmdL2.Contains(TARGET_TAG) == false)
             {
                 //自动为其添加上一次的Header
-                string fmtLine = String.Format("{0}{1}{2}", ctx.CmdTarget.Substring(0, ctx.CmdTarget.IndexOf('<')), TARGET_TAG, line);
+                string fmtLine = String.Format("{0}{1}{2}", ctx.CmdTarget.Substring(0, ctx.CmdTarget.IndexOf('<')), TARGET_TAG, calCmdL2);
                 ctx.ReportMessage("SYS>>自动添加命令TARGET_TAG:实际执行命令:{0}", fmtLine);
                 calCmdL2 = fmtLine;              
             }

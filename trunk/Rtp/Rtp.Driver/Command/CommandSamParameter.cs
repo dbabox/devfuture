@@ -16,12 +16,8 @@ namespace Rtp.Driver.Command
 
         public bool execute(string commandBody, CommandContext ctx)
         {
-            if (!commandBody.StartsWith(CommandName, StringComparison.OrdinalIgnoreCase))
-            {
-                ctx.ReportMessage("ERR>>Command format error:  {0}.", commandBody);
-                return false;
-            }
-            string par = commandBody.Substring(CommandName.Length, commandBody.Length - CommandName.Length).Trim();
+
+            string par = Utility.GetSubStringBetweenChars(commandBody, '(', ')');
             string[] pars = par.Split(',');
             byte slot = 0;
             byte cpupro = 0;
