@@ -24,7 +24,7 @@ namespace Rtp.Driver.Command
                 ctx.ReportMessage("SYS>> OPEN READER RC={0}", rc);
                 return rc > 0;
             }
-            ctx.ReportMessage("ERR>>{0} is not {2}.", commandBody, CommandName);
+            ctx.ReportMessage("ERR>>{0} is not {1}.", commandBody, CommandName);
             return false;
         }
 

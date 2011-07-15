@@ -1207,6 +1207,54 @@ namespace Rtp.Driver
 
         }
 
+        public static string GetSubStringBetweenChars(string src,char leftChar,char rightChar)
+        {
+            int lkh = src.LastIndexOf(leftChar);
+            int rkh = src.IndexOf(rightChar);
+            if (lkh < 0 || rkh < 0)
+            {
+                System.Diagnostics.Trace.WriteLine(String.Format("获取两个字符间的字符串值失败，原因：格式错误 src={0},leftChar={1},rightChar={2}",
+                    src,leftChar,rightChar));
+                return src;
+            }
+            return src.Substring(lkh + 1, rkh - lkh - 1);        
+        }
+
+        /// <summary>
+        /// 返回两个字符之间的子字符串，若这2个字符不存在，或者只存在部分，则返回原字符串.
+        /// </summary>
+        /// <param name="src"></param>
+        /// <param name="leftChar"></param>
+        /// <param name="rightChar"></param>
+        /// <returns></returns>
+        public static string GetSubStringBetweenChars(string src, string leftChar, string rightChar)
+        {
+            int lkh = src.LastIndexOf(leftChar);
+            int rkh = src.IndexOf(rightChar);
+            if (lkh < 0 || rkh < 0)
+            {
+                System.Diagnostics.Trace.WriteLine(String.Format("获取两个字符间的字符串值失败， src={0},leftChar={1},rightChar={2},返回原字符串.",
+                    src, leftChar, rightChar));
+                return src;
+            }
+            return src.Substring(lkh + 1, rkh - lkh - 1);
+        }
+
+
+        public static string GetSubStringBetweenCharsInclude(string src, char leftChar, char rightChar)
+        {
+            int lkh = src.LastIndexOf(leftChar);
+            int rkh = src.IndexOf(rightChar);
+            if (lkh < 0 || rkh < 0)
+            {
+
+                throw new ArgumentOutOfRangeException(String.Format("获取两个字符(含)间的字符串值失败，原因：格式错误 src={0},leftChar={1},rightChar={2}",
+                    src, leftChar, rightChar));               
+            }
+            return src.Substring(lkh , rkh - lkh + 1);    
+        }
+        
+       
 
     }
 }

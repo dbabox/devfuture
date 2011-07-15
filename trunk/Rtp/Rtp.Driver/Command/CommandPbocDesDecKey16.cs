@@ -52,7 +52,7 @@ namespace Rtp.Driver.Command
 
         public string CommandName
         {
-            get { return "PBOCDESDECKEY16"; }
+            get { return "SYS<PBOCDESDECKEY16"; }
         }
     }
 }

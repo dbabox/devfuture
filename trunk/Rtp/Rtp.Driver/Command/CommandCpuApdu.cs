@@ -31,8 +31,10 @@ namespace Rtp.Driver.Command
         public bool execute(string commandBody, CommandContext ctx)
         {
 
+            string par = Utility.GetSubStringBetweenChars(commandBody, '(', ')').Trim().ToUpper();
+
             #region 分解组合命令后执行
-            string[] cmdarr = commandBody.Split('/');
+            string[] cmdarr = par.Split('/');
             ctx.slen = (byte)Utility.HexStrToByteArray(cmdarr[0], ref ctx.sbuff); //得到第一条命令
             #region 执行命令
             if (ctx.slen > 0)

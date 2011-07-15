@@ -28,7 +28,7 @@ namespace Rtp.Driver.Command
                 ctx.ReportMessage("SYS>> Turn OFF MAC");
                 return true;
             }
-            ctx.ReportMessage("ERR>>{0} is not {2}.", commandBody, CommandName);
+            ctx.ReportMessage("ERR>>{0} is not {1}.", commandBody, CommandName);
             return false;
         }
 

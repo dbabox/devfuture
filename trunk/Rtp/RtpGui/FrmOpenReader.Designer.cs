@@ -65,6 +65,8 @@
             // checkBoxEnableDebug
             // 
             this.checkBoxEnableDebug.AutoSize = true;
+            this.checkBoxEnableDebug.Checked = true;
+            this.checkBoxEnableDebug.CheckState = System.Windows.Forms.CheckState.Checked;
             this.checkBoxEnableDebug.Location = new System.Drawing.Point(50, 64);
             this.checkBoxEnableDebug.Name = "checkBoxEnableDebug";
             this.checkBoxEnableDebug.Size = new System.Drawing.Size(72, 16);

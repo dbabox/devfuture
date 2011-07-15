@@ -14,18 +14,14 @@ namespace Rtp.Driver.Command
 
         public bool execute(string commandBody, CommandContext ctx)
         {
-            if (commandBody.Trim() == "DATE")
-            {
-                string resultStr = DateTime.Now.ToString("yyyyMMdd");
-                ctx.rlen = (byte)Utility.HexStrToByteArray(resultStr, ref ctx.rbuff);
-                return true;                
-            }
-            return false;
+            string resultStr = DateTime.Now.ToString("yyyyMMdd");
+            ctx.rlen = (byte)Utility.HexStrToByteArray(resultStr, ref ctx.rbuff);
+            return true;       
         }
 
         public string CommandName
         {
-            get { return "DATE"; }
+            get { return "SYS<DATE"; }
         }
 
         #endregion

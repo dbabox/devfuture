@@ -61,7 +61,7 @@ namespace Rtp.Driver.Command
       
         public string CommandName
         {
-            get { return "DES"; }
+            get { return "SYS<DES"; }
         }
 
         #endregion

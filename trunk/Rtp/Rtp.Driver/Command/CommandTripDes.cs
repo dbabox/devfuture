@@ -59,7 +59,7 @@ namespace Rtp.Driver.Command
 
         public string CommandName
         {
-            get { return "TRIPDES"; }
+            get { return "SYS<TRIPDES"; }
         }
 
         #endregion

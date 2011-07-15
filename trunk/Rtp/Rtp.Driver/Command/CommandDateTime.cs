@@ -21,7 +21,7 @@ namespace Rtp.Driver.Command
 
         public string CommandName
         {
-            get { return "DATETIME"; }
+            get { return "SYS<DATETIME"; }
         }
 
         #endregion
