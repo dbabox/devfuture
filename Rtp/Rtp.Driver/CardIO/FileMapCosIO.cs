@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Rtp.Driver.CardIO
 {
-    public class FileMapCosIO:ICosIO
+    public class FileMapCosIO:ICosDictionary
     {
         private string cosName;
         public FileMapCosIO()
@@ -15,7 +15,7 @@ namespace Rtp.Driver.CardIO
         private readonly Dictionary<UInt16, string> cosDic = new Dictionary<UInt16, string>();
 
         #region 从文件中读取COS命令码定义
-        public ICosIO ReadCosFile(string file)
+        public ICosDictionary ReadCosFile(string file)
         {
             if (System.IO.File.Exists(file))
             {

@@ -162,5 +162,17 @@ namespace Rtp.Driver.RfidReader
             }
             return rc;
         }
+
+        #region IUltralightIO
+        public override int UL_read(byte addr, byte[] rbuff)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override int UL_write(byte addr, byte[] wbuff)
+        {
+            throw new NotImplementedException();
+        }
+        #endregion
     }
 }

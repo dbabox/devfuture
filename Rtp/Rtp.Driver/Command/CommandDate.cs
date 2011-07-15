@@ -5,6 +5,7 @@ using System.Text;
 namespace Rtp.Driver.Command
 {
     /// <summary>
+    /// 函数
     /// {Date}函数，输入参数commandBody已经去除了块符号。
     /// </summary>
     class CommandDate:ICommand

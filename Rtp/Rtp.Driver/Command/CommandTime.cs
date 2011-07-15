@@ -11,7 +11,7 @@ namespace Rtp.Driver.Command
     {
         #region ICommand ≥…‘±
 
-        public bool execute(string commandBody, CommandContext ctx)
+        public bool execute(string input, CommandContext ctx)
         {
             string resultStr = DateTime.Now.ToString("HHmmss");
             ctx.rlen = (byte)Utility.HexStrToByteArray(resultStr, ref ctx.rbuff);

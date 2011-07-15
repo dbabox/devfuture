@@ -5,6 +5,7 @@ using System.Text;
 namespace Rtp.Driver.Command
 {
     /// <summary>
+    /// 系统命令
     /// 系统带参数操作。 Add GV,xx 
     /// 第一个参数是全局变量的名字，第二个是16进制整数值。
     /// eg: Add CARD_BLANCE,BE
@@ -70,7 +71,7 @@ namespace Rtp.Driver.Command
 
         public string CommandName
         {
-            get { return "ADD"; }
+            get { return "SYS<ADD"; }
         }
 
         #endregion

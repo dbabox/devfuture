@@ -5,6 +5,7 @@ using System.Text;
 namespace Rtp.Driver.Command
 {
     /// <summary>
+    /// 系统命令
     /// 打开读卡器OPEN READER操作。
     /// </summary>
     public class CommandOpenReader:ICommand
@@ -29,7 +30,7 @@ namespace Rtp.Driver.Command
 
         public string CommandName
         {
-            get { return "OPENREADER"; }
+            get { return "SYS<OPENREADER"; }
         }
 
         #endregion

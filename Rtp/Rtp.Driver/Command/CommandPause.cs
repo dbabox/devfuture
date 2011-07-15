@@ -5,6 +5,7 @@ using System.Text;
 namespace Rtp.Driver.Command
 {
     /// <summary>
+    /// ÏµÍ³ÃüÁî
     /// ÔİÍ£ÃüÁî
     /// </summary>
     public class CommandPause:ICommand
@@ -33,7 +34,7 @@ namespace Rtp.Driver.Command
 
         public string CommandName
         {
-            get { return "PAUSE"; }
+            get { return "SYS<PAUSE"; }
         }
 
         #endregion

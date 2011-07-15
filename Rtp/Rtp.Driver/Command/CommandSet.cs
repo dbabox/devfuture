@@ -78,7 +78,7 @@ namespace Rtp.Driver.Command
 
         public string CommandName
         {
-            get { return "SET"; }
+            get { return "SYS<SET"; }
         }
 
         #endregion

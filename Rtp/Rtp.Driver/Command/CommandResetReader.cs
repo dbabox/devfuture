@@ -5,6 +5,7 @@ using System.Text;
 namespace Rtp.Driver.Command
 {
     /// <summary>
+    /// 系统命令
     /// 重置读卡器设备。
     /// </summary>
     public class CommandResetReader:ICommand
@@ -35,7 +36,7 @@ namespace Rtp.Driver.Command
 
         public string CommandName
         {
-            get { return "RESETREADER"; }
+            get { return "SYS<RESETREADER"; }
         }
 
         #endregion

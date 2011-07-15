@@ -5,6 +5,7 @@ using System.Text;
 namespace Rtp.Driver.Command
 {
     /// <summary>
+    /// 系统命令
     /// 系统带参数操作。实现BUFF指令
     /// BUFF offset,Length,GV|offset,Length,GV|offset,Length,GV，获取BUFF的值，从offset开始，长度为Length字节，放到GV变量中；允许串接
     /// BUFF offset,$GV|offset,$GV|offset,$GV 设置BUFF的值,从offset开始；允许串接
@@ -87,7 +88,7 @@ namespace Rtp.Driver.Command
 
         public string CommandName
         {
-            get { return "BUFF"; }
+            get { return "SYS<BUFF"; }
         }
 
         #endregion

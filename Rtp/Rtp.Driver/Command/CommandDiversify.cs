@@ -15,7 +15,8 @@ namespace Rtp.Driver.Command
 
    
         /// <summary>
-          /// 计算形如Diversify($KM,$SEED)的分散函数。结果保存到ctx的rbuff中。 
+        /// 函数
+        /// 计算形如Diversify($KM,$SEED)的分散函数。结果保存到ctx的rbuff中。 
         /// </summary>
         /// <param name="cmdBody_"></param>
         public CommandDiversify()

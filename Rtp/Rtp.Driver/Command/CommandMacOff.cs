@@ -34,7 +34,7 @@ namespace Rtp.Driver.Command
 
         public string CommandName
         {
-            get { return "MACOFF"; }
+            get { return "SYS<MACOFF"; }
         }
 
         #endregion

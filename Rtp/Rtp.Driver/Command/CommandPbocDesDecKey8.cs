@@ -7,6 +7,7 @@ namespace Rtp.Driver.Command
     class CommandPbocDesDecKey8 : ICommand
     {
         /// <summary>
+        /// 函数
         /// 调用PBOC_DesDec_Key8(byte[] data, byte[] key8, ref byte[] dec).
         /// 结果在ctx.rbuff中。
         /// 调用方式：{PBOCDESDECKEY8(data,key8)}

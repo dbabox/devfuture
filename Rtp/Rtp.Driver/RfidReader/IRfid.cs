@@ -19,7 +19,7 @@ namespace Rtp.Driver.RfidReader
 
     }
 
-    public interface IRfid : IDisposable, ICpuIO,ISamIO
+    public interface IRfid : IDisposable, ICpuIO,ISamIO,IUltralightIO
     {
         /// <summary>
         /// 打开设备，成功返回设备句柄，失败返回负数值。

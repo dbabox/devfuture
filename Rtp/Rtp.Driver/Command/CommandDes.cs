@@ -5,6 +5,7 @@ using System.Text;
 namespace Rtp.Driver.Command
 {
     /// <summary>
+    /// º¯Êý
     /// DES¼ÓÃÜº¯Êý£º
     /// {DES(init8,key8)}
     /// </summary>

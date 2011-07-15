@@ -26,7 +26,7 @@ namespace Rtp.Driver.Command
 
         public string CommandName
         {
-            get { return "PRINT"; }
+            get { return "SYS<PRINT"; }
         }
 
         #endregion

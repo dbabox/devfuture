@@ -11,7 +11,7 @@ namespace Rtp.Driver.Command
 {
     public interface ICommand
     {
-        bool execute(string commandBody, CommandContext ctx);
+        bool execute(string input, CommandContext ctx);
         string CommandName { get;}
        
            
