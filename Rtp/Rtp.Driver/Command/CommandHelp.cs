@@ -23,12 +23,17 @@ namespace Rtp.Driver.Command
         public bool execute(string commandBody, CommandContext ctx)
         {
             #region  //打印帮助信息
-            ctx.ReportMessage("OPEN READER\t:打开读卡器");
-            ctx.ReportMessage("CLOSE READER\t:关闭读卡器");
-            ctx.ReportMessage("RESET READER\t:重置读卡器");
-            ctx.ReportMessage("REQUEST CARD\t:寻卡");
-            ctx.ReportMessage("MAC ON \t:自动计算命令的MAC");
-            ctx.ReportMessage("MAC OFF \t:关闭命令MAC计算");
+            ctx.ReportMessage("SYS<\t:向系统发送指令");
+            ctx.ReportMessage("CPU<\t:向CPU卡发送指令");
+            ctx.ReportMessage("SAM<\t:向SAM卡发送指令");
+            ctx.ReportMessage("UL<\t:向Ultralight卡发送指令");
+            ctx.ReportMessage("M1<\t:向M1卡发送指令");
+            ctx.ReportMessage("OPENREADER\t:打开读卡器");
+            ctx.ReportMessage("CLOSEREADER\t:关闭读卡器");
+            ctx.ReportMessage("RESETREADER\t:重置读卡器");
+            ctx.ReportMessage("REQUESTCARD\t:寻卡");
+            ctx.ReportMessage("MACON \t:自动计算命令的MAC");
+            ctx.ReportMessage("MACOFF \t:关闭命令MAC计算");
             ctx.ReportMessage("{DES(RN8,KEY8} \t:DES加密");
             ctx.ReportMessage("{TripDES(RN8,KEY16)} \t:3DES加密.");
             ctx.ReportMessage("$VAR_NAME \t:取变量.");

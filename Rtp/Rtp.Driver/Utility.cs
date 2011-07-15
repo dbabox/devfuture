@@ -1213,8 +1213,7 @@ namespace Rtp.Driver
             int rkh = src.IndexOf(rightChar);
             if (lkh < 0 || rkh < 0)
             {
-                System.Diagnostics.Trace.WriteLine(String.Format("获取两个字符间的字符串值失败，原因：格式错误 src={0},leftChar={1},rightChar={2}",
-                    src,leftChar,rightChar));
+        
                 return src;
             }
             return src.Substring(lkh + 1, rkh - lkh - 1);        
@@ -1233,8 +1232,7 @@ namespace Rtp.Driver
             int rkh = src.IndexOf(rightChar);
             if (lkh < 0 || rkh < 0)
             {
-                System.Diagnostics.Trace.WriteLine(String.Format("获取两个字符间的字符串值失败， src={0},leftChar={1},rightChar={2},返回原字符串.",
-                    src, leftChar, rightChar));
+          
                 return src;
             }
             return src.Substring(lkh + 1, rkh - lkh - 1);

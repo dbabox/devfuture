@@ -19,34 +19,24 @@ namespace Rtp.Driver.Command
         public bool execute(string commandBody,CommandContext ctx)
         {
 
-            if (!commandBody.StartsWith(CommandName, StringComparison.OrdinalIgnoreCase))
+            string slotStr = Utility.GetSubStringBetweenChars(commandBody, '(', ')');
+            byte slot = 0;
+            if (Byte.TryParse(slotStr,
+                System.Globalization.NumberStyles.HexNumber, null, out slot))
             {
-                ctx.ReportMessage("ERR>>Command format error:  {0}.", commandBody);
-                return false;
-            }
-
-            if (commandBody.Length>CommandName.Length)
-            {
-                string slotStr = commandBody.Substring(CommandName.Length, commandBody.Length - CommandName.Length).Trim();
-                byte slot = 0;
-                if (Byte.TryParse(slotStr, 
-                    System.Globalization.NumberStyles.HexNumber, null, out slot))
+                //转成正确的格式了
+                if (ctx.Rfid.SAM_SetSlot(slot) == 0)
                 {
-                    //转成正确的格式了
-                    if (ctx.Rfid.SAM_SetSlot(slot) == 0)
-                    {
-                        ctx.ReportMessage("SYS>> Current SAM Slot is 0x{0,2:X2}", ctx.Rfid.CurrentSamSlot);
-                        return true;
-                    }
-                    else
-                    {
-                        ctx.ReportMessage("ERR>>Command ERROR: {0} ", commandBody);
-                        return false;
-                    }
+                    ctx.ReportMessage("SYS>> Current SAM Slot is 0x{0,2:X2}", ctx.Rfid.CurrentSamSlot);
+                    return true;
+                }
+                else
+                {
+                    ctx.ReportMessage("ERR>>Command ERROR: {0} ", commandBody);
+                    return false;
                 }
             }
-            ctx.ReportMessage("ERR>> System Call failed:{0}; Current SAM Slot is 0x{0,2:X2}.",
-                commandBody, ctx.Rfid.CurrentSamSlot);
+            ctx.ReportMessage("ERR>>Command ERROR: {0} 转换16进制失败！", commandBody);
             return false;
         }
 

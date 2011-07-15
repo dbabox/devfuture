@@ -27,8 +27,27 @@ namespace Rtp.Driver.Command
         /// <returns></returns>
         public bool execute(string args, CommandContext ctx)
         {
+            int rc = 0;
+            string parline = Utility.GetSubStringBetweenChars(args, '(', ')');
+
             #region 分解组合命令后执行
-            string[] cmdarr = args.Split('/');
+            string[] pars = parline.Split(',');
+            if (pars.Length != 2)
+            {
+                ctx.ReportMessage("ERR>> CommandSamApdu:参数{0}格式错误，必须是slot,cos.", args);
+                return false;
+            }
+            byte slot= Byte.Parse(pars[0], System.Globalization.NumberStyles.HexNumber);
+            if (slot != ctx.Rfid.CurrentSamSlot)
+            {
+                rc = ctx.Rfid.SAM_SetSlot(slot);
+                if (rc != 0)
+                {
+                    ctx.ReportMessage("ERR>> CommandSamApdu:Set_Slot({0}) 失败.RC={1}.",slot,rc);
+                    return false;
+                }
+            }
+            string[] cmdarr = pars[1].Split('/');
             ctx.slen = (byte)Utility.HexStrToByteArray(cmdarr[0], ref ctx.sbuff); //得到第一条命令
 
             #region 执行命令

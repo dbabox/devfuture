@@ -223,7 +223,10 @@ namespace Rtp.Driver.RfidReader
         /// <returns></returns>
         public override int SAM_Reset(byte slot, ref byte rlen, byte[] rbuff)
         {
-            if (currentSamSlot != slot) SAM_SetSlot(slot);             
+            if (currentSamSlot != slot)
+            {
+                SAM_SetSlot(slot);
+            }
             short rc = NMDcrf32V8.dc_cpureset(icdev, ref rlen, rbuff);
             if (rc == 0)
             {
