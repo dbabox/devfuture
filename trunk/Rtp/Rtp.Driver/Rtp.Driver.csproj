@@ -103,7 +103,7 @@
     <Compile Include="Command\CommandSamSlot.cs" />
     <Compile Include="Command\CommandSet.cs" />
     <Compile Include="Command\CommandSub.cs" />
-    <Compile Include="Command\CommandTargetHeader.cs" />
+    <Compile Include="Command\CommandDesc.cs" />
     <Compile Include="Command\CommandTime.cs" />
     <Compile Include="Command\CommandTripDes.cs" />
     <Compile Include="Command\CommandULRead.cs" />
