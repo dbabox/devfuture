@@ -6,10 +6,12 @@ namespace Rtp.Driver.Command
 {
     /// <summary>
     /// 3DES加密函数。{TripDES(data,KEY16) }
+    /// 注意：函数只能在{} 块中执行。
     /// </summary>
     public class CommandTripDes:ICommand
     {     
         /// <summary>
+        /// 函数.
         /// 计算形如TripDES(data,KEY16) 的语句，其中KEY16为16字节密钥；data为8的倍数长度字节的明文。
         /// </summary>
         /// <param name="cmdBody_"></param>
@@ -19,17 +21,17 @@ namespace Rtp.Driver.Command
         }
         #region ICommand 成员
 
-        public bool execute(string commandBody, CommandContext ctx)
+        public bool execute(string input, CommandContext ctx)
         {
             #region 3DES
             //取函数参数 
             //逗号分隔的，先找到逗号
-            int lxkhIdx = commandBody.IndexOf('(', 3);
-            int dhIdx = commandBody.IndexOf(',', lxkhIdx);//逗号            
-            int rxkhIdx = commandBody.IndexOf(')', dhIdx);
+            int lxkhIdx = input.IndexOf('(', 3);
+            int dhIdx = input.IndexOf(',', lxkhIdx);//逗号            
+            int rxkhIdx = input.IndexOf(')', dhIdx);
 
-            string datastr =commandBody.Substring(lxkhIdx + 1, dhIdx - lxkhIdx - 1);
-            string key16Str = commandBody.Substring(dhIdx + 1, rxkhIdx - dhIdx - 1);
+            string datastr =input.Substring(lxkhIdx + 1, dhIdx - lxkhIdx - 1);
+            string key16Str = input.Substring(dhIdx + 1, rxkhIdx - dhIdx - 1);
 
             ctx.rlen = (byte)Utility.HexStrToByteArray(datastr, ref ctx.rbuff);
             byte[] data = new byte[ctx.rlen];

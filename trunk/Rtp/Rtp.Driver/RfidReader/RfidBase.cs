@@ -218,5 +218,10 @@ namespace Rtp.Driver.RfidReader
         }
 
         #endregion
+
+        #region IUltralightIO ≥…‘±
+        public abstract int UL_read(byte addr, byte[] rbuff);
+        public abstract int UL_write(byte addr, byte[] wbuff);       
+        #endregion
     }
 }

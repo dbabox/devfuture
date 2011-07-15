@@ -331,5 +331,23 @@ namespace Rtp.Driver.RfidReader
             Trace.TraceInformation("T10N SAM_SetPara:RC={0}, RBUFF={1},samProtocol={2}",rc, Utility.ByteArrayToHexStr(rbuff, rlen), samProtocol);
             return rc;
         }
+
+        #region IUltralightIO
+        public override int UL_read(byte addr, byte[] rbuff)
+        {
+            Trace.TraceInformation("∂¡»°Ultralightø®,addr={0}.", addr);
+            int rc = NMTrf32.dc_read(icdev, addr, rbuff);
+            Trace.TraceInformation("∂¡»°Ultralightø®,addr={0}.RBUFF={1},rc={2}", addr, Utility.ByteArrayToHexStr(rbuff, 4),rc);
+            return rc;
+        }
+
+        public override int UL_write(byte addr, byte[] wbuff)
+        {
+            Trace.TraceInformation("∂¡»°Ultralightø®,addr={0}.", addr);
+            int rc = NMTrf32.dc_write(icdev, addr, wbuff);
+            Trace.TraceInformation("∂¡»°Ultralightø®,addr={0}.WBUFF={1},rc={2}", addr, Utility.ByteArrayToHexStr(wbuff, 4), rc);
+            return rc;
+        }
+        #endregion
     }
 }

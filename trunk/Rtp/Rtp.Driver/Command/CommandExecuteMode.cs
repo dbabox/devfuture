@@ -4,6 +4,9 @@ using System.Text;
 
 namespace Rtp.Driver.Command
 {
+    /// <summary>
+    /// 系统命令，更改执行模式
+    /// </summary>
     class CommandExecuteMode : ICommand
     {
         public bool execute(string commandBody, CommandContext ctx)
@@ -32,7 +35,7 @@ namespace Rtp.Driver.Command
 
         public string CommandName
         {
-            get { return "EXECUTEMODE"; }
+            get { return "SYS<EXECUTEMODE"; }
         }
     }
 }

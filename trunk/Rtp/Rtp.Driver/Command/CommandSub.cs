@@ -5,7 +5,7 @@ using System.Text;
 namespace Rtp.Driver.Command
 {
     /// <summary>
-    /// SUB GV,##
+    /// 系统命令 SUB GV,## 
     /// GV是字节数组表示。当字节数组表达为整数时，要求 byte[0]=00,byte[1]=04这样的数组表示的值是10进制整数4.
     /// 即，当字节数组表示一个整数时，采用低字节高位的规则。
     ///  
@@ -70,7 +70,7 @@ namespace Rtp.Driver.Command
 
         public string CommandName
         {
-            get { return "SUB"; }
+            get { return "SYS<SUB"; }
         }
 
         #endregion

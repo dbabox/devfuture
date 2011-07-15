@@ -5,6 +5,7 @@ using System.Text;
 namespace Rtp.Driver.Command
 {
     /// <summary>
+    /// ÏµÍ³ÃüÁî
     /// HELPÃüÁî¡£´òÓ¡°ïÖú¡£
     /// </summary>
     public class CommandHelp:ICommand
@@ -44,7 +45,7 @@ namespace Rtp.Driver.Command
 
         public string CommandName
         {
-            get { return "HELP"; }
+            get { return "SYS<HELP"; }
         }
 
         #endregion

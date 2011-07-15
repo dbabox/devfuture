@@ -5,6 +5,7 @@ using System.Text;
 namespace Rtp.Driver.Command
 {
     /// <summary>
+    /// 函数
     /// KEY08MAC (data,key8,init8)
     /// PBOC_GetKey8MAC，建设部MAC算法，密钥长度8byte，8字节随机数作为IV，若仅计算
     /// data部分的MAC，init8可以为0.

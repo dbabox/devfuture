@@ -24,16 +24,16 @@ namespace Rtp.Driver
         /// 重定向指令；
         /// 
         /// </summary>
-        public const string TARGET_HEADER = "<";
+        public const string TARGET_TAG = "<";
   
         public const string COMPOSE = "/";
  
         /// <summary>
         /// 带参数的操作，操作是可以再脚本中独立使用的关键字.
         /// </summary>
-        public const string ARG_OPERATION = "SET,SAMSLOT,SAMPARA,BUFF,ADD,SUB,PRINT,SAMRESET,EXECUTEMODE";
+        public const string ARG_OPERATION = "SET,SAMSLOT,SAMPARA,BUFF,ADD,SUB,PRINT,SAMRESET,EXECUTEMODE,DESC";
         /// <summary>
-        /// 不带参数的操作
+        /// 不带参数的系统命令
         /// </summary>
         public const string NONE_ARG_OPRATION = "HELP,OPENREADER,CLOSEREADER,RESETREADER,REQUESTCARD,MACON,MACOFF"; //PAUSE
         /// <summary>
@@ -53,8 +53,8 @@ namespace Rtp.Driver
         System.Collections.Specialized.StringCollection argFunction = new System.Collections.Specialized.StringCollection();
 
 
-        ICosIO cosIO;
-        public ICosIO CosIO
+        ICosDictionary cosIO;
+        public ICosDictionary CosIO
         {
             get { return cosIO; }
             set { cosIO = value; }
@@ -64,13 +64,12 @@ namespace Rtp.Driver
         public RtpCore(CommandContext ctx_)
         {
             ctx = ctx_;
-
+            cosIO = new FileMapCosIO().ReadCosFile("default.cos");
             #region 注册命令
             CommandCloseReader ccr = new CommandCloseReader();
             commandEngine.Add(ccr.CommandName, ccr);
 
-            CommandCompose cc = new CommandCompose();
-            commandEngine.Add(cc.CommandName, cc);
+          
 
             CommandCpuApdu cca = new CommandCpuApdu();
             commandEngine.Add(cca.CommandName, cca);
@@ -114,7 +113,7 @@ namespace Rtp.Driver
             CommandSet cset = new CommandSet();
             commandEngine.Add(cset.CommandName, cset);
 
-            CommandTargetHeader cth = new CommandTargetHeader();
+            CommandDesc cth = new CommandDesc(cosIO);
             commandEngine.Add(cth.CommandName, cth);
 
             CommandTripDes ctd = new CommandTripDes();
@@ -172,7 +171,7 @@ namespace Rtp.Driver
             noneArgFunction.AddRange(NONE_ARG_FUNCTION.Split(','));
             argFunction.AddRange(ARG_FUNCTION.Split(','));
 
-            cosIO = new FileMapCosIO().ReadCosFile("default.cos");
+          
         }
 
         #region 核心执行引擎
@@ -235,7 +234,8 @@ namespace Rtp.Driver
                 return scriptRunResult;
             }
             #endregion
-             
+
+            #region 执行命令
             //行命令预处理 变量，函数先执行，带<的COS指令先指向
             //不论什么命令，总是先处理$，然后处理{}           
             string calCmdL1;
@@ -244,63 +244,32 @@ namespace Rtp.Driver
                 ctx.ReportMessage("ERR>> Command format error:{0}, GV error.", line);
                 return false;
             }
-            //变量替换完成后，执行命令块执行功能
+            //变量替换完成后，执行命令块中函数
             string calCmdL2;
             if (!ExcuteFunctionBlock(calCmdL1, out calCmdL2)) //所有函数执行完成
             {
                 ctx.ReportMessage("ERR>> Command format error:{0}, ExcuteFunctionBlock error.", calCmdL1);
                 return false;
-            }
-            line = calCmdL2;//至此，语句中无$，无{}，无()
-            #region 若是COS指令
-            if (line.Contains(TARGET_HEADER))
+            }          
+            if (calCmdL2.Contains(TARGET_TAG) == false)
             {
-                //先处理目标头
-                string calCmdL3;
-                //优先执行
-                if (!AnalyzeRedirect(calCmdL2, out calCmdL3))
-                {
-                    ctx.ReportMessage("ERR>> Command format error:{0}, AnalyzeRedirect error.", line);
-                    return false;
-                }
-                if (calCmdL3.Trim().Length < 2) //仅执行切换的命令
-                {
-                    return true;
-                }
-                line = calCmdL3;
-                return commandEngine[ctx.CmdTarget].execute(line, ctx); 
+                //自动为其添加上一次的Header
+                string fmtLine = String.Format("{0}{1}{2}", ctx.CmdTarget.Substring(0, ctx.CmdTarget.IndexOf('.')), TARGET_TAG, line);
+                ctx.ReportMessage("SYS>>自动添加命令TARGET_TAG:实际执行命令:{0}", fmtLine);
+                calCmdL2 = fmtLine;              
             }
+            //先处理目标头
+            string args;
+            //优先执行
+            if (!CommandAnalyze(calCmdL2, out args)) //分析命令执行的对象
+            {
+                ctx.ReportMessage("ERR>> Command format error:{0}, AnalyzeRedirect error.", line);
+                return false;
+            }          
+            return commandEngine[ctx.CmdTarget].execute(args, ctx); 
             
             #endregion
-
-            #region DESC命令
-            //DESC命令与COS相关，在RTPCORE中直接执行
-            if (line.StartsWith("DESC "))
-            {
-                string cos = line.Substring(5);
-                byte[] cosbuff = new byte[cos.Length / 2];
-                int coslen = Utility.HexStrToByteArray(cos, ref cosbuff);
-                if (coslen >= 2) //获取COS描述
-                {
-                    ctx.ReportMessage("SYS>> {0}", cosIO.GetDescription(cosbuff[0], cosbuff[1]));
-                    return true;
-                }
-            }
-            #endregion
-
-            #region 无参系统调用和前缀系统调用
-            //无参数操作
-            if (noneArgOperation.Contains(line)) return commandEngine[line].execute(line, ctx);
-
-            //有参数的操作 "SET,SAM SLOT,SAM PARA,BUFF,ADD";
-            foreach (string ao in argOperation)
-            {
-                if (line.StartsWith(ao)) return commandEngine[ao].execute(line, ctx);
-            }
-            #endregion            
-            //普通COS命令
-            return commandEngine[ctx.CmdTarget].execute(line, ctx);            
-            
+                           
         }
 
         #endregion
@@ -382,37 +351,44 @@ namespace Rtp.Driver
         }
 
         /// <summary>
+        /// 匹配:
+        /// UL { Read 04
+        /// M1 { Read 05
+        /// CPU{ APDU 00 84 xx 
+        /// SYS{ REQUESTCARD
+        /// SAM{APDU slot, 00 84 
+        /// </summary>
+        const string REG_CARDTYPE_CMD = @"([\S]+)[\s]*(<)[\s]*([\S]+)[\s]+(.+)";
+        const string REG_HEX_STRING = @"[A-Fa-f0-9\s]+";
+        readonly System.Text.RegularExpressions.Regex regCmd = new System.Text.RegularExpressions.Regex(REG_CARDTYPE_CMD);
+        readonly System.Text.RegularExpressions.Regex regHexStr = new System.Text.RegularExpressions.Regex(REG_HEX_STRING);
+        
+
+        /// <summary>
         /// 分析重定向语句，必须在GV分析之后，COS指令指向之前进行。
-        /// 如:$SAM0 < 80 CA 00 00 09 $SA_CODE
+        /// 如:SAM00{ 80 CA 00 00 09
         /// </summary>
         /// <param name="line"></param>
-        /// <param name="cmd"></param>
+        /// <param name="args"></param>
         /// <returns></returns>
-        public bool AnalyzeRedirect(string line, out string cmd)
+        public bool CommandAnalyze(string line, out string args)
         {
-            cmd = line;
-            if (line.Contains(TARGET_HEADER))//包含重定向语句
+            args = String.Empty;
+            if (line.Contains(TARGET_TAG) && regCmd.IsMatch(line))//包含命令方向标志
             {
-                int idx = line.IndexOf(TARGET_HEADER);
-                //执行切换命令目标的指令，目前支持指向SAM卡或者CPU卡
-                if (!commandEngine[TARGET_HEADER].execute(line.Substring(0, idx), ctx)) return false;
-                //成功才继续
-                if (idx == (line.Length - 1))
+                var rc = regCmd.Match(line);
+                if (rc.Groups.Count != 5)
                 {
-                    ctx.ReportMessage("{0}切换命令目标成功，但后续无COS指令.", line);
-                    cmd = String.Empty;
+                    ctx.ReportMessage("ERR>>{0} format incorrect .", line);
+                    return false;
                 }
-                else
-                {
-                    cmd = line.Substring(idx + 1, line.Length - idx - 1).Trim();//只包含了命令体                    
-                }
+                ctx.CmdTarget = String.Format("{0}{1}{2}", rc.Groups[1].Value,TARGET_TAG, rc.Groups[3].Value);
+                args = rc.Groups[4].Value; //此时cmd只包含参数
+                ctx.ReportMessage("SYS>>{0} TargetHeader is {1}.", line, ctx.CmdTarget);
                 return true;
             }
-            else
-            {
-                ctx.CmdTarget = "CPU";//不含的话自动重置为CPU
-            }
-            return true;
+            ctx.ReportMessage("ERR>>{0} format incorrect .", line);
+            return false;           
         }
 
         /// <summary>
@@ -461,7 +437,7 @@ namespace Rtp.Driver
                     ctx.ReportMessage("SYS>> Statemants Block is plain cos instructor.");
                     //先处理目标头
                     string calCmdL3;
-                    if (!AnalyzeRedirect(statementBody, out calCmdL3))
+                    if (!CommandAnalyze(statementBody, out calCmdL3))
                     {
                         ctx.ReportMessage("ERR>> Command format error:{0}, AnalyzeRedirect error.", statementBody);
                         return false;
@@ -506,14 +482,14 @@ namespace Rtp.Driver
             cmdOut = cmdIn;//全部计算完毕
             return true;
         }
-         
-
         #endregion
 
          
     }
 
-
+    /// <summary>
+    /// 下面的类都是为了编译执行而设
+    /// </summary>
     public class TagMap
     {
         #region 系统操作映射 00

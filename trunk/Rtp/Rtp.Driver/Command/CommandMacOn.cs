@@ -28,7 +28,7 @@ namespace Rtp.Driver.Command
 
         public string CommandName
         {
-            get { return "MACON"; }
+            get { return "SYS<MACON"; }
         }
 
         #endregion

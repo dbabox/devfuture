@@ -22,7 +22,12 @@ namespace Rtp.Driver.Command
             
         }
         #region ICommand 成员
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="commandBody">16进制数字串构成的COS指令</param>
+        /// <param name="ctx"></param>
+        /// <returns></returns>
         public bool execute(string commandBody, CommandContext ctx)
         {
 
@@ -101,7 +106,7 @@ namespace Rtp.Driver.Command
 
         public string CommandName
         {
-            get { return "CPU"; }
+            get { return "CPU<APDU"; }
         }
 
         #endregion

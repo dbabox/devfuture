@@ -1,50 +1,40 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using Rtp.Driver.CardIO;
 
 namespace Rtp.Driver.Command
 {
     /// <summary>
-    /// 命令头处理。如：$SAM1< 00 A4... 
+    ///  DESC系统命令。
+    /// 
     /// </summary>
-    public class CommandTargetHeader:ICommand
+    public class CommandDesc:ICommand
     {
-        
-
-      
+        private ICosDictionary cos;
+        public CommandDesc(ICosDictionary cos_)
+        {
+            cos = cos_;
+        }
+       
        
         #region ICommand 成员
 
         public bool execute(string commandBody, CommandContext ctx)
         {
-            if (String.IsNullOrEmpty(commandBody)||commandBody=="CPU")
-            {
-                ctx.CmdTarget = "CPU";
+
+            int coslen = Utility.HexStrToByteArray(commandBody, ref ctx.rbuff);
+            if (coslen >= 2) //获取COS描述
+            {                 
+                ctx.ReportMessage("SYS>> {0}", cos.GetDescription(ctx.rbuff[0], ctx.rbuff[1]));
                 return true;
-            }   
-            if (commandBody.StartsWith("SAM") && commandBody.Length>4)
-            {
-                ctx.CmdTarget = "SAM";//eg:SAM 1
-                string slotstr = commandBody.Substring(3, commandBody.Length - 3).Trim();
-                slotstr = slotstr.Substring(2, slotstr.Length - 2);//去除0x前导符
-                byte slot=0;
-                if (Byte.TryParse(slotstr, System.Globalization.NumberStyles.HexNumber, null, out slot))
-                {
-                    ctx.Rfid.CurrentSamSlot = slot;
-                    return true;
-                }
-                else
-                {
-                    ctx.ReportMessage("ERR>>{0} format incorrect.", commandBody);
-                    return false;
-                }
             }
-            return false;        
+            return false;
         }
 
         public string CommandName
         {
-            get { return "<"; }
+            get { return "SYS<DESC"; }
         }
 
        

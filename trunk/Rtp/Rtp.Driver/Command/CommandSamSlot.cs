@@ -5,8 +5,9 @@ using System.Text;
 namespace Rtp.Driver.Command
 {
     /// <summary>
-    /// SAM SLOT ##
-    /// eg:SAM SLOT C0
+    /// 系统命令
+    /// SAMSLOT ##
+    /// eg:SAMSLOT C0
     /// 设定当前要操作的SAM卡插槽号。
     /// </summary>
     public class CommandSamSlot:ICommand
@@ -51,7 +52,7 @@ namespace Rtp.Driver.Command
 
         public string CommandName
         {
-            get { return "SAMSLOT"; }
+            get { return "SYS<SAMSLOT"; }
         }
 
          

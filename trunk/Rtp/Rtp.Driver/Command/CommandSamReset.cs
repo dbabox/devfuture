@@ -5,7 +5,7 @@ using System.Text;
 namespace Rtp.Driver.Command
 {
     /// <summary>
-    /// SAM¿¨¸´Î»SAM RESET¡£
+    /// SAM¿¨¸´Î»SAMRESET¡£
     /// </summary>
     public class CommandSamReset:ICommand
     {
@@ -61,7 +61,7 @@ namespace Rtp.Driver.Command
 
         public string CommandName
         {
-            get { return "SAMRESET"; }
+            get { return "SYS<SAMRESET"; }
         }
 
        

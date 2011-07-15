@@ -7,6 +7,7 @@ namespace Rtp.Driver.Command
     public class CommandPbocDesEncKey16 : ICommand
     {
         /// <summary>
+        /// 函数
         /// 调用PBOC_DesEnc_Key16(byte[] data, byte[] key16, ref byte[] enc).
         /// 结果在ctx.rbuff中。
         /// 调用方式：{PBOCDESENCKEY16(data,key16)}

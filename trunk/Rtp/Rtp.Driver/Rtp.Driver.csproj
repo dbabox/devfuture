@@ -106,6 +106,8 @@
     <Compile Include="Command\CommandTargetHeader.cs" />
     <Compile Include="Command\CommandTime.cs" />
     <Compile Include="Command\CommandTripDes.cs" />
+    <Compile Include="Command\CommandULRead.cs" />
+    <Compile Include="Command\CommandULWrite.cs" />
     <Compile Include="Command\ICommand.cs" />
     <Compile Include="Command\CommandResetReader.cs" />
     <Compile Include="RfidReader\NMDcic32.cs" />

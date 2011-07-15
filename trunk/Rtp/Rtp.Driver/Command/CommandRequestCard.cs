@@ -32,41 +32,57 @@ namespace Rtp.Driver.Command
             CardPhysicalType cpt = CardPhysicalType.Unknown;           
             string snr = ctx.Rfid.Request(out cpt);
             ctx.ReportMessage("CARD>> {0} / {1}", snr, cpt);
-            if (cpt != CardPhysicalType.Unknown)
+            bool result=false;
+            switch(cpt)
             {
-                if (cpt == CardPhysicalType.CPU_TypeA
-                    || cpt == CardPhysicalType.CPU_TypeB)
-                {
-                    //自动Reset
-                    ctx.rc = ctx.Rfid.CPU_Reset(out ctx.rlen, ctx.rbuff);
-                    if (ctx.rc == 0)
+                case CardPhysicalType.CPU_TypeA:
                     {
-                        ctx.ReportMessage("CARD>> ATS={0}", Utility.ByteArrayToHexStr(ctx.rbuff, ctx.rlen));
-                        return true;
+                         //自动Reset
+                        ctx.rc = ctx.Rfid.CPU_Reset(out ctx.rlen, ctx.rbuff);
+                        if (ctx.rc == 0)
+                        {
+                            ctx.ReportMessage("CARD>> ATS={0}", Utility.ByteArrayToHexStr(ctx.rbuff, ctx.rlen));
+                            result=true;
+                        }
+                        else
+                        {
+                            ctx.ReportMessage("SYS>> CPU RESET RC={0}", ctx.rc);
+                            result= false;
+                        }
+                        break;
                     }
-                    else
+                case CardPhysicalType.CPU_TypeB:
                     {
-                        ctx.ReportMessage("SYS>> CPU RESET RC={0}", ctx.rc);
-                        return false;
+                        result=false;
+                        ctx.ReportMessage("ERR>>系统目前不支持TypeB卡");
+                        break;
                     }
-                    //至此CPU卡寻卡复位完毕
-                }
-                else
-                {
-                    //TODO:  对其他卡种的处理
-                    ctx.ReportMessage("ERR>>系统暂不支持出CPU、SAM卡之外的卡种.");
-                    return false;
-                }
-
-            }
-            System.Diagnostics.Trace.TraceError("ERR>> REQUEST CARD failed. cpt={0}", cpt);
-            return false;
+                case CardPhysicalType.UltraLight:
+                    {
+                        result = true;
+                        ctx.ReportMessage("SYS>> UL SNR={0}", snr);
+                        break;
+                    }
+                case CardPhysicalType.MifareOne:
+                    {
+                        result = false;
+                        ctx.ReportMessage("ERR>>还未实现对M1卡的支持.");
+                        break;
+                    }
+                default:
+                    {
+                        result = false;
+                        ctx.ReportMessage("ERR>>未知的卡类型.");
+                        break;
+                    }
+            }   
+            return result;
             #endregion
         }
 
         public string CommandName
         {
-            get { return "REQUESTCARD"; }
+            get { return "SYS<REQUESTCARD"; }
         }
 
         #endregion

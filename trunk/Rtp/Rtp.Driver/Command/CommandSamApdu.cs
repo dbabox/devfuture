@@ -19,11 +19,18 @@ namespace Rtp.Driver.Command
 
         #region ICommand 成员
 
-        public bool execute(string commandBody, CommandContext ctx)
+        /// <summary>
+        /// 执行SAM的COS指令
+        /// </summary>
+        /// <param name="args">slot,cos cmd</param>
+        /// <param name="ctx"></param>
+        /// <returns></returns>
+        public bool execute(string args, CommandContext ctx)
         {
             #region 分解组合命令后执行
-            string[] cmdarr = commandBody.Split('/');
+            string[] cmdarr = args.Split('/');
             ctx.slen = (byte)Utility.HexStrToByteArray(cmdarr[0], ref ctx.sbuff); //得到第一条命令
+
             #region 执行命令
             if (ctx.slen > 0)
             {
@@ -38,7 +45,7 @@ namespace Rtp.Driver.Command
                     }
 
                 }
-                ctx.ReportMessage("SYS>> CommandBody={0}", commandBody);
+                ctx.ReportMessage("SYS>> CommandBody={0}", args);
                 ctx.rc = ctx.Rfid.SAM_APDU(ctx.Rfid.CurrentSamSlot,
                     ctx.slen, ctx.sbuff, ref ctx.rlen, ctx.rbuff);
                 ctx.ReportMessage("SYS>> SAM_APDU RC={0}", ctx.rc);
@@ -51,7 +58,7 @@ namespace Rtp.Driver.Command
             }
             else
             {
-                ctx.ReportMessage("ERR: Command format incorrect:{0}.", commandBody);
+                ctx.ReportMessage("ERR: Command format incorrect:{0}.", args);
                 return false;
             }
             #endregion
@@ -63,7 +70,7 @@ namespace Rtp.Driver.Command
                 parlen = Utility.HexStrToByteArray(cmdarr[i], ref parv);
                 if (parlen <= 0 || parlen > ctx.slen)
                 {
-                    ctx.ReportMessage("ERR>> Command format incorrect:{0}", commandBody);
+                    ctx.ReportMessage("ERR>> Command format incorrect:{0}", args);
                     return false;
                 }
                 Array.Copy(parv, 0, ctx.sbuff, ctx.slen - parlen, parlen);
@@ -78,7 +85,7 @@ namespace Rtp.Driver.Command
 
                 }
 
-                ctx.ReportMessage("SYS>> CommandBody={0}", commandBody);
+                ctx.ReportMessage("SYS>> CommandBody={0}", args);
                 ctx.rc = ctx.Rfid.SAM_APDU(ctx.Rfid.CurrentSamSlot,
                      ctx.slen, ctx.sbuff, ref ctx.rlen, ctx.rbuff);
                 ctx.ReportMessage("SYS>> SAM_APDU RC={0}", ctx.rc);
@@ -98,7 +105,7 @@ namespace Rtp.Driver.Command
 
         public string CommandName
         {
-            get { return "SAM"; }
+            get { return "SAM<APDU"; }
         }
 
        

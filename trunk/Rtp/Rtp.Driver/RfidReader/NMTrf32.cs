@@ -94,7 +94,10 @@ namespace Rtp.Driver.RfidReader
         ///DeviceName: char*
         ///Baudrate: unsigned int
         [System.Runtime.InteropServices.DllImportAttribute("Trf32.dll", EntryPoint = "DC_init_comm", CallingConvention = System.Runtime.InteropServices.CallingConvention.StdCall)]
-        public static extern int DC_init_comm([System.Runtime.InteropServices.InAttribute()] [System.Runtime.InteropServices.MarshalAsAttribute(System.Runtime.InteropServices.UnmanagedType.LPStr)] string DeviceName, uint Baudrate);
+        public static extern int DC_init_comm(
+            [System.Runtime.InteropServices.InAttribute()] 
+            [System.Runtime.InteropServices.MarshalAsAttribute(System.Runtime.InteropServices.UnmanagedType.LPStr)] string DeviceName, 
+            uint Baudrate);
 
 
         /// Return Type: int

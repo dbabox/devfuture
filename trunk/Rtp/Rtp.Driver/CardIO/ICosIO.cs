@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Rtp.Driver.CardIO
 {
-    public interface ICosIO
+    public interface ICosDictionary
     {
         System.Collections.Generic.IDictionary<UInt16, string> CosDic { get; }
 

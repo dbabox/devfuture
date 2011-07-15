@@ -5,6 +5,7 @@ using System.Text;
 namespace Rtp.Driver.Command
 {
     /// <summary>
+    /// 系统命令
     /// SAM PARA slot,cpupro:协议(T=0/1),cpuetu:波特率(9600/115200)
     /// 参数都是16进制
     /// </summary>
@@ -43,7 +44,7 @@ namespace Rtp.Driver.Command
         /// </summary>
         public string CommandName
         {
-            get { return "SAMPARA"; }
+            get { return "SYS<SAMPARA"; }
         }
 
         #endregion
