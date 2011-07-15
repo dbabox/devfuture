@@ -349,7 +349,7 @@ namespace Rtp.Gui
                     tsslRequest.Text = "打开读卡器失败！";
                 }
             }
-            rtp.CommandExcuter("HELP");//显示帮助信息
+            rtp.CommandExcuter("SYS<HELP");//显示帮助信息
             
         }
 

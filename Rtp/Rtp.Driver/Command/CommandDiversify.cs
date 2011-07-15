@@ -63,7 +63,7 @@ namespace Rtp.Driver.Command
 
         public string CommandName
         {
-            get { return "DIVERSIFY"; }
+            get { return "SYS<DIVERSIFY"; }
         }
 
         #endregion

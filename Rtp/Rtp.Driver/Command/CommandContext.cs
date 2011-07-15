@@ -127,9 +127,9 @@ namespace Rtp.Driver.Command
             set { rfid = value; }
         }
 
-        string cmdTarget="CPU";
+        string cmdTarget="SYS<";
         /// <summary>
-        /// 命令目标,可以是CPU,SAM 0x##。默认CPU。如果命令不指定对象，则为CPU。
+        /// 命令目标,可以是CPU,SAM 0x##。默认CPU。如果命令不指定对象，则为SYS。
         /// </summary>
         public string CmdTarget
         {

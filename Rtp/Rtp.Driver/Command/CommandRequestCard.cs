@@ -19,16 +19,11 @@ namespace Rtp.Driver.Command
             
         }
 
-        #region ICommand ³ÉÔ±
+        
 
         public bool execute(string commandBody, CommandContext ctx)
         {
-            if (!commandBody.Equals(CommandName, StringComparison.OrdinalIgnoreCase))
-            {
-                ctx.ReportMessage("ERR>>{0} is not {2}.", commandBody, CommandName);
-                return false;
-            }
-            #region Ñ°¿¨
+            
             CardPhysicalType cpt = CardPhysicalType.Unknown;           
             string snr = ctx.Rfid.Request(out cpt);
             ctx.ReportMessage("CARD>> {0} / {1}", snr, cpt);
@@ -77,7 +72,7 @@ namespace Rtp.Driver.Command
                     }
             }   
             return result;
-            #endregion
+            
         }
 
         public string CommandName
@@ -85,6 +80,6 @@ namespace Rtp.Driver.Command
             get { return "SYS<REQUESTCARD"; }
         }
 
-        #endregion
+       
     }
 }

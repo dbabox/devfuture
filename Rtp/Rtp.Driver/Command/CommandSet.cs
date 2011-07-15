@@ -14,9 +14,15 @@ namespace Rtp.Driver.Command
        
         #region ICommand 成员
 
+        /// <summary>
+        /// commandBody形如KEY=VALUE格式
+        /// </summary>
+        /// <param name="commandBody">KEY=VALUE格式</param>
+        /// <param name="ctx"></param>
+        /// <returns></returns>
         public bool execute(string commandBody, CommandContext ctx)
         {
-            if (!commandBody.StartsWith(CommandName)) throw new ArgumentException(String.Format("{0}命令格式错误:{1}", CommandName, commandBody));
+           
 
             #region SET命令
             if (commandBody.Length > 3)
@@ -26,7 +32,7 @@ namespace Rtp.Driver.Command
                 #region 显示GV
                 if (equIdx < 0) //没有=号，则显示该变量的值
                 {
-                    string partname = commandBody.Substring(3, commandBody.Length - 3).Trim().ToUpper();
+                    string partname = commandBody.Trim().ToUpper();
                     if (String.IsNullOrEmpty(partname))
                     {
                         ctx.ReportMessage("SYS>>GVDIC:---------BEGIN-----------");
@@ -57,7 +63,7 @@ namespace Rtp.Driver.Command
                 #endregion
 
                 //设置变量值
-                string gvName = commandBody.Substring(3, equIdx - 3).Trim().ToUpper();
+                string gvName = commandBody.Substring(0, equIdx).Trim().ToUpper();
                 string gvValue = commandBody.Substring(equIdx + 1, commandBody.Length - equIdx - 1).Trim().ToUpper();
 
                 ctx.ReportMessage("SYS>> GV={0},Value={1}", gvName, gvValue);

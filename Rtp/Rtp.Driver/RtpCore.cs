@@ -29,29 +29,24 @@ namespace Rtp.Driver
         public const string COMPOSE = "/";
  
         /// <summary>
-        /// 带参数的操作，操作是可以再脚本中独立使用的关键字.
+        /// 带参数的系统命令，操作是可以再脚本中独立使用的关键字.
         /// </summary>
-        public const string ARG_OPERATION = "SET,SAMSLOT,SAMPARA,BUFF,ADD,SUB,PRINT,SAMRESET,EXECUTEMODE,DESC";
+        //public const string ARG_OPERATION = "SET,SAMSLOT,SAMPARA,BUFF,ADD,SUB,PRINT,SAMRESET,EXECUTEMODE,DESC";
         /// <summary>
         /// 不带参数的系统命令
         /// </summary>
-        public const string NONE_ARG_OPRATION = "HELP,OPENREADER,CLOSEREADER,RESETREADER,REQUESTCARD,MACON,MACOFF"; //PAUSE
+        //public const string NONE_ARG_OPRATION = "HELP,OPENREADER,CLOSEREADER,RESETREADER,REQUESTCARD,MACON,MACOFF"; //PAUSE
         /// <summary>
-        /// 带参数函数。函数只能在块中调用。
+        /// 带参数函数，参数用小括号包围。函数只能在块中调用。
         /// </summary>
-        public const string ARG_FUNCTION = "KEY16MAC,KEY08MAC,DES,TRIPDES,DIVERSIFY,PBOCDESENCKEY16,PBOCDESENCKEY8,PBOCDESDECKEY16,PBOCDESDECKEY8";
+        //public const string ARG_FUNCTION = "KEY16MAC,KEY08MAC,DES,TRIPDES,DIVERSIFY,PBOCDESENCKEY16,PBOCDESENCKEY8,PBOCDESDECKEY16,PBOCDESDECKEY8";
         /// <summary>
         /// 无参数函数。
         /// </summary>
-        public const string NONE_ARG_FUNCTION = "DATE,TIME,DATETIME";
-
-        Dictionary<string, ICommand> commandEngine = new Dictionary<string, ICommand>();
-        System.Collections.Specialized.StringCollection noneArgOperation = new System.Collections.Specialized.StringCollection();
-        System.Collections.Specialized.StringCollection argOperation = new System.Collections.Specialized.StringCollection();
-
-        System.Collections.Specialized.StringCollection noneArgFunction = new System.Collections.Specialized.StringCollection();
-        System.Collections.Specialized.StringCollection argFunction = new System.Collections.Specialized.StringCollection();
-
+        //public const string NONE_ARG_FUNCTION = "DATE,TIME,DATETIME";
+        Dictionary<string, ICommand> commandEngine = new Dictionary<string, ICommand>();     
+    
+       
 
         ICosDictionary cosIO;
         public ICosDictionary CosIO
@@ -163,13 +158,13 @@ namespace Rtp.Driver
 
             CommandPbocDesDecKey8 cmdpbocDecKey8 = new CommandPbocDesDecKey8();
             commandEngine.Add(cmdpbocDecKey8.CommandName, cmdpbocDecKey8);
+
+            CommandULRead cmdULRead = new CommandULRead();
+            commandEngine.Add(cmdULRead.CommandName, cmdULRead);
+
+            CommandULWrite cmdULWrite = new CommandULWrite();
+            commandEngine.Add(cmdULWrite.CommandName, cmdULWrite);
             #endregion
-
-            noneArgOperation.AddRange(NONE_ARG_OPRATION.Split(','));
-            argOperation.AddRange(ARG_OPERATION.Split(','));
-
-            noneArgFunction.AddRange(NONE_ARG_FUNCTION.Split(','));
-            argFunction.AddRange(ARG_FUNCTION.Split(','));
 
           
         }
@@ -254,7 +249,7 @@ namespace Rtp.Driver
             if (calCmdL2.Contains(TARGET_TAG) == false)
             {
                 //自动为其添加上一次的Header
-                string fmtLine = String.Format("{0}{1}{2}", ctx.CmdTarget.Substring(0, ctx.CmdTarget.IndexOf('.')), TARGET_TAG, line);
+                string fmtLine = String.Format("{0}{1}{2}", ctx.CmdTarget.Substring(0, ctx.CmdTarget.IndexOf('<')), TARGET_TAG, line);
                 ctx.ReportMessage("SYS>>自动添加命令TARGET_TAG:实际执行命令:{0}", fmtLine);
                 calCmdL2 = fmtLine;              
             }
@@ -265,8 +260,16 @@ namespace Rtp.Driver
             {
                 ctx.ReportMessage("ERR>> Command format error:{0}, AnalyzeRedirect error.", line);
                 return false;
-            }          
-            return commandEngine[ctx.CmdTarget].execute(args, ctx); 
+            }
+            if (commandEngine.ContainsKey(ctx.CmdTarget))
+            {
+                return commandEngine[ctx.CmdTarget].execute(args, ctx);
+            }
+            else
+            {
+                ctx.ReportMessage("不可识别的命令:{0} {1}", ctx.CmdTarget,args);
+                return false;
+            }
             
             #endregion
                            
@@ -358,7 +361,7 @@ namespace Rtp.Driver
         /// SYS{ REQUESTCARD
         /// SAM{APDU slot, 00 84 
         /// </summary>
-        const string REG_CARDTYPE_CMD = @"([\S]+)[\s]*(<)[\s]*([\S]+)[\s]+(.+)";
+        const string REG_CARDTYPE_CMD = @"([\S]+)[\s]*(<)[\s]*([\S]*)(\s.*)?";
         const string REG_HEX_STRING = @"[A-Fa-f0-9\s]+";
         readonly System.Text.RegularExpressions.Regex regCmd = new System.Text.RegularExpressions.Regex(REG_CARDTYPE_CMD);
         readonly System.Text.RegularExpressions.Regex regHexStr = new System.Text.RegularExpressions.Regex(REG_HEX_STRING);
@@ -398,86 +401,31 @@ namespace Rtp.Driver
         /// <returns></returns>
         public bool ExcuteFunctionBlock(string cmdIn, out string cmdOut)
         {
-            cmdOut = cmdIn;//先保存最原始的字符串
-            int lkhIdx = -1;
-            int rkhIdx = -1;
-            int lxkhIdx = -1;
-            int rxkhIdx = -1;
+            cmdOut = cmdIn;//先保存最原始的字符串           
             string funcBlock = null;
             string statementBody = null;
-            string resultStr = null;
+            string resultStr = null;            
             while (cmdIn.Contains("{") && cmdIn.Contains("}"))
             {
-                lxkhIdx = -1;
-                rxkhIdx = -1;
-
-                lkhIdx = cmdIn.IndexOf('{');
-                rkhIdx = cmdIn.IndexOf('}');
-                funcBlock = cmdIn.Substring(lkhIdx, rkhIdx + 1 - lkhIdx);
-                statementBody = funcBlock.Substring(1, funcBlock.Length - 2).Trim();
+                funcBlock = Utility.GetSubStringBetweenCharsInclude(cmdIn, '{', '}');
+                statementBody = Utility.GetSubStringBetweenChars(funcBlock, '{', '}'); 
                 ctx.ReportMessage("SYS>> 计算:{0}", funcBlock);
 
-                //分解其中的语句
-                lxkhIdx = cmdIn.IndexOf('(', lkhIdx); //左小括号
-                if(lxkhIdx>0) rxkhIdx = cmdIn.IndexOf(')', lxkhIdx);//右小括号
-
-                #region 明文命令块执行
-                if (lxkhIdx < 0 && rxkhIdx < 0)//若语句中无小括号
+                //先处理目标头
+                string args;
+                if (!CommandAnalyze(statementBody, out args))
                 {
-                    //直接命令，如:Date,Time,若不是直接命令，就当作明文COS执行
-                    if (noneArgFunction.Contains(statementBody))
-                    {
-                        if (!commandEngine[statementBody].execute(statementBody, ctx)) return false;
-                        cmdIn = cmdIn.Replace(funcBlock, Utility.ByteArrayToHexStr(ctx.rbuff, ctx.rlen));
-                        continue;
-                    }
-                    
-                    //如果不是无参函数 语句块中是明文                    
-                    #region 明文COS指令
-                    ctx.ReportMessage("SYS>> Statemants Block is plain cos instructor.");
-                    //先处理目标头
-                    string calCmdL3;
-                    if (!CommandAnalyze(statementBody, out calCmdL3))
-                    {
-                        ctx.ReportMessage("ERR>> Command format error:{0}, AnalyzeRedirect error.", statementBody);
-                        return false;
-                    }
-                    statementBody = calCmdL3;//至此，语句中无$，无{}，无(),无<
-                    if (commandEngine[ctx.CmdTarget].execute(statementBody, ctx)) //若语句执行成功
-                    {
-                        //用执行结果替换
-                        resultStr = Utility.ByteArrayToHexStr(ctx.rbuff, ctx.rlen - 2);
-                        cmdIn = cmdIn.Replace(funcBlock, resultStr);
-                        continue;
-                    }
-                    #endregion
+                    ctx.ReportMessage("ERR>> Command format error:{0}, AnalyzeRedirect error.", statementBody);
                     return false;
                 }
-                #endregion
-
-                #region 函数块执行
-                if (lxkhIdx < 0 || rxkhIdx < lxkhIdx)
+                if (commandEngine[ctx.CmdTarget].execute(args, ctx)) //若语句执行成功
                 {
-                    ctx.ReportMessage("ERR>> Statemants Block format is incorrect.");
-                    return false;
-                }
-                string funcName = cmdIn.Substring(lkhIdx + 1, lxkhIdx - lkhIdx - 1).Trim().ToUpper();//知道了函数名
-                ctx.ReportMessage("SYS>> Function Name:{0}", funcName);
-                //带参数函数执行
-                if (commandEngine.ContainsKey(funcName) && commandEngine[funcName].execute(statementBody, ctx))
-                {
-                    //函数执行成功
-                    resultStr = Utility.ByteArrayToHexStr(ctx.rbuff, ctx.rlen);
+                    //用执行结果替换
+                    resultStr = Utility.ByteArrayToHexStr(ctx.rbuff, ctx.rlen - 2);
                     cmdIn = cmdIn.Replace(funcBlock, resultStr);
+                    continue;
                 }
-                else
-                {
-                    ctx.ReportMessage("ERR>> unknown command :{0}.",cmdIn);
-                    return false;
-                }
-
-               
-                #endregion
+                return false;
             }
             cmdOut = cmdIn;//全部计算完毕
             return true;

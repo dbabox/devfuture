@@ -25,7 +25,7 @@ namespace Rtp.Driver.Command
         {
             if (!commandBody.Equals(CommandName, StringComparison.OrdinalIgnoreCase))
             {
-                ctx.ReportMessage("ERR>>{0} is not {2}.", commandBody, CommandName);
+                ctx.ReportMessage("ERR>>{0} is not {1}.", commandBody, CommandName);
                 return false;
             }
 

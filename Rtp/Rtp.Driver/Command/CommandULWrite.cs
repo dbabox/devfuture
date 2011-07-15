@@ -12,15 +12,16 @@ namespace Rtp.Driver.Command
         public bool execute(string input, CommandContext ctx)
         {
             int rc = -1;
+            string par = Utility.GetSubStringBetweenChars(input, '(', ')').Trim().ToUpper();
             //commandBody格式 04,01 02 03 04
             Array.Clear(ctx.sbuff, 0, ctx.sbuff.Length);
-            string[] args = input.Split(',');
+            string[] args = par.Split(',');
             if (args.Length != 2)
             {
                 ctx.ReportMessage("ERR>>命令格式错误:{0}", args);
                 return false;
             }
-            byte addr = byte.Parse(args[0], System.Globalization.NumberStyles.AllowHexSpecifier);
+            byte addr = Convert.ToByte(args[0], 16);
             ctx.slen=(byte)Utility.HexStrToByteArray(args[1], ref ctx.sbuff);
             if (ctx.slen > 0)
             {
