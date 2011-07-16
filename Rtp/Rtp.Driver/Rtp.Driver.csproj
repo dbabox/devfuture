@@ -68,7 +68,7 @@
   <ItemGroup>
     <Compile Include="BCDEncoding.cs" />
     <Compile Include="CardIO\FileMapCosIO.cs" />
-    <Compile Include="CardIO\ICosIO.cs" />
+    <Compile Include="CardIO\ICosDictionary.cs" />
     <Compile Include="CardIO\ICpuIO.cs" />
     <Compile Include="CardIO\IM1IO.cs" />
     <Compile Include="CardIO\ISamIO.cs" />
