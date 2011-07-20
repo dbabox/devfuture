@@ -158,6 +158,37 @@ namespace Rtp.NunitTest
 
             Console.WriteLine("2<<3={0}", 2 << 3);
         }
+        [Test]
+        public void TestDate745()
+        {
+            int tt = 16;
+            Console.WriteLine("tt<<2 ={0}", tt << 2);
+            Console.WriteLine("tt>>2 ={0}", tt>> 2);
+
+            byte[] rc=new byte[2];
+            byte year=10;
+            byte month=9;
+            byte day=23;
+            Utility.ConvertDateTo745b(year, month, day, ref rc);
+            Console.WriteLine("ConvertDateTo745b :10, 9, 7,={0,2:X2} {1,2:X2}", rc[0], rc[1]);
+
+            Utility.ConvertDateTo645b(year, month, day, ref rc);
+            Console.WriteLine("ConvertDateTo645b :10, 9, 7,={0,2:X2} {1,2:X2}", rc[0]  , rc[1]  );
+
+            UInt16 u16 = 0;
+
+            u16 = Utility.ConvertDateTo745bU16(year, month, day);
+            Console.WriteLine("ConvertDateTo745bU16:{0}-{1}-{2} ==>{3,4:X4}", year, month, day, u16);
+
+            u16 = Utility.ConvertDateTo645bU16(year, month, day);
+            Console.WriteLine("ConvertDateTo645bU16:{0}-{1}-{2} ==>{3,4:X4}", year, month, day, u16);
+
+            Console.WriteLine("ÉòÑôµØÌúµ¥³ÌÆ±£º1<< ConvertDateTo645bU16:{0}-{1}-{2} ==>{3,4:X4}", year, month, day, (u16<<1));
+
+            
+
+        }
+
 
     }
 }
