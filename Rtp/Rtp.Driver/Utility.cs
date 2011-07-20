@@ -1259,7 +1259,7 @@ namespace Rtp.Driver
 
         /// <summary>
         /// 将年-月-日转换成7bit年-4bit月-5bit日格式，共占2字节；
-        /// 年最多可表达0~127，故可覆盖1个世纪（100年）;高位在前；
+        /// 年最多可表达0~127，故可覆盖1个世纪（100年）;高位在前(左)(即所见所得方式,解析时：低字节高位)
         /// </summary>
         /// <param name="year"></param>
         /// <param name="month"></param>
@@ -1283,6 +1283,13 @@ namespace Rtp.Driver
             return true;
         }
 
+        /// <summary>
+        /// 将年月日表达为UINT16的7-4-5编码格式
+        /// </summary>
+        /// <param name="year"></param>
+        /// <param name="month"></param>
+        /// <param name="day"></param>
+        /// <returns></returns>
         public static UInt16 ConvertDateTo745bU16(byte year, byte month, byte day)
         {
             UInt16 u16 = 0;
@@ -1299,7 +1306,7 @@ namespace Rtp.Driver
 
         /// <summary>
         /// 将年-月-日转换成6bit年-4bit月-5bit日格式，共占2字节；最末位预留；
-        /// 年最多可表达0~63；高位在前，即所见所得方式；(解析时：低字节高位)
+        /// 年最多可表达0~63；高位在前(左)(即所见所得方式,解析时：低字节高位)
         /// </summary>
         /// <param name="year"></param>
         /// <param name="month"></param>
@@ -1321,7 +1328,13 @@ namespace Rtp.Driver
             result[1] = (byte)(((month & 0x03) << 6) + (day<<1));
             return true;
         }
-
+        /// <summary>
+        /// 将年月日表达为UINT16的6-4-5格式
+        /// </summary>
+        /// <param name="year"></param>
+        /// <param name="month"></param>
+        /// <param name="day"></param>
+        /// <returns></returns>
         public static UInt16 ConvertDateTo645bU16(byte year, byte month, byte day)
         {
             UInt16 u16 = 0;
