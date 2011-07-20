@@ -1251,8 +1251,89 @@ namespace Rtp.Driver
             }
             return src.Substring(lkh , rkh - lkh + 1);    
         }
-        
-       
+
+        public static bool ConvertDateTo745b(DateTime dateVal,ref byte[] result)
+        {
+            return ConvertDateTo745b((byte)(dateVal.Year % 100), (byte)dateVal.Month, (byte)dateVal.Day, ref result);
+        }
+
+        /// <summary>
+        /// 将年-月-日转换成7bit年-4bit月-5bit日格式，共占2字节；
+        /// 年最多可表达0~127，故可覆盖1个世纪（100年）;高位在前；
+        /// </summary>
+        /// <param name="year"></param>
+        /// <param name="month"></param>
+        /// <param name="day"></param>
+        /// <param name="result"></param>
+        /// <returns></returns>
+        public static bool ConvertDateTo745b(byte year,byte month,byte day, ref byte[] result)
+        {
+            if (result.Length < 2)
+            {
+                System.Diagnostics.Trace.TraceError("输出缓冲区至少2字节。");
+                return false;
+            }         
+            System.Diagnostics.Debug.Assert(year < 127);
+            System.Diagnostics.Debug.Assert(month <= 12);
+            System.Diagnostics.Debug.Assert(day <= 31);
+
+            result[0] = (byte)((year << 1) + (month >> 3));
+            result[1] = (byte)(((month & 0x07)<<5) + day);
+
+            return true;
+        }
+
+        public static UInt16 ConvertDateTo745bU16(byte year, byte month, byte day)
+        {
+            UInt16 u16 = 0;
+            byte[] rc = new byte[2];
+            if (ConvertDateTo745b(year, month, day, ref rc))
+            {
+                u16 += rc[0];
+                u16 <<= 8;
+                u16 += rc[1];                
+            }
+            return u16;
+        }
+
+
+        /// <summary>
+        /// 将年-月-日转换成6bit年-4bit月-5bit日格式，共占2字节；最末位预留；
+        /// 年最多可表达0~63；高位在前，即所见所得方式；(解析时：低字节高位)
+        /// </summary>
+        /// <param name="year"></param>
+        /// <param name="month"></param>
+        /// <param name="day"></param>
+        /// <param name="result"></param>
+        /// <returns></returns>
+        public static bool ConvertDateTo645b(byte year, byte month, byte day, ref byte[] result)
+        {
+            if (result.Length < 2)
+            {
+                System.Diagnostics.Trace.TraceError("输出缓冲区至少2字节。");
+                return false;
+            }
+            System.Diagnostics.Debug.Assert(year < 64);
+            System.Diagnostics.Debug.Assert(month <= 12);
+            System.Diagnostics.Debug.Assert(day <= 31);            
+            //year向高字节方向移动2位，month的高2位填充空出来的2位；
+            result[0] = (byte)((year << 2) + (month >> 2));
+            result[1] = (byte)(((month & 0x03) << 6) + (day<<1));
+            return true;
+        }
+
+        public static UInt16 ConvertDateTo645bU16(byte year, byte month, byte day)
+        {
+            UInt16 u16 = 0;
+            byte[] rc = new byte[2];
+            if (ConvertDateTo645b(year, month, day, ref rc))
+            {
+                u16 += rc[0];
+                u16 <<= 8;
+                u16 += rc[1];
+            }
+            return u16;
+        }
 
     }
 }
