@@ -26,6 +26,7 @@ namespace Rtp.Driver.Command
             {
                 System.Diagnostics.Trace.WriteLine(String.Format( "UL_read :addr={0},rbuff={1}",
                     addr, Utility.ByteArrayToHexStr(ctx.rbuff,64)));
+                ctx.rlen = 4;
                 return true;
             }
             else

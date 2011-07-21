@@ -334,10 +334,9 @@ namespace Rtp.Driver.RfidReader
 
         #region IUltralightIO
         public override int UL_read(byte addr, byte[] rbuff)
-        {
-            Trace.TraceInformation("∂¡»°Ultralightø®,addr={0}.", addr);
+        {           
             int rc = NMTrf32.dc_read(icdev, addr, rbuff);
-            Trace.TraceInformation("∂¡»°Ultralightø®,addr={0}.RBUFF={1},rc={2}", addr, Utility.ByteArrayToHexStr(rbuff, 4),rc);
+            Trace.TraceInformation("∂¡»°Ultralightø®,addr={0}.RBUFF={1},rc={2}", (int)addr, Utility.ByteArrayToHexStr(rbuff, 4), rc);
             return rc;
         }
 

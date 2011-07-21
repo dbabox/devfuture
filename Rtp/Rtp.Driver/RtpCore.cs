@@ -27,23 +27,10 @@ namespace Rtp.Driver
         public const string TARGET_TAG = "<";
   
         public const string COMPOSE = "/";
- 
-        /// <summary>
-        /// 带参数的系统命令，操作是可以再脚本中独立使用的关键字.
-        /// </summary>
-        //public const string ARG_OPERATION = "SET,SAMSLOT,SAMPARA,BUFF,ADD,SUB,PRINT,SAMRESET,EXECUTEMODE,DESC";
-        /// <summary>
-        /// 不带参数的系统命令
-        /// </summary>
-        //public const string NONE_ARG_OPRATION = "HELP,OPENREADER,CLOSEREADER,RESETREADER,REQUESTCARD,MACON,MACOFF"; //PAUSE
-        /// <summary>
-        /// 带参数函数，参数用小括号包围。函数只能在块中调用。
-        /// </summary>
-        //public const string ARG_FUNCTION = "KEY16MAC,KEY08MAC,DES,TRIPDES,DIVERSIFY,PBOCDESENCKEY16,PBOCDESENCKEY8,PBOCDESDECKEY16,PBOCDESDECKEY8";
-        /// <summary>
-        /// 无参数函数。
-        /// </summary>
-        //public const string NONE_ARG_FUNCTION = "DATE,TIME,DATETIME";
+
+        public const string SYS_COMMAND = "ADD,BUFF,CLOSEREADER,DATE,DATETIME,DES,DESC,DIVERSIFY,EXECUTEMODE,HELP,KEY08MAC,KEY16MAC,MACOFF,MACON,OPENREADER,PAUSE,PBOCDESDECKEY16,PBOCDESDECKEY8,PBOCDESENCKEY16,PBOCDESENCKEY8,PRINT,REQUESTCARD,RESETREADER,SAMPARA,SAMRESET,SAMSLOT,SET,SUB,TIME,TRIPDES";
+        System.Collections.Specialized.StringCollection sysCmdColl = new System.Collections.Specialized.StringCollection();
+
         Dictionary<string, ICommand> commandEngine = new Dictionary<string, ICommand>();     
     
        
@@ -166,7 +153,7 @@ namespace Rtp.Driver
             commandEngine.Add(cmdULWrite.CommandName, cmdULWrite);
             #endregion
 
-          
+            sysCmdColl.AddRange(SYS_COMMAND.Split(','));
         }
 
         #region 核心执行引擎
@@ -248,8 +235,16 @@ namespace Rtp.Driver
             }          
             if (calCmdL2.Contains(TARGET_TAG) == false)
             {
+                calCmdL2 = calCmdL2.Trim().ToUpper();
+                bool isSysCmd = sysCmdColl.Contains(calCmdL2);
+                if (!isSysCmd && calCmdL2.IndexOf(' ') > 0)
+                {
+                    string cmd_key = calCmdL2.Substring(0,calCmdL2.IndexOf(' '));
+                    isSysCmd = sysCmdColl.Contains(cmd_key);
+                }
                 //自动为其添加上一次的Header
-                string fmtLine = String.Format("{0}{1}{2}", ctx.CmdTarget.Substring(0, ctx.CmdTarget.IndexOf('<')), TARGET_TAG, calCmdL2);
+                string fmtLine = String.Format("{0}{1}{2}",
+                    isSysCmd ? "SYS" : ctx.CmdTarget.Substring(0, ctx.CmdTarget.IndexOf('<')), TARGET_TAG, calCmdL2);
                 ctx.ReportMessage("SYS>>自动添加命令TARGET_TAG:实际执行命令:{0}", fmtLine);
                 calCmdL2 = fmtLine;              
             }
@@ -421,8 +416,10 @@ namespace Rtp.Driver
                 if (commandEngine[ctx.CmdTarget].execute(args, ctx)) //若语句执行成功
                 {
                     //用执行结果替换
-                    resultStr = Utility.ByteArrayToHexStr(ctx.rbuff, ctx.rlen - 2);
+
+                    resultStr = Utility.ByteArrayToHexStr(ctx.rbuff,ctx.rlen);
                     cmdIn = cmdIn.Replace(funcBlock, resultStr);
+                    System.Diagnostics.Trace.TraceInformation("{0}==>{1}", funcBlock, resultStr);
                     continue;
                 }
                 return false;

@@ -12,7 +12,7 @@
     <AssemblyName>RtpCli</AssemblyName>
     <ApplicationIcon>RRT.ico</ApplicationIcon>
     <IsWebBootstrapper>false</IsWebBootstrapper>
-    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileUpgradeFlags>
     </FileUpgradeFlags>
     <OldToolsVersion>2.0</OldToolsVersion>
@@ -31,6 +31,7 @@
     <ApplicationVersion>0.1.1.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -79,6 +80,7 @@
     <None Include="..\Rtp.Driver\SIASUN.pfx">
       <Link>SIASUN.pfx</Link>
     </None>
+    <None Include="app.config" />
     <None Include="default.cos">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
