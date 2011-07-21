@@ -1283,6 +1283,27 @@ namespace Rtp.Driver
             return true;
         }
 
+        
+
+
+        public static bool Convert745bToDate(byte[] b745,out byte year,out byte month,out byte day)
+        {
+            year = 0;
+            month = 0; 
+            day = 0;
+
+            if (b745 == null || b745.Length != 2)
+            {
+                System.Diagnostics.Trace.TraceError("b745日期表示法至少2字节。");
+                return false;
+            }
+            //===================================
+            year = (byte)(b745[0] >> 1);
+            month = (byte)(((b745[0] & 0x01) << 3) + (b745[1] >> 5));
+            day = (byte)(b745[1] & 0x01F);
+            return true;
+        }
+
         /// <summary>
         /// 将年月日表达为UINT16的7-4-5编码格式
         /// </summary>
@@ -1328,6 +1349,25 @@ namespace Rtp.Driver
             result[1] = (byte)(((month & 0x03) << 6) + (day<<1));
             return true;
         }
+
+        public static bool Convert645bToDate(byte[] b645, out byte year, out byte month, out byte day)
+        {
+            year = 0;
+            month = 0;
+            day = 0;
+            if (b645 == null || b645.Length != 2)
+            {
+                System.Diagnostics.Trace.TraceError("b645结构表示法必须2字节。");
+                return false;
+            }
+
+            year = (byte)(b645[0] >> 2);
+            month = (byte)(((b645[0] & 0x03) << 2) + (b645[1] >> 6));
+            day = (byte)((b645[1] & 0x3E) >> 1);
+            return true;
+        }
+
+
         /// <summary>
         /// 将年月日表达为UINT16的6-4-5格式
         /// </summary>

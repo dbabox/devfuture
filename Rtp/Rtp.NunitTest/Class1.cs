@@ -170,10 +170,18 @@ namespace Rtp.NunitTest
             byte month=9;
             byte day=23;
             Utility.ConvertDateTo745b(year, month, day, ref rc);
-            Console.WriteLine("ConvertDateTo745b :10, 9, 7,={0,2:X2} {1,2:X2}", rc[0], rc[1]);
+            Console.WriteLine("ConvertDateTo745b :{2}, {3}, {4},={0,2:X2} {1,2:X2}", rc[0], rc[1],year,month,day);
+
+            byte oy=0;byte om=0;byte od=0;
+            Utility.Convert745bToDate(rc, out oy, out om, out od);
+            Console.WriteLine("Convert745bToDate:out year={0},out month={1},out day={2}", oy, om, od);
+
 
             Utility.ConvertDateTo645b(year, month, day, ref rc);
-            Console.WriteLine("ConvertDateTo645b :10, 9, 7,={0,2:X2} {1,2:X2}", rc[0]  , rc[1]  );
+            Console.WriteLine("ConvertDateTo645b :{2}, {3}, {4},={0,2:X2} {1,2:X2}", rc[0], rc[1], year, month, day);
+
+            Utility.Convert645bToDate(rc, out oy, out om, out od);
+            Console.WriteLine("Convert645bToDate:out year={0},out month={1},out day={2}", oy, om, od);
 
             UInt16 u16 = 0;
 
@@ -185,8 +193,33 @@ namespace Rtp.NunitTest
 
             Console.WriteLine("沈阳地铁单程票：1<< ConvertDateTo645bU16:{0}-{1}-{2} ==>{3,4:X4}", year, month, day, (u16<<1));
 
-            
+          
 
+
+
+
+            Console.WriteLine("-------------");
+            int t32 = 32;
+            byte[] b32 = BitConverter.GetBytes(t32);
+            for (int i = b32.Length-1; i >=0; i--)
+            {
+                Console.Write("{0,2:X2} ", b32[i]);
+            }
+            Console.WriteLine("-------------");
+           
+            string idstr = "21058119800909003X";
+           
+            idstr = idstr.Replace('X', 'A');
+            Console.WriteLine("身份证号:{0}转16进制码：", idstr);
+            byte[] idBytes=new byte[9];
+            Utility.HexStrToByteArray(idstr, ref idBytes);
+
+            for (int i =0; i<idBytes.Length; i++)
+            {
+                Console.Write("{0,2:X2} ", idBytes[i]);
+            }
+
+            Console.WriteLine("-------------");
         }
 
 
