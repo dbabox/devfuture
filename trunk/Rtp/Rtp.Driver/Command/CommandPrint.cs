@@ -13,15 +13,9 @@ namespace Rtp.Driver.Command
 
         public bool execute(string commandBody, CommandContext ctx)
         {
-            if (commandBody.StartsWith(CommandName))
-            {
-                //将内容输出到控制台
-                ctx.ReportMessage("[{0}]",
-                    commandBody.Substring(CommandName.Length, commandBody.Length - CommandName.Length));
-                return true;
-            }
-            ctx.ReportMessage("ERR>>Print:command format error:{0}", commandBody);
-            return false;
+            //将内容输出到控制台
+            ctx.ReportMessage(commandBody);
+            return true;
         }
 
         public string CommandName

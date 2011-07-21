@@ -25,6 +25,7 @@ namespace Rtp.Driver.Command
             ctx.slen=(byte)Utility.HexStrToByteArray(args[1], ref ctx.sbuff);
             if (ctx.slen > 0)
             {
+                System.Diagnostics.Trace.TraceInformation("UL_Write :slen={0}", ctx.slen);
                 rc = ctx.Rfid.UL_write(addr, ctx.sbuff);
             }
             else
