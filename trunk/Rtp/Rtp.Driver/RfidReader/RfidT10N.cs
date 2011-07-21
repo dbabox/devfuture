@@ -336,7 +336,6 @@ namespace Rtp.Driver.RfidReader
         public override int UL_read(byte addr, byte[] rbuff)
         {           
             int rc = NMTrf32.dc_read(icdev, addr, rbuff);
-            Trace.TraceInformation("∂¡»°Ultralightø®,addr={0}.RBUFF={1},rc={2}", (int)addr, Utility.ByteArrayToHexStr(rbuff, 4), rc);
             return rc;
         }
 
