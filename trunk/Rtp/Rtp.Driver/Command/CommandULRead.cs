@@ -9,6 +9,7 @@ namespace Rtp.Driver.Command
     /// </summary>
     class CommandULRead : ICommand
     {
+        private static log4net.ILog logger = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         /// <summary>
         /// 读取UL卡的1个page；
         /// READ 01
@@ -24,8 +25,9 @@ namespace Rtp.Driver.Command
             int rc=ctx.Rfid.UL_read(addr, ctx.rbuff);
             if (rc == 0)
             {
-                System.Diagnostics.Trace.WriteLine(String.Format( "UL_read :addr={0},rbuff={1}",
-                    addr, Utility.ByteArrayToHexStr(ctx.rbuff,64)));
+                logger.InfoFormat("UL_read :addr={0},rbuff={1}",
+                    addr, Utility.ByteArrayToHexStr(ctx.rbuff, 64));
+                 
                 ctx.rlen = 4;
                 return true;
             }

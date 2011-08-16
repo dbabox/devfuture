@@ -40,7 +40,6 @@ namespace Rtp.Gui
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FrmMain));
             this.btnExcute = new System.Windows.Forms.Button();
             this.textBoxCmd = new System.Windows.Forms.TextBox();
-            this.textBoxLog = new System.Windows.Forms.TextBox();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.tsslRequest = new System.Windows.Forms.ToolStripStatusLabel();
             this.tsslResponse = new System.Windows.Forms.ToolStripStatusLabel();
@@ -67,8 +66,10 @@ namespace Rtp.Gui
             this.btnViewCmdLog = new System.Windows.Forms.Button();
             this.btnOpenFile = new System.Windows.Forms.Button();
             this.btnSaveAs = new System.Windows.Forms.Button();
+            this.loggerRTB = new System.Windows.Forms.RichTextBox();
             this.statusStrip1.SuspendLayout();
             this.menuStrip1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
             this.splitContainer1.SuspendLayout();
@@ -97,17 +98,6 @@ namespace Rtp.Gui
             this.textBoxCmd.Size = new System.Drawing.Size(692, 251);
             this.textBoxCmd.TabIndex = 0;
             // 
-            // textBoxLog
-            // 
-            this.textBoxLog.BackColor = System.Drawing.SystemColors.Info;
-            this.textBoxLog.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.textBoxLog.Location = new System.Drawing.Point(0, 0);
-            this.textBoxLog.Multiline = true;
-            this.textBoxLog.Name = "textBoxLog";
-            this.textBoxLog.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.textBoxLog.Size = new System.Drawing.Size(692, 119);
-            this.textBoxLog.TabIndex = 5;
-            // 
             // statusStrip1
             // 
             this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -132,7 +122,7 @@ namespace Rtp.Gui
             this.tsslResponse.BorderSides = ((System.Windows.Forms.ToolStripStatusLabelBorderSides)((System.Windows.Forms.ToolStripStatusLabelBorderSides.Left | System.Windows.Forms.ToolStripStatusLabelBorderSides.Right)));
             this.tsslResponse.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.tsslResponse.Name = "tsslResponse";
-            this.tsslResponse.Size = new System.Drawing.Size(522, 21);
+            this.tsslResponse.Size = new System.Drawing.Size(553, 21);
             this.tsslResponse.Spring = true;
             this.tsslResponse.Text = "响应:....";
             // 
@@ -270,9 +260,9 @@ namespace Rtp.Gui
             // 
             // splitContainer1
             // 
-            this.splitContainer1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.splitContainer1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.splitContainer1.Location = new System.Drawing.Point(2, 25);
             this.splitContainer1.Name = "splitContainer1";
             this.splitContainer1.Orientation = System.Windows.Forms.Orientation.Horizontal;
@@ -283,7 +273,7 @@ namespace Rtp.Gui
             // 
             // splitContainer1.Panel2
             // 
-            this.splitContainer1.Panel2.Controls.Add(this.textBoxLog);
+            this.splitContainer1.Panel2.Controls.Add(this.loggerRTB);
             this.splitContainer1.Size = new System.Drawing.Size(692, 374);
             this.splitContainer1.SplitterDistance = 251;
             this.splitContainer1.TabIndex = 7;
@@ -343,6 +333,15 @@ namespace Rtp.Gui
             this.btnSaveAs.UseVisualStyleBackColor = true;
             this.btnSaveAs.Click += new System.EventHandler(this.btnExcute_Click);
             // 
+            // loggerRTB
+            // 
+            this.loggerRTB.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.loggerRTB.Location = new System.Drawing.Point(0, 0);
+            this.loggerRTB.Name = "loggerRTB";
+            this.loggerRTB.Size = new System.Drawing.Size(692, 119);
+            this.loggerRTB.TabIndex = 0;
+            this.loggerRTB.Text = "";
+            // 
             // FrmMain
             // 
             this.ClientSize = new System.Drawing.Size(696, 463);
@@ -369,7 +368,7 @@ namespace Rtp.Gui
             this.splitContainer1.Panel1.ResumeLayout(false);
             this.splitContainer1.Panel1.PerformLayout();
             this.splitContainer1.Panel2.ResumeLayout(false);
-            this.splitContainer1.Panel2.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
             this.splitContainer1.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -381,7 +380,6 @@ namespace Rtp.Gui
         private System.Windows.Forms.Button btnExcute;
         private System.Windows.Forms.TextBox textBoxCmd;
         private System.Windows.Forms.StatusStrip statusStrip1;
-        private System.Windows.Forms.TextBox textBoxLog;
         private System.Windows.Forms.ToolStripStatusLabel tsslRequest;
         private System.Windows.Forms.ToolStripStatusLabel tsslResponse;
         private System.Windows.Forms.ToolStripStatusLabel tsslAsciiResponse;
@@ -407,6 +405,7 @@ namespace Rtp.Gui
         private ToolStripMenuItem tsmiNew;
         private ToolStripSeparator toolStripSeparator2;
         private ToolStripMenuItem tsmiSaveLog;
+        private RichTextBox loggerRTB;
     }
 }
 

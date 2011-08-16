@@ -6,6 +6,7 @@ namespace Rtp.Driver.CardIO
 {
     public class FileMapCosIO:ICosDictionary
     {
+        private static log4net.ILog logger = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         private string cosName;
         public FileMapCosIO()
         {
@@ -48,7 +49,7 @@ namespace Rtp.Driver.CardIO
                             {
                                 if (cosDic[kvp.Key].Contains(kvp.Value) == false)
                                 {
-                                    System.Diagnostics.Trace.TraceWarning("Cos [{1}]命令码{0,8:X}有多种含义!", kvp.Key, CosName);
+                                    logger.WarnFormat("Cos [{1}]命令码{0,8:X}有多种含义!", kvp.Key, CosName);
                                     cosDic[kvp.Key] += ("/" + kvp.Value);
                                 }
                             }
@@ -58,12 +59,12 @@ namespace Rtp.Driver.CardIO
 
                 }
            
-                System.Diagnostics.Trace.TraceInformation("Cos [{0}] Cmd 初始化完毕!", CosName);
+                logger.InfoFormat("Cos [{0}] Cmd 初始化完毕!", CosName);
 
             }
             else
             {
-                System.Diagnostics.Trace.TraceError("Cos [{1}]  命令定义文件 {0} 不存在！", file, CosName);
+                logger.ErrorFormat("Cos [{1}]  命令定义文件 {0} 不存在！", file, CosName);
             }
             return this;
 

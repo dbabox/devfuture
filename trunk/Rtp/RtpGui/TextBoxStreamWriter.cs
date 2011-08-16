@@ -31,4 +31,25 @@ namespace Rtp.Gui
             get { return System.Text.Encoding.UTF8; }
         }
     }
+
+    public class RichTextBoxStreamWriter : TextWriter
+    {
+        RichTextBox  _output = null;
+
+        public RichTextBoxStreamWriter(RichTextBox output)
+        {
+            _output = output;
+        }
+
+        public override void Write(char value)
+        {
+            base.Write(value);
+            _output.AppendText(value.ToString()); // When character data is written, append it to the text box.
+        }
+
+        public override Encoding Encoding
+        {
+            get { return System.Text.Encoding.UTF8; }
+        }
+    }
 }

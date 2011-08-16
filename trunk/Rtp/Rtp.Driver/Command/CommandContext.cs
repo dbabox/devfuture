@@ -14,6 +14,7 @@ namespace Rtp.Driver.Command
 
     public class CommandContext
     {
+        private static log4net.ILog logger = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         private const int BUFF_LEN = 128;
         /// <summary>
         /// 默认命令上下文，必须绑定到一个rfid。
@@ -230,7 +231,7 @@ namespace Rtp.Driver.Command
             if (_recvCtxMsg != null)
                 _recvCtxMsg(message);
             else
-                System.Diagnostics.Trace.TraceInformation(message);
+                logger.InfoFormat(message);
         }
 
         public void ReportMessage(string format,params object[] args)
@@ -238,7 +239,7 @@ namespace Rtp.Driver.Command
             if (_recvCtxMsg != null) 
                 _recvCtxMsg(String.Format(format, args));
             else 
-                System.Diagnostics.Trace.TraceInformation(format, args);
+                logger.InfoFormat(format, args);
 
         }
         #endregion
