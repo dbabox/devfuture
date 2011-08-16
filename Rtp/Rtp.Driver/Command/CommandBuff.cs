@@ -24,9 +24,8 @@ namespace Rtp.Driver.Command
         /// <param name="ctx"></param>
         /// <returns></returns>
         public bool execute(string commandBody, CommandContext ctx)
-        {
-            string par =Utility.GetSubStringBetweenChars(commandBody,'(',')').Trim().ToUpper();
-            string[] sections = par.Split('|');
+        {           
+            string[] sections = commandBody.Split('|');
             if (sections.Length == 0)
             {
                 ctx.ReportMessage("ERR>>CommandBuff:command format error:{0}", commandBody);

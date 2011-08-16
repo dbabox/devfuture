@@ -15,14 +15,9 @@ namespace Rtp.Driver.Command
 
         public bool execute(string commandBody, CommandContext ctx)
         {
-            if (commandBody.Equals(CommandName, StringComparison.OrdinalIgnoreCase))
-            {
-                int rc = ctx.Rfid.Close();
-                ctx.ReportMessage("SYS>> CLOSE READER RC={0}", rc);
-                return rc == 0;
-            }
-            ctx.ReportMessage("ERR>>{0} is not {1}.", commandBody, CommandName);
-            return false;
+            int rc = ctx.Rfid.Close();
+            ctx.ReportMessage("SYS>> CLOSE READER RC={0}", rc);
+            return rc == 0;           
         }
 
         public string CommandName

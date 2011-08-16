@@ -9,6 +9,7 @@ namespace Rtp.Driver
 {
     public static class Utility
     {
+        private static log4net.ILog logger = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
        
        /// <summary>
        /// 检查输入的模式，将字符串转换成Byte数组.
@@ -38,12 +39,12 @@ namespace Rtp.Driver
             {
                 if (!System.Text.RegularExpressions.Regex.IsMatch(trim, "^[A-Fa-f0-9]+$"))
                 {
-                    System.Diagnostics.Trace.TraceWarning("待转换字符串 {0} 数字不是16进制字符串！", trim);
+                    logger.WarnFormat("待转换字符串 {0} 数字不是16进制字符串！", trim);
                     return 0;
                 }
                 if (trim.Length % 2 != 0)
                 {
-                    System.Diagnostics.Trace.TraceWarning("待转换字符串 {0} 数字的个数不为偶数，无法转成16进制！", trim);
+                    logger.WarnFormat("待转换字符串 {0} 数字的个数不为偶数，无法转成16进制！", trim);
                     return 0;
                 }
             }
@@ -126,7 +127,7 @@ namespace Rtp.Driver
                 {             
                     if(line.StartsWith("--")|| line.StartsWith("//") || line.StartsWith("#") || line.StartsWith("=="))
                     {
-                        System.Diagnostics.Trace.TraceInformation(line);
+                        logger.InfoFormat(line);
                         continue;
                     }
                     line = line.Trim();
@@ -137,7 +138,7 @@ namespace Rtp.Driver
                     }
                     else
                     {
-                        System.Diagnostics.Trace.TraceWarning("无效的命令字符串：{0}", line);
+                        logger.WarnFormat("无效的命令字符串：{0}", line);
                     }
 
                 }
@@ -186,7 +187,7 @@ namespace Rtp.Driver
             int rc = trans.TransformBlock(inputValue, 0, inputValue.Length, ref rbuff, 0);
 #endif
             
-            System.Diagnostics.Trace.TraceInformation("TripDes:key={0},inputValue={1},CipherMode={4}, outputValue={2},rc={3}",
+            logger.InfoFormat("TripDes:key={0},inputValue={1},CipherMode={4}, outputValue={2},rc={3}",
                 ByteArrayToHexStr(key,key.Length), ByteArrayToHexStr(inputValue, inputValue.Length), ByteArrayToHexStr(rbuff, inputValue.Length), rc, cm);
            
             return rc;
@@ -322,7 +323,7 @@ namespace Rtp.Driver
             int rc = trans.TransformBlock(inputValue, 0, 8, ref rbuff, 0);
          
 #endif
-            System.Diagnostics.Trace.TraceInformation("DesBlockEncrypt:key={0},inputValue={1},CipherMode={4}, outputValue={2},rc={3}",
+            logger.InfoFormat("DesBlockEncrypt:key={0},inputValue={1},CipherMode={4}, outputValue={2},rc={3}",
                 ByteArrayToHexStr(key), ByteArrayToHexStr(inputValue, inputValue.Length), ByteArrayToHexStr(rbuff, inputValue.Length), rc, cm);
             return 0;  
         }
@@ -387,7 +388,8 @@ namespace Rtp.Driver
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Trace.TraceError("Exception caught: {0}", ex.Message);
+                
+                logger.ErrorFormat("Exception caught: {0}", ex.Message);
                 return new byte[8];
             }
 
@@ -426,7 +428,7 @@ namespace Rtp.Driver
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Trace.TraceError("DESDecrypt Error:{0}", ex);
+                logger.ErrorFormat("DESDecrypt Error:{0}", ex);
                 return new byte[8];
             }
         }
@@ -445,7 +447,7 @@ namespace Rtp.Driver
             byte[] encryption = ms.ToArray();
             byte[] mac = new byte[8];
             Array.Copy(encryption, encryption.Length - 8, mac, 0, 8);
-            System.Diagnostics.Trace.TraceInformation("encryption={0}", Utility.ByteArrayToHexStr(encryption));
+            logger.InfoFormat("encryption={0}", Utility.ByteArrayToHexStr(encryption));
             return mac;
         }
 
@@ -494,7 +496,7 @@ namespace Rtp.Driver
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Trace.TraceError("HCDES Exception Caught, Exception = {0}", ex.Message);
+                logger.ErrorFormat("HCDES Exception Caught, Exception = {0}", ex.Message);
                 return new byte[8];
             }
 
@@ -545,7 +547,7 @@ namespace Rtp.Driver
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Trace.TraceError("MAC_CBC() Exception caught, exception = {0}", ex.Message);
+                logger.ErrorFormat("MAC_CBC() Exception caught, exception = {0}", ex.Message);
                 return new byte[8];
             }
 
@@ -609,7 +611,7 @@ namespace Rtp.Driver
                 init[7] ^= buff[7 + i * 8];
 
                 rc = DesBlockEncrypt(key8, init, CipherMode.ECB, ref mac);
-                System.Diagnostics.Trace.TraceInformation("i={0},mac={1}", i, Utility.ByteArrayToHexStr(mac,init.Length));                
+                logger.InfoFormat("i={0},mac={1}", i, Utility.ByteArrayToHexStr(mac,init.Length));                
                 Array.Copy(mac, init, 8);
               
             }
@@ -631,7 +633,7 @@ namespace Rtp.Driver
             System.Diagnostics.Trace.Assert(key8.Length == 8, "KEY长度错误，应该是8字节");
             System.Diagnostics.Trace.Assert(init.Length == 8, "IV长度错误，应该是8字节");
 
-            System.Diagnostics.Trace.TraceInformation("data={0} key8={1} IV={2}", 
+            logger.InfoFormat("data={0} key8={1} IV={2}", 
                 Utility.ByteArrayToHexStr(data), 
                 Utility.ByteArrayToHexStr(key8), 
                 Utility.ByteArrayToHexStr(init));
@@ -674,7 +676,7 @@ namespace Rtp.Driver
                 init[7] ^= buff[7 + i * 8];
 
                 rc = DesBlockEncrypt(key8, init, CipherMode.ECB, ref mac);
-                System.Diagnostics.Trace.TraceInformation("i={0},mac={1}", i, Utility.ByteArrayToHexStr(mac,init.Length));
+                logger.InfoFormat("i={0},mac={1}", i, Utility.ByteArrayToHexStr(mac,init.Length));
                 Array.Copy(mac, init, 8);
 
             }
@@ -707,7 +709,7 @@ namespace Rtp.Driver
             {
                 Array.Copy(src, i * 8, buff8, 0, 8);
                 rc=DesBlockEncrypt(key8, buff8, CipherMode.ECB, ref rc8);
-                System.Diagnostics.Trace.TraceInformation(Utility.ByteArrayToHexStr(rc8));
+                logger.InfoFormat(Utility.ByteArrayToHexStr(rc8));
                 Array.Copy(rc8, 0, enc, i * 8, 8);                
             }
             return src.Length;
@@ -822,7 +824,7 @@ namespace Rtp.Driver
             System.Diagnostics.Trace.Assert(key16.Length == 16, "KEY长度错误，应该是16字节");
             System.Diagnostics.Trace.Assert(init.Length == 8, "IV长度错误，应该是8字节");
 
-            System.Diagnostics.Trace.TraceInformation("data={0} key={1} IV={2}",
+            logger.InfoFormat("data={0} key={1} IV={2}",
                 Utility.ByteArrayToHexStr(data),
                 Utility.ByteArrayToHexStr(key16),
                 Utility.ByteArrayToHexStr(init));
@@ -848,7 +850,7 @@ namespace Rtp.Driver
 
 
             //======以上准备好了要计算MAC的数据 buff========
-            System.Diagnostics.Trace.TraceInformation("待计算MAC的数据:{0}", Utility.ByteArrayToHexStr(buff));
+            logger.InfoFormat("待计算MAC的数据:{0}", Utility.ByteArrayToHexStr(buff));
 
             //byte[] init = new byte[8];
             //Array.Clear(init, 0, 8);
@@ -922,12 +924,12 @@ namespace Rtp.Driver
         {   
             if (Km.Length != 16)
             {
-                System.Diagnostics.Trace.TraceError("主密钥长度不是16字节。");
+                logger.ErrorFormat("主密钥长度不是16字节。");
                 return -1;
             }
             if (Out.Length < 16)
             {
-                System.Diagnostics.Trace.TraceError("分散密钥缓冲区太小。");
+                logger.ErrorFormat("分散密钥缓冲区太小。");
                 return -1;
             }
           
@@ -981,12 +983,12 @@ namespace Rtp.Driver
         {
             if (Km.Length != 16)
             {
-                System.Diagnostics.Trace.TraceError("主密钥长度不是16字节。");
+                logger.ErrorFormat("主密钥长度不是16字节。");
                 return -1;
             }
             if (Out.Length < 16)
             {
-                System.Diagnostics.Trace.TraceError("分散密钥缓冲区太小。");
+                logger.ErrorFormat("分散密钥缓冲区太小。");
                 return -1;
             }
             byte[] AntiSeed = new byte[8];
@@ -1042,7 +1044,7 @@ namespace Rtp.Driver
             }
             else
             {
-                System.Diagnostics.Trace.TraceWarning("无效的SW Item定义：{0}", line);               
+                logger.WarnFormat("无效的SW Item定义：{0}", line);               
             }
             kvp = new KeyValuePair<ushort, string>(0, String.Empty);
             return false;
@@ -1063,12 +1065,12 @@ namespace Rtp.Driver
                 }
                 else
                 {
-                    System.Diagnostics.Trace.TraceError("{0}无法解析成COS状态字或命令码", line);
+                    logger.ErrorFormat("{0}无法解析成COS状态字或命令码", line);
                 }
             }
             else
             {
-                System.Diagnostics.Trace.TraceWarning("无效的Cmd/SW Item定义：{0}", line);
+                logger.WarnFormat("无效的Cmd/SW Item定义：{0}", line);
             }
             kvp = new KeyValuePair<UInt16, string>(0, String.Empty);
             return false;
@@ -1099,7 +1101,7 @@ namespace Rtp.Driver
             if (buff == null) return 0;
             if (buff.Length > 4)
             {
-                System.Diagnostics.Trace.TraceWarning("字节数组长度大于4，只转换低4字节。");
+                logger.WarnFormat("字节数组长度大于4，只转换低4字节。");
             }
             int rc = 0;
             int v = 0;
@@ -1270,7 +1272,7 @@ namespace Rtp.Driver
         {
             if (result.Length < 2)
             {
-                System.Diagnostics.Trace.TraceError("输出缓冲区至少2字节。");
+                logger.ErrorFormat("输出缓冲区至少2字节。");
                 return false;
             }         
             System.Diagnostics.Debug.Assert(year < 127);
@@ -1294,7 +1296,7 @@ namespace Rtp.Driver
 
             if (b745 == null || b745.Length != 2)
             {
-                System.Diagnostics.Trace.TraceError("b745日期表示法至少2字节。");
+                logger.ErrorFormat("b745日期表示法至少2字节。");
                 return false;
             }
             //===================================
@@ -1338,7 +1340,7 @@ namespace Rtp.Driver
         {
             if (result.Length < 2)
             {
-                System.Diagnostics.Trace.TraceError("输出缓冲区至少2字节。");
+                logger.ErrorFormat("输出缓冲区至少2字节。");
                 return false;
             }
             System.Diagnostics.Debug.Assert(year < 64);
@@ -1357,7 +1359,7 @@ namespace Rtp.Driver
             day = 0;
             if (b645 == null || b645.Length != 2)
             {
-                System.Diagnostics.Trace.TraceError("b645结构表示法必须2字节。");
+                logger.ErrorFormat("b645结构表示法必须2字节。");
                 return false;
             }
 
@@ -1388,5 +1390,45 @@ namespace Rtp.Driver
             return u16;
         }
 
+        #region 计算校验和
+        /// <summary>
+        /// 计算输入字节的校验和
+        /// </summary>
+        /// <param name="input"></param>
+        /// <returns></returns>
+        public static byte CheckSumXor(byte[] input)
+        {
+            return CheckSumXor(input, 0, input.Length);
+        }
+        /// <summary>
+        /// 计算buff中从0开始，length字节的数据的校验和
+        /// </summary>
+        /// <param name="buff"></param>
+        /// <param name="length"></param>
+        /// <returns></returns>
+        public static byte CheckSumXor(byte[] buff, int length)
+        {
+            return CheckSumXor(buff, 0, length);
+        }
+
+
+        /// <summary>
+        /// 计算BUFF中从startIdx开始Length字节的数据的校验和。
+        /// </summary>
+        /// <param name="buff"></param>
+        /// <param name="startIdx"></param>
+        /// <param name="length"></param>
+        /// <returns></returns>
+        public static byte CheckSumXor(byte[] buff, int startIdx, int length)
+        {
+            byte cs = 0;
+            for (int i = 0; i < length; i++)
+            {
+                cs ^= buff[startIdx+i];
+            }
+            return cs;
+        }
+
+        #endregion
     }
 }
