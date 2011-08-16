@@ -16,9 +16,8 @@ namespace Rtp.Driver.Command
         #region ICommand ³ÉÔ±
 
         public bool execute(string commandBody, CommandContext ctx)
-        {
-            string par =Utility.GetSubStringBetweenChars(commandBody,'(',')').Trim().ToUpper();
-            string[] pars = par.Split(',');
+        {            
+            string[] pars = commandBody.Split(',');
             if (pars.Length != 2)
             {
                 ctx.ReportMessage("ERR>>CommandAdd:{0} format error.", commandBody);

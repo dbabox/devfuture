@@ -34,7 +34,7 @@ namespace Rtp.NunitTest
             System.Diagnostics.Trace.Listeners.Clear();
             Console.WriteLine("测试结束:" + DateTime.Now.ToString());
         }
-        [Test]
+        [Test(Description="PBOC:DES KEY8加密解密，KEY16加密解密")]
         public void TestPBOC_DES()
         {
             Console.WriteLine("测试PBOC DES KEY8 加密解密");
@@ -84,7 +84,7 @@ namespace Rtp.NunitTest
             
         }
 
-        [Test]
+        [Test(Description="DES块加密解密；3DES块加密解密")]
         public void Test_DES()
         {
             string data8str = " 31 32 33 34 35 36 37 38";

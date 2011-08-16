@@ -3,6 +3,7 @@
  * https://sgsoft-las.googlecode.com/svn/trunk
  * 
  * 核心执行引擎。 
+ * 不论是函数还是系统命令，参数部分都无需小括号。
  * 
  * */
 using System;
@@ -19,6 +20,7 @@ namespace Rtp.Driver
 
     public class RtpCore
     {
+        private static log4net.ILog logger = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         public const string STATEMENT_BLOCK = "{}";
         /// <summary>
         /// 重定向指令；
@@ -28,7 +30,7 @@ namespace Rtp.Driver
   
         public const string COMPOSE = "/";
 
-        public const string SYS_COMMAND = "ADD,BUFF,CLOSEREADER,DATE,DATETIME,DES,DESC,DIVERSIFY,EXECUTEMODE,HELP,KEY08MAC,KEY16MAC,MACOFF,MACON,OPENREADER,PAUSE,PBOCDESDECKEY16,PBOCDESDECKEY8,PBOCDESENCKEY16,PBOCDESENCKEY8,PRINT,REQUESTCARD,RESETREADER,SAMPARA,SAMRESET,SAMSLOT,SET,SUB,TIME,TRIPDES";
+        public const string SYS_COMMAND = "ADD,BUFF,CLOSEREADER,DATE,DATETIME,DES,DESC,DIVERSIFY,EXECUTEMODE,HELP,KEY08MAC,KEY16MAC,MACOFF,MACON,OPENREADER,PAUSE,PBOCDESDECKEY16,PBOCDESDECKEY8,PBOCDESENCKEY16,PBOCDESENCKEY8,PRINT,REQUESTCARD,RESETREADER,SAMPARA,SAMRESET,SAMSLOT,SET,SUB,TIME,TRIPDES,CHECKSUMXOR";
         System.Collections.Specialized.StringCollection sysCmdColl = new System.Collections.Specialized.StringCollection();
 
         Dictionary<string, ICommand> commandEngine = new Dictionary<string, ICommand>();     
@@ -49,9 +51,7 @@ namespace Rtp.Driver
             cosIO = new FileMapCosIO().ReadCosFile("default.cos");
             #region 注册命令
             CommandCloseReader ccr = new CommandCloseReader();
-            commandEngine.Add(ccr.CommandName, ccr);
-
-          
+            commandEngine.Add(ccr.CommandName, ccr);                   
 
             CommandCpuApdu cca = new CommandCpuApdu();
             commandEngine.Add(cca.CommandName, cca);
@@ -151,6 +151,11 @@ namespace Rtp.Driver
 
             CommandULWrite cmdULWrite = new CommandULWrite();
             commandEngine.Add(cmdULWrite.CommandName, cmdULWrite);
+
+            CommandCheckSumXor cmdCSX = new CommandCheckSumXor();
+            commandEngine.Add(cmdCSX.CommandName, cmdCSX);
+
+
             #endregion
 
             sysCmdColl.AddRange(SYS_COMMAND.Split(','));
@@ -350,11 +355,17 @@ namespace Rtp.Driver
 
         /// <summary>
         /// 匹配:
-        /// UL { Read 04
-        /// M1 { Read 05
-        /// CPU{ APDU 00 84 xx 
-        /// SYS{ REQUESTCARD
-        /// SAM{APDU slot, 00 84 
+        /// <![
+        /// CDATA[
+        /// APDU slot, 00 84 
+        /// UL < Read 04
+        /// M1 < Read 05
+        /// CPU< APDU 00 84 xx 
+        /// SYS<REQUESTCARD
+        /// SYS<CHECKSUMXOR 11223344
+        /// SYS<SUB GV,XX
+        /// ]]>
+        /// 
         /// </summary>
         const string REG_CARDTYPE_CMD = @"([\S]+)[\s]*(<)[\s]*([\S]*)(\s.*)?";
         const string REG_HEX_STRING = @"[A-Fa-f0-9\s]+";
@@ -372,21 +383,60 @@ namespace Rtp.Driver
         public bool CommandAnalyze(string line, out string args)
         {
             args = String.Empty;
-            if (line.Contains(TARGET_TAG) && regCmd.IsMatch(line))//包含命令方向标志
+            if (line.Contains(TARGET_TAG))//包含命令方向标志
             {
-                var rc = regCmd.Match(line);
-                if (rc.Groups.Count != 5)
+                if (regCmd.IsMatch(line))
                 {
-                    ctx.ReportMessage("ERR>>{0} format incorrect .", line);
+                    var rc = regCmd.Match(line);
+                    if (rc.Groups.Count != 5)
+                    {
+                        ctx.ReportMessage("ERR>>{0} format incorrect .", line);
+                        return false;
+                    }
+                    ctx.CmdTarget = String.Format("{0}{1}{2}", rc.Groups[1].Value, TARGET_TAG, rc.Groups[3].Value);
+                    args = rc.Groups[4].Value; //此时cmd只包含参数
+                    ctx.ReportMessage("SYS>>{0} TargetHeader is {1}.", line, ctx.CmdTarget);
+                    return true;
+                }
+                else
+                {
+                    ctx.ReportMessage("ERR>>{0} 命令格式错误.", line);
                     return false;
                 }
-                ctx.CmdTarget = String.Format("{0}{1}{2}", rc.Groups[1].Value,TARGET_TAG, rc.Groups[3].Value);
-                args = rc.Groups[4].Value; //此时cmd只包含参数
-                ctx.ReportMessage("SYS>>{0} TargetHeader is {1}.", line, ctx.CmdTarget);
-                return true;
+           
             }
-            ctx.ReportMessage("ERR>>{0} format incorrect .", line);
-            return false;           
+            else
+            {
+                //不含定向标志
+                line = line.Trim().ToUpper();
+                bool isSysCmd = sysCmdColl.Contains(line);
+                string cmd_key;
+                if (isSysCmd)
+                {
+                    cmd_key = line;                
+                }
+                else
+                {
+                    if (line.IndexOf(' ') > 0)
+                    {
+                        cmd_key = line.Substring(0, line.IndexOf(' ')).Trim();
+                        args = line.Substring(line.IndexOf(' '));
+                    }
+                    else
+                    {
+                        ctx.ReportMessage("ERR>>{0}命令不可识别.", line);
+                        return false;                    
+                    }
+                }                
+                //自动为其添加上一次的Header
+                string targetHeader = String.Format("{0}{1}{2}",
+                    isSysCmd ? "SYS" : ctx.CmdTarget.Substring(0, ctx.CmdTarget.IndexOf('<')), TARGET_TAG,cmd_key);
+                ctx.CmdTarget = targetHeader;
+
+                ctx.ReportMessage("SYS>>自动添加命令TARGET_TAG:实际执行命令:{0}{1}", targetHeader,args);
+                return true;    
+            }
+               
         }
 
         /// <summary>
@@ -419,7 +469,7 @@ namespace Rtp.Driver
 
                     resultStr = Utility.ByteArrayToHexStr(ctx.rbuff,ctx.rlen);
                     cmdIn = cmdIn.Replace(funcBlock, resultStr);
-                    System.Diagnostics.Trace.TraceInformation("{0}==>{1}", funcBlock, resultStr);
+                    logger.InfoFormat("{0}==>{1}", funcBlock, resultStr);
                     continue;
                 }
                 return false;
