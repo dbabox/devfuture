@@ -7,12 +7,13 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using System.Diagnostics;
+
 
 namespace Rtp.Driver.RfidReader
 {
     public class RfidT10N : RfidBase
     {
+        
         private const int USB_PORT = 100;
         private const uint BAUD = 115200;
         private readonly ushort BEEP_MSEC = 5;              //∑‰√˘ ±≥§ 2m 
@@ -102,14 +103,15 @@ namespace Rtp.Driver.RfidReader
             icdev = NMTrf32.dc_init(port, baud);
             if (icdev < 0)
             {
-                Trace.TraceWarning("dc_init failed:port={0},baud={1}",port,baud);
+               
+                logger.WarnFormat("dc_init failed:port={0},baud={1}",port,baud);
             }
             else
             {
                 NMTrf32.dc_beep(icdev, BEEP_MSEC);
                 byte[] buff=new byte[4];
                 NMTrf32.dc_getver(icdev, buff);
-                Trace.TraceInformation("SYS>> Device Version:{0}.",Utility.ByteArrayToHexStr(buff));
+                logger.InfoFormat("SYS>> Device Version:{0}.",Utility.ByteArrayToHexStr(buff));
             }
             return icdev;
         }
@@ -118,7 +120,7 @@ namespace Rtp.Driver.RfidReader
         {
             NMTrf32.dc_beep(icdev, BEEP_MSEC);
             int rc = NMTrf32.dc_exit(icdev);
-            Trace.TraceInformation("*****************dc_exit:icdev={0},rc={1}**************", icdev, rc);
+            logger.InfoFormat("*****************dc_exit:icdev={0},rc={1}**************", icdev, rc);
             if (rc == 0) icdev =0;//≥…π¶πÿ±’£¨‘Ú÷√…Ë±∏√Ë ˆ∑˚Œ™0.
             return rc;
         }
@@ -127,9 +129,9 @@ namespace Rtp.Driver.RfidReader
         {
             int rc = NMTrf32.dc_reset(icdev);
             if (rc == 0)
-                Trace.TraceInformation("…‰∆µ∏¥Œª≥…π¶£°");
+                logger.InfoFormat("…‰∆µ∏¥Œª≥…π¶£°");
             else
-                Trace.TraceError("…‰∆µ∏¥Œª ß∞‹£°");
+                logger.ErrorFormat("…‰∆µ∏¥Œª ß∞‹£°");
             return rc;
         }
 
@@ -145,7 +147,7 @@ namespace Rtp.Driver.RfidReader
         /// <returns></returns>
         internal CardPhysicalType GetCardType(int tagType)
         {
-            Trace.TraceInformation("card tag type:{0}", tagType);
+            logger.InfoFormat("card tag type:{0}", tagType);
             switch (tagType)
             {
                 case Trf32Constants.RQ_TRAIT_ULTRALIGHT: return CardPhysicalType.UltraLight;
@@ -169,28 +171,28 @@ namespace Rtp.Driver.RfidReader
             if (rc == 0)
             {
                 cpt = GetCardType(tagType);                
-                Trace.TraceInformation("dc_request OK! Card Type={0}", cpt);
+                logger.InfoFormat("dc_request OK! Card Type={0}", cpt);
                 
                 rc = NMTrf32.dc_anticoll(icdev, 0, ref snr); //∑¿≥ÂÕª
                 if (rc == 0)
                 {
-                    Trace.TraceInformation("dc_anticoll OK! snr={0}", snr);
+                    logger.InfoFormat("dc_anticoll OK! snr={0}", snr);
                     byte size = 0;
                     rc = NMTrf32.dc_select(icdev, snr, ref size); //—°‘Ò
                     if (rc == 0)
                     {
-                        Trace.TraceInformation("dc_select OK! size={0}", size);
+                        logger.InfoFormat("dc_select OK! size={0}", size);
                         return snr.ToString();
                     }
                     else
                     {
-                        Trace.TraceInformation("dc_select failed! rc={0}", rc);
+                        logger.InfoFormat("dc_select failed! rc={0}", rc);
                     }
                 }
             }
             else
             {
-                Trace.TraceWarning("dc_request failed.rc={0},tagType={1}", rc, tagType);
+                logger.WarnFormat("dc_request failed.rc={0},tagType={1}", rc, tagType);
                 if (tagType != 0 && isTwoTried == false)
                 {
                     isTwoTried = true;
@@ -220,7 +222,7 @@ namespace Rtp.Driver.RfidReader
                 return -1;
             }
 
-            Trace.TraceInformation("dc_pro_commandlink:slen={0},sbuff={1}", slen, Utility.ByteArrayToHexStr(sbuff, slen));
+            logger.InfoFormat("dc_pro_commandlink:slen={0},sbuff={1}", slen, Utility.ByteArrayToHexStr(sbuff, slen));
             OnCpuRequest(slen, sbuff);
             int rc = NMTrf32.dc_pro_commandlink(icdev, slen, sbuff, ref rlen, rbuff, COS_CMD_TIME_OUT,FG);
             if (rc == 0)
@@ -229,7 +231,7 @@ namespace Rtp.Driver.RfidReader
             }
             else
             {
-                Trace.TraceInformation("dc_pro_commandlink failed:rc={0}", rc);
+                logger.InfoFormat("dc_pro_commandlink failed:rc={0}", rc);
             }
             return rc;
         }
@@ -261,13 +263,13 @@ namespace Rtp.Driver.RfidReader
             int rc = NMTrf32.dc_cpureset(icdev, slot,samBaudrate, volt, ref rlen, rbuff, ref samProtocol);
             if (rc == 0)
             {
-                Trace.TraceInformation("dc_cpureset success: rlen={0},databuff={1}",
+                logger.InfoFormat("dc_cpureset success: rlen={0},databuff={1}",
                     rlen, Utility.ByteArrayToHexStr(rbuff, rlen));
                 OnCpuResponse(rlen, rbuff);
             }
             else
             {
-                Trace.TraceError("dc_cpureset failed: rc={0}", rc.ToString("X"));
+                logger.ErrorFormat("dc_cpureset failed: rc={0}", rc.ToString("X"));
             }
             return rc;
         }
@@ -287,7 +289,7 @@ namespace Rtp.Driver.RfidReader
             else
             {
                 currentSamSlot = INVALID_SAM_SLOT;
-                Trace.TraceError("dc_setcpu failed: rc={0}", rc.ToString("X"));
+                logger.ErrorFormat("dc_setcpu failed: rc={0}", rc.ToString("X"));
             }
             return rc;
         }
@@ -304,7 +306,7 @@ namespace Rtp.Driver.RfidReader
             }
             else
             {
-                Trace.TraceError("dc_cpuapdu device failed:rc={0}", rc.ToString("X"));
+                logger.ErrorFormat("dc_cpuapdu device failed:rc={0}", rc.ToString("X"));
             }
             return rc;
         }
@@ -318,7 +320,7 @@ namespace Rtp.Driver.RfidReader
         /// <returns></returns>
         public override int SAM_SetPara(byte slot, byte cpupro, byte cpuetu)
         {
-            Trace.TraceWarning("T10N not support set cpuprotocal.");
+            logger.WarnFormat("T10N not support set cpuprotocal.");
             if (currentSamSlot != slot) SAM_SetSlot(slot);
             byte rlen=0;
             byte[] rbuff=new byte[64];
@@ -328,7 +330,7 @@ namespace Rtp.Driver.RfidReader
             {
                 samBaudrate = cpuetu;
             }
-            Trace.TraceInformation("T10N SAM_SetPara:RC={0}, RBUFF={1},samProtocol={2}",rc, Utility.ByteArrayToHexStr(rbuff, rlen), samProtocol);
+            logger.InfoFormat("T10N SAM_SetPara:RC={0}, RBUFF={1},samProtocol={2}",rc, Utility.ByteArrayToHexStr(rbuff, rlen), samProtocol);
             return rc;
         }
 
@@ -341,9 +343,9 @@ namespace Rtp.Driver.RfidReader
 
         public override int UL_write(byte addr, byte[] wbuff)
         {
-            Trace.TraceInformation("∂¡»°Ultralightø®,addr={0}.", addr);
+            logger.InfoFormat("∂¡»°Ultralightø®,addr={0}.", addr);
             int rc = NMTrf32.dc_write(icdev, addr, wbuff);
-            Trace.TraceInformation("∂¡»°Ultralightø®,addr={0}.WBUFF={1},rc={2}", addr, Utility.ByteArrayToHexStr(wbuff, 4), rc);
+            logger.InfoFormat("∂¡»°Ultralightø®,addr={0}.WBUFF={1},rc={2}", addr, Utility.ByteArrayToHexStr(wbuff, 4), rc);
             return rc;
         }
         #endregion

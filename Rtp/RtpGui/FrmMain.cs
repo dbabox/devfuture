@@ -8,7 +8,7 @@ using System.Windows.Forms;
 using Siasun.Gui.Components;
 using Rtp.Driver.RfidReader;
 using Rtp.Driver.Command;
-using System.Diagnostics;
+
 using Rtp.Driver;
 using System.IO;
 
@@ -16,9 +16,10 @@ namespace Rtp.Gui
 {
     public partial class FrmMain : Form
     {
+        private static log4net.ILog logger = log4net.LogManager.GetLogger(typeof(FrmMain));
         private IList<string> cmdHistory = new List<string>();
 
-        private TextBoxTraceListener textBoxTraceListener;        
+      
         private RfidBase rf =null;
         private CommandContext ctx = null;
         private RtpCore rtp = null;
@@ -31,21 +32,19 @@ namespace Rtp.Gui
         public FrmMain(string readerType_,bool enableDebug_)
         {
             InitializeComponent();
+
+            RichTextBoxAppender.SetRichTextBox(loggerRTB);
+
             readerType = readerType_;
             this.Text = String.Format("RFID 脚本环境 V{0}", System.Reflection.Assembly.GetExecutingAssembly().GetName().Version);
-            if (enableDebug_)
-            {
-                textBoxTraceListener = new TextBoxTraceListener(textBoxLog);
-                System.Diagnostics.Trace.Listeners.Add(textBoxTraceListener);
-            }
-
+           
             #region CopyRight
-            textBoxLog.AppendText(String.Format("RFID Test Platform:Release {0} Production on {1}{2}",
+            loggerRTB.AppendText(String.Format("RFID Test Platform:Release {0} Production on {1}{2}",
                 System.Reflection.Assembly.GetExecutingAssembly().GetName().Version,
                 DateTime.Now.ToLocalTime(), Environment.NewLine));
-            textBoxLog.AppendText("Copyright (c) 1999, 2011, SIASUN.  All rights reserved.");
-            textBoxLog.AppendText(Environment.NewLine);
-            textBoxLog.AppendText(String.Format("-------------------------------------------------------{0}", Environment.NewLine));
+            loggerRTB.AppendText("Copyright (c) 1999, 2011, SIASUN.  All rights reserved.");
+            loggerRTB.AppendText(Environment.NewLine);
+            loggerRTB.AppendText(String.Format("-------------------------------------------------------{0}", Environment.NewLine));
             #endregion                                    
 
             scriptFile = Application.UserAppDataRegistry.GetValue(USER_REG_KEY_LAST_SCRIPT_FILE) as string;
@@ -85,13 +84,13 @@ namespace Rtp.Gui
 
         void DisplayContextMessage(string message)
         {
-            textBoxLog.AppendText(message);
-            textBoxLog.AppendText(Environment.NewLine);
+            loggerRTB.AppendText(message);
+            loggerRTB.AppendText(Environment.NewLine);
         }
 
         void rf_SamResponse(object sender, Rtp.Driver.CardIO.SamResponseEventArgs e)
         {
-            textBoxLog.AppendText(String.Format("{2}>>{0}|{1}{3}", e.ResponseString, rtp.CosIO.GetDescription(e.Sw), ctx.CmdTarget,Environment.NewLine));
+            loggerRTB.AppendText(String.Format("{2}>>{0}|{1}{3}", e.ResponseString, rtp.CosIO.GetDescription(e.Sw), ctx.CmdTarget, Environment.NewLine));
             tsslResponse.Text = e.ResponseString;
             tsslAsciiResponse.Text = Utility.ByteArrayToAsciiString(ctx.rlen, ctx.rbuff);
             cmdHistory.Add(String.Format("{2}>> {0}\t[{1}]", e.ResponseString,rtp.CosIO.GetDescription(e.Sw) , ctx.CmdTarget));
@@ -107,14 +106,14 @@ namespace Rtp.Gui
 
         void rf_SamRequest(object sender, Rtp.Driver.CardIO.SamRequestEventArgs e)
         {
-            textBoxLog.AppendText(String.Format("{2}<<{0}|{1}{3}", e.Cmdstr, rtp.CosIO.GetDescription(e.Cmd), ctx.CmdTarget,Environment.NewLine));
+            loggerRTB.AppendText(String.Format("{2}<<{0}|{1}{3}", e.Cmdstr, rtp.CosIO.GetDescription(e.Cmd), ctx.CmdTarget, Environment.NewLine));
             tsslRequest.Text = e.Cmdstr;
             cmdHistory.Add(String.Format("{2}<< {0}\t[{1}]", e.Cmdstr, rtp.CosIO.GetDescription(e.Cmd), ctx.CmdTarget));         
         }
 
         void rf_CpuResponse(object sender, Rtp.Driver.CardIO.CpuResponseEventArgs e)
         {
-            textBoxLog.AppendText(String.Format("{2}>>{0}|{1}{3}", e.ResponseString, rtp.CosIO.GetDescription(e.Sw), ctx.CmdTarget,Environment.NewLine));
+            loggerRTB.AppendText(String.Format("{2}>>{0}|{1}{3}", e.ResponseString, rtp.CosIO.GetDescription(e.Sw), ctx.CmdTarget, Environment.NewLine));
             tsslResponse.Text = e.ResponseString;
             tsslAsciiResponse.Text = Utility.ByteArrayToAsciiString(ctx.rlen, ctx.rbuff);
             cmdHistory.Add(String.Format("{2}>> {0}\t[{1}]", e.ResponseString, rtp.CosIO.GetDescription(e.Sw), ctx.CmdTarget));
@@ -130,7 +129,7 @@ namespace Rtp.Gui
 
         void rf_CpuRequest(object sender, Rtp.Driver.CardIO.CpuRequestEventArgs e)
         {
-            textBoxLog.AppendText(String.Format("{2}<<{0}|{1}{3}", e.Cmdstr, rtp.CosIO.GetDescription(e.Cmd), ctx.CmdTarget,Environment.NewLine));
+            loggerRTB.AppendText(String.Format("{2}<<{0}|{1}{3}", e.Cmdstr, rtp.CosIO.GetDescription(e.Cmd), ctx.CmdTarget, Environment.NewLine));
             tsslRequest.Text = e.Cmdstr;
             cmdHistory.Add(String.Format("{2}<< {0}\t[{1}]", e.Cmdstr, rtp.CosIO.GetDescription(e.Cmd), ctx.CmdTarget));           
         }
@@ -141,7 +140,7 @@ namespace Rtp.Gui
             if (sender.Equals(btnExcute)||sender.Equals(tsmiRun))
             {
                 DateTime dtstart=DateTime.Now;
-                textBoxLog.AppendText(String.Format("开始执行脚本:{0}{1}.", dtstart,Environment.NewLine));
+                loggerRTB.AppendText(String.Format("开始执行脚本:{0}{1}.", dtstart, Environment.NewLine));
                 bool rc = false;
                 foreach (string l in textBoxCmd.Lines)
                 {
@@ -158,12 +157,12 @@ namespace Rtp.Gui
                     }
                 }
                 TimeSpan ts=DateTime.Now-dtstart;
-                textBoxLog.AppendText(String.Format("脚本执行完成:{0},共耗时:{1}毫秒.执行结果：{3}{2}", dtstart, ts.TotalMilliseconds, Environment.NewLine,rc?"成功":"失败"));
+                loggerRTB.AppendText(String.Format("脚本执行完成:{0},共耗时:{1}毫秒.执行结果：{3}{2}", dtstart, ts.TotalMilliseconds, Environment.NewLine,rc?"成功":"失败"));
                 return;
             }
             if (sender.Equals(btnClearLog) || sender.Equals(tsmiClearLog))
             {
-                textBoxLog.Clear();
+                loggerRTB.Clear();
                 return;
             }
             if (sender.Equals(btnSaveCmd) || sender.Equals(tsmiSave))
@@ -248,7 +247,7 @@ namespace Rtp.Gui
                         string path = sfd.FileName;
                         using (System.IO.StreamWriter sw = new StreamWriter(path))
                         {
-                            sw.Write(textBoxLog.Text);
+                            sw.Write(loggerRTB.Text);
                         }
                     }
                 }
@@ -315,7 +314,7 @@ namespace Rtp.Gui
                         {
                             if (!rtp.CommandExcuter(s))
                             {
-                                Trace.TraceError("Command {0} excute failed!", s);
+                                logger.ErrorFormat("Command {0} excute failed!", s);
                                 break;
                             }
                         }
@@ -325,7 +324,7 @@ namespace Rtp.Gui
                         rtp.CommandExcuter(textBoxCmd.SelectedText.Trim().ToUpper());
                     }
                     TimeSpan ts = DateTime.Now - dtstart;
-                    Trace.TraceInformation("脚本执行完成:{0},共耗时:{1}毫秒.", dtstart, ts.TotalMilliseconds);
+                    logger.InfoFormat("脚本执行完成:{0},共耗时:{1}毫秒.", dtstart, ts.TotalMilliseconds);
                 }
             }
 

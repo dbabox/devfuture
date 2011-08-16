@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using System.Diagnostics;
+
 
 namespace Rtp.Driver.RfidReader
 {
     public class RfidT6U : RfidBase
     {
+        
         private IntPtr icdev = System.IntPtr.Zero;          //设备描述符
         private const Int16 USB_PORT = 100;
         private readonly byte BEEP_MSEC = 2;              //蜂鸣时长 2m
@@ -22,18 +23,18 @@ namespace Rtp.Driver.RfidReader
 
         public override int Open()
         {
-            Trace.Assert(icdev == System.IntPtr.Zero);
+            System.Diagnostics.Trace.Assert(icdev == System.IntPtr.Zero);
             icdev = NMDcic32.IC_InitCommAdvanced(USB_PORT);
             if (icdev.ToInt32() > 0)
             {
                 NMDcic32.IC_DevBeep(icdev, BEEP_MSEC);
                 byte[] ver = new byte[10];
                 NMDcic32.IC_ReadVer(icdev, ver); //读出来版本号
-                Trace.TraceInformation("SYS>> Device Version:{0}.", Utility.ByteArrayToHexStr(ver));
+                logger.InfoFormat("SYS>> Device Version:{0}.", Utility.ByteArrayToHexStr(ver));
             }
             else
             {
-                Trace.TraceWarning("IC_InitComm failed!");
+                logger.WarnFormat("IC_InitComm failed!");
                 icdev = System.IntPtr.Zero;
             }
             return icdev.ToInt32();
@@ -44,7 +45,7 @@ namespace Rtp.Driver.RfidReader
         {
             NMDcic32.IC_DevBeep(icdev, BEEP_MSEC);
             short rc = NMDcic32.IC_ExitComm(icdev);
-            Trace.TraceInformation("*****************IC_ExitComm:icdev={0},rc={1}**************", icdev.ToString(), rc);
+            logger.InfoFormat("*****************IC_ExitComm:icdev={0},rc={1}**************", icdev.ToString(), rc);
             if (rc == 0) icdev = System.IntPtr.Zero;//成功关闭，则置设备描述符为0.
             return rc;
         }
@@ -94,24 +95,24 @@ namespace Rtp.Driver.RfidReader
             short rc = NMDcic32.IC_CheckCard(icdev);
             if (rc > 0)
             {
-                Trace.TraceInformation("Card type test ok:{0}", rc);
+                logger.InfoFormat("Card type test ok:{0}", rc);
             }
             else
             {
-                Trace.TraceError("Card type test failed");
+                logger.ErrorFormat("Card type test failed");
                 return -1;
             }
             //对CPU卡进行Reset
             rc = NMDcic32.IC_CpuReset(icdev, ref rlen, rbuff);
             if (rc == 0)
             {
-                Trace.TraceInformation("IC_CpuReset success: rlen={0},rbuff={1}",
+                logger.InfoFormat("IC_CpuReset success: rlen={0},rbuff={1}",
                     rlen, Utility.ByteArrayToHexStr(rbuff, rlen));
                 OnSamResponse(slot, rlen, rbuff);
             }
             else
             {
-                Trace.TraceError("dc_cpureset failed: rc={0}", rc.ToString("X"));
+                logger.ErrorFormat("dc_cpureset failed: rc={0}", rc.ToString("X"));
             }
             return rc;
              
@@ -127,7 +128,7 @@ namespace Rtp.Driver.RfidReader
             else
             {
                 currentSamSlot = INVALID_SAM_SLOT;
-                Trace.TraceError("dc_setcpu failed: rc={0}", rc.ToString("X"));
+                logger.ErrorFormat("dc_setcpu failed: rc={0}", rc.ToString("X"));
             }
             return rc;
         }
@@ -143,7 +144,7 @@ namespace Rtp.Driver.RfidReader
             }
             else
             {
-                Trace.TraceError("IC_CpuApdu device failed:rc={0}", rc.ToString("X"));
+                logger.ErrorFormat("IC_CpuApdu device failed:rc={0}", rc.ToString("X"));
             }
             return rc;
         }
@@ -154,11 +155,11 @@ namespace Rtp.Driver.RfidReader
             short rc = NMDcic32.IC_SetCpuPara(icdev, slot, cpupro, cpuetu);
             if (rc == 0)
             {
-                Trace.TraceInformation("IC_SetCpuPara success:cputype={0},cpupro={1},cpuetu={2}", slot, cpupro, cpuetu);
+                logger.InfoFormat("IC_SetCpuPara success:cputype={0},cpupro={1},cpuetu={2}", slot, cpupro, cpuetu);
             }
             else
             {
-                Trace.TraceError("IC_SetCpuPara failed:cputype={0},cpupro={1},cpuetu={2}", slot, cpupro, cpuetu);
+                logger.ErrorFormat("IC_SetCpuPara failed:cputype={0},cpupro={1},cpuetu={2}", slot, cpupro, cpuetu);
             }
             return rc;
         }

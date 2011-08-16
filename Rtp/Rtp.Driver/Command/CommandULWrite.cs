@@ -9,6 +9,7 @@ namespace Rtp.Driver.Command
     /// </summary>
     class CommandULWrite:ICommand
     {
+        private static log4net.ILog logger = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         public bool execute(string input, CommandContext ctx)
         {
             int rc = -1;
@@ -25,7 +26,7 @@ namespace Rtp.Driver.Command
             ctx.slen=(byte)Utility.HexStrToByteArray(args[1], ref ctx.sbuff);
             if (ctx.slen > 0)
             {
-                System.Diagnostics.Trace.TraceInformation("UL_Write :slen={0}", ctx.slen);
+                logger.InfoFormat("UL_Write :slen={0}", ctx.slen);
                 rc = ctx.Rfid.UL_write(addr, ctx.sbuff);
             }
             else

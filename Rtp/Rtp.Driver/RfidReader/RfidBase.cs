@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using System.Text;
 using Rtp.Driver.CardIO;
 using Rtp.Driver;
-using System.Diagnostics;
+
 
 namespace Rtp.Driver.RfidReader
 {
     public abstract class RfidBase:IRfid
     {
+        protected static log4net.ILog logger = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         #region 公共常量定义
         public const byte INVALID_SAM_SLOT = 0xFF;
 
@@ -50,11 +51,11 @@ namespace Rtp.Driver.RfidReader
             if (rc == 0)
             {
                 if (le == 4)
-                    Trace.Assert(rlen == 6);
+                    System.Diagnostics.Trace.Assert(rlen == 6);
                 else
-                    Trace.Assert(rlen == 10);
+                    System.Diagnostics.Trace.Assert(rlen == 10);
                 //必须以9000结尾
-                Trace.Assert(rbuff[rlen - 2] == 0x90 && rbuff[rlen - 1] == 0x00);
+                System.Diagnostics.Trace.Assert(rbuff[rlen - 2] == 0x90 && rbuff[rlen - 1] == 0x00);
             }
             return rc;
         }
@@ -69,11 +70,11 @@ namespace Rtp.Driver.RfidReader
             if (rc == 0)
             {
                 if (le == 4)
-                    Trace.Assert(rlen == 6);
+                    System.Diagnostics.Trace.Assert(rlen == 6);
                 else
-                    Trace.Assert(rlen == 10);
+                    System.Diagnostics.Trace.Assert(rlen == 10);
                 //必须以9000结尾
-                Trace.Assert(rbuff[rlen - 2] == 0x90 && rbuff[rlen - 1] == 0x00);
+                System.Diagnostics.Trace.Assert(rbuff[rlen - 2] == 0x90 && rbuff[rlen - 1] == 0x00);
             }
             return rc;
         }
@@ -211,7 +212,7 @@ namespace Rtp.Driver.RfidReader
                 else
                 {
                     currentSamSlot = 0;
-                    Trace.TraceError("SET SAM Slot to {0} failed.", value);
+                    logger.ErrorFormat("SET SAM Slot to {0} failed.", value);
                 }
             }
           
