@@ -126,8 +126,10 @@
     <Compile Include="RfidReader\RfidFM8201.cs" />
     <Compile Include="RfidReader\RfidT10N.cs" />
     <Compile Include="RfidReader\RfidT6U.cs" />
+    <Compile Include="RfidReader\RfidT9.cs" />
     <Compile Include="RtpCompiler.cs" />
     <Compile Include="RtpCore.cs" />
+    <Compile Include="RfidReader\SerialComRfidBase.cs" />
     <Compile Include="Utility.cs" />
   </ItemGroup>
   <ItemGroup>

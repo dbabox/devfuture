@@ -1092,7 +1092,7 @@ namespace Rtp.Driver
         }
 
         /// <summary>
-        /// 将字节数组转换成整数。
+        /// 将高位在先的字节数组转换成整数。
         /// </summary>
         /// <param name="buff"></param>
         /// <returns></returns>
@@ -1114,6 +1114,56 @@ namespace Rtp.Driver
             return rc;
         }
 
+        /// <summary>
+        /// 将整数Int32转成高位在先的byte数组；
+        /// </summary>
+        /// <param name="iValue"></param>
+        /// <param name="buff"></param>
+        /// <param name="offset"></param>
+        /// <returns></returns>
+        public static int ConvertInt32ToByteArray(int iValue, byte[] buff, int offset)
+        {
+            if (buff == null || buff.Length < 4) return -1;
+            buff[offset] = (byte)(iValue >> 24);
+            buff[offset+1] = (byte)((iValue >> 16) & 0xFF);
+            buff[offset + 2] = (byte)((iValue >> 8) & 0xFF);
+            buff[offset + 3] = (byte)(iValue & 0xFF);
+            return 0;
+        }
+
+        /// <summary>
+        /// 将整数UInt32转成高位在先的byte数组；
+        /// </summary>
+        /// <param name="iValue"></param>
+        /// <param name="buff"></param>
+        /// <param name="offset"></param>
+        /// <returns></returns>
+        public static int ConvertUInt32ToByteArray(UInt32 iValue, byte[] buff, int offset)
+        {
+            if (buff == null || buff.Length < 4) return -1;
+            buff[offset] = (byte)(iValue >> 24);
+            buff[offset + 1] = (byte)((iValue >> 16) & 0xFF);
+            buff[offset + 2] = (byte)((iValue >> 8) & 0xFF);
+            buff[offset + 3] = (byte)(iValue & 0xFF);
+            return 0;
+        }
+
+
+        /// <summary>
+        /// 将整数UInt16转成高位在先的byte数组；
+        /// </summary>
+        /// <param name="iValue"></param>
+        /// <param name="buff"></param>
+        /// <param name="offset"></param>
+        /// <returns></returns>
+        public static int ConvertUInt16ToByteArray(UInt16 iValue, byte[] buff, int offset)
+        {
+            if (buff == null || buff.Length <2) return -1;            
+            buff[offset] = (byte)((iValue >> 8) & 0xFF);
+            buff[offset + 1] = (byte)(iValue & 0xFF);
+            return 0;
+        }
+       
 
 
          

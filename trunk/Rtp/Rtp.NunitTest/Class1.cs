@@ -221,7 +221,18 @@ namespace Rtp.NunitTest
 
             Console.WriteLine("-------------");
         }
+        [Test]
+        public void TestT9Protocol()
+        {
+            Rtp.Driver.RfidReader.RfidT9.Protocol p = new Rtp.Driver.RfidReader.RfidT9.Protocol();
+            p.cmd = 0x0100;
+            p.len = 3;
+            p.para[0] = 0x00;
 
+            byte[] wBuff=new byte[1024];
+            Rtp.Driver.RfidReader.RfidT9.Protocol.Protocol2WBuff(p, wBuff);
+            Console.WriteLine(Utility.ByteArrayToHexStr(wBuff, p.BytesToWrite));
+        }
 
     }
 }
