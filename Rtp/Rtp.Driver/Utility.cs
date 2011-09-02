@@ -1098,18 +1098,23 @@ namespace Rtp.Driver
         /// <returns></returns>
         public static int ConvertByteArrayToInt32(byte[] buff)
         {
-            if (buff == null) return 0;
-            if (buff.Length > 4)
+            return ConvertByteArrayToInt32(buff, 0);
+        }
+
+        public static int ConvertByteArrayToInt32(byte[] buff, int offset)
+        {
+            if (buff == null) throw new ArgumentNullException("buff");
+            if ((buff.Length - offset) > 4)
             {
                 logger.WarnFormat("字节数组长度大于4，只转换低4字节。");
             }
             int rc = 0;
             int v = 0;
-            for (int i = 0; i < buff.Length; ++i)
+            for (int i = offset; i < (offset+4); ++i)
             {
                 v = buff[i];
-                v <<= (8 * i);
-                rc |= v;                
+                v <<= (8 * (3-(i-offset)));
+                rc |= v;
             }
             return rc;
         }
@@ -1162,6 +1167,19 @@ namespace Rtp.Driver
             buff[offset] = (byte)((iValue >> 8) & 0xFF);
             buff[offset + 1] = (byte)(iValue & 0xFF);
             return 0;
+        }
+
+        public static UInt16 ConvertByteArrayToUInt16(byte[] buff,int offset)
+        {
+            UInt16 rc = 0;
+            UInt16 v=0;
+            for (int i = offset; i < (2 + offset); ++i)
+            {
+                v= buff[i];
+                v <<= (8 * (1 - (i - offset)));
+                rc |= v;
+            }
+            return rc;
         }
        
 

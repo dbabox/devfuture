@@ -7,22 +7,10 @@ namespace Rtp.Driver.RfidReader
 {
     public class RfidT9:SerialComRfidBase
     {
-        //
-       
-        
-        //写缓冲区
-        public readonly byte[] wBuff = new byte[0x0400+8];
-        private int wLen = 0;
-
-              
         /// <summary>
-        /// 需要写入的长度
+        /// T9读卡器通信协议
         /// </summary>
-        public int WLen
-        {
-            get { return wLen; }            
-        }
-        public class Protocol 
+        public class Protocol
         {
             public const int PROTOCOL_MAX_LEN = 0x0400;
             //以下都是协议区的成员
@@ -55,10 +43,68 @@ namespace Rtp.Driver.RfidReader
                 wBuff[5 + p.len] = Utility.CheckSumXor(wBuff, (int)(5 + p.len));
                 logger.InfoFormat("Protocol2WBuff:{0}", Utility.ByteArrayToHexStr(wBuff, p.BytesToWrite));
             }
-        }
 
-        private Protocol _currentCmdProtocol=new Protocol();
-     
+            public static int RBuff2Protocol(byte[] rBuff, int recLen, Protocol p)
+            {
+                int rc = 0;
+                if (rBuff != null && recLen >=9)
+                {
+                    if (rBuff[0] != HEAD_BYTE || rBuff[recLen-1]!=END_BYTE) 
+                    {
+                        logger.ErrorFormat("命令格式错误，Header={0},End={1},应为[0x02 .. .. 0x03]格式", rBuff[0], rBuff[recLen - 1]);
+                        rc = -2; 
+                    }
+                    else
+                    {
+                        #region 解析响应
+                        p.len =(UInt32)Utility.ConvertByteArrayToInt32(rBuff, 1);
+                        if ((p.len + 7) != recLen)
+                        {
+                            logger.ErrorFormat("数据长度不匹配: {0}",Utility.ByteArrayToHexStr(rBuff,recLen));
+                            rc = -3;
+                        }
+                        else
+                        {
+                            p.cmd = Utility.ConvertByteArrayToUInt16(rBuff, 5);
+                            //参数块拷贝 //校验位 // 截止位
+                            System.Buffer.BlockCopy(rBuff, 7, p.para, 0, (int)(p.len - 2));
+                            rc = 0;
+                            if (rBuff[p.len + 5] != Utility.CheckSumXor(rBuff, (int)(5 + p.len)))
+                            {
+                                logger.ErrorFormat("校验码错误:{0}", Utility.ByteArrayToHexStr(rBuff, recLen));
+                                rc = -4;
+                            }
+                        }
+                        #endregion
+                    }
+                   
+                }
+                else
+                {
+                    logger.Error("参数错误");
+                    rc = -1;
+                }
+                return rc;
+            }
+        }
+       
+        
+        //写缓冲区
+        public readonly byte[] wBuff = new byte[0x0400+8];
+        private int wLen = 0;
+
+              
+        /// <summary>
+        /// 需要写入的长度
+        /// </summary>
+        public int WLen
+        {
+            get { return wLen; }            
+        }
+        
+
+        private readonly Protocol _currentRequest=new Protocol();
+        private readonly Protocol _currentResponse = new Protocol();
 
 
         private byte antennaIndex=0;
@@ -73,15 +119,20 @@ namespace Rtp.Driver.RfidReader
         public override int DeviceReset()
         {
             int rc = 0;
-            _currentCmdProtocol.len = 3;
-            _currentCmdProtocol.cmd= 0x0400;
-            _currentCmdProtocol.para[0] = antennaIndex;
-            Protocol.Protocol2WBuff(_currentCmdProtocol, wBuff);           
+            _currentRequest.len = 3;
+            _currentRequest.cmd= 0x0400;
+            _currentRequest.para[0] = antennaIndex;
+            Protocol.Protocol2WBuff(_currentRequest, wBuff);           
             rc=Write(wBuff, wLen);
             if (rc==0 && responseEvent.WaitOne())
             {
-                //收到信号了,请处理协议
-
+                //收到响应数据了,请处理recBuff,recLen
+                rc = Protocol.RBuff2Protocol(recBuff, recLen, _currentResponse);
+                if (0 == rc)
+                {
+                    //解析响应成功
+                    logger.Info("DeviceReset response ok.");
+                }
             }
             return rc;
             

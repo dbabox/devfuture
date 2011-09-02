@@ -20,8 +20,16 @@ namespace Rtp.Driver.RfidReader
         protected System.Threading.AutoResetEvent responseEvent = new System.Threading.AutoResetEvent(false);
         private System.IO.Ports.SerialPort com=null;
         const int REC_BUFF_LEN=1024;
-        private readonly byte[] recBuff=new byte[REC_BUFF_LEN];
-        private int _recLen = 0;
+        protected readonly byte[] recBuff=new byte[REC_BUFF_LEN];
+        public byte[] RecBuff
+        {
+            get { return recBuff; }            
+        }
+        protected int recLen = 0;
+        public int RecLen
+        {
+            get { return recLen; }            
+        }
         
 
         public SerialComRfidBase()
@@ -69,10 +77,10 @@ namespace Rtp.Driver.RfidReader
 
         void com_DataReceived(object sender, System.IO.Ports.SerialDataReceivedEventArgs e)
         {           
-            _recLen = 0;
+            recLen = 0;
             while (com.BytesToRead > 0 && com.BytesToRead < REC_BUFF_LEN)
             {
-                System.Buffer.SetByte(recBuff, _recLen++, (byte)com.ReadByte());
+                System.Buffer.SetByte(recBuff, recLen++, (byte)com.ReadByte());
             }
 
             responseEvent.Set();
@@ -130,7 +138,7 @@ namespace Rtp.Driver.RfidReader
 
         public override bool IsOpened()
         {
-           
+          
             return com.IsOpen;
         }
 
