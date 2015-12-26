@@ -1,0 +1,149 @@
+#RFID脚本 复合消费
+
+# 复合消费脚本 #
+
+已通过D8U测试
+
+
+# 脚本内容 #
+
+```
+#复合消费脚本文件
+#create by samonsun 2011-1-1
+
+SET SAM0=SAM 0x0C
+SET SAM1=SAM 0x0D
+
+#----------------------密钥环境设置开始---------------
+#应用主控子密钥
+SET CPU_DACK=6641E72668A152FD3C9B71835AFAFC4A
+#应用维护子密钥
+SET CPU_DAMK=BF6F8F9EB4D6FE19A6C3FFEC27594AFF
+#互通复合消费维护密钥
+SET CPU_DAMK1=8CEEED04A6B4A950C7097CC96264D768
+
+#消费子密钥
+SET CPU_DPK=8CEEED04A6B4A950C7097CC96264D768
+#圈存子密钥
+SET CPU_DLK=6641E72668A152FD3C9B71835AFAFC4A
+#TAC子密钥
+SET CPU_DTK=F482976B32E387497D96E724D1F1B677
+
+#消费密钥索引
+SET CPU_DPK_IDX=01
+#圈存密钥索引
+SET CPU_DLK_IDX=01
+
+
+#PIN
+SET CPU_PIN=1122334455667788
+SET CPU_PIN_IDX=00 
+SET CPU_PIN_RELOAD=6641E72668A152FD3C9B71835AFAFC4A
+SET CPU_PIN_UNLOCK=6641E72668A152FD3C9B71835AFAFC4A
+
+#----------------------密钥环境设置结束---------------
+
+SET CARD_RAND_8BYTE=00 00 00 00 00 00 00 00
+SET CARD_RAND_4BYTE=00 00 00 00
+
+#安全认证码变量
+SET SACODE=00 00 00 00 00 00 00 00 00
+
+
+#终端机编号
+SET TERMINAL_ID=00 00 00 00 00 01
+SET STATION_ID=00 00 00 8D
+
+#----------------------预处理----------------------
+REQUEST CARD
+#选择主目录读发行信息
+00 A4 00 00 02 3F 00
+
+#Read Binary 0005
+00 B0 85 00 1E
+#检查应用序列号byte[8]--byte[15] 是否是黑名单，是黑名单则进入黑名单处理流程
+BUFF 8,8,CARD_SNR
+
+#检查返回结果的byte[10](0x01则为普通地铁储值票，0x03则为员工卡）
+#根据上面的检查结果，判定是进行储值票交易还是员工卡交易
+
+#选择储值票应用 1001
+00 A4 00 00 02 10 01
+#COS返回0015文件的内容
+#byte[22]--byte[51] 为3F00/1001/0015文件内容
+#0015文件：需检查应用有效期
+
+#判定是否本地卡 byte[24~25]的值是否为 沈阳城市代码1161
+#若是本地卡，进入本地卡消费流程0x19文件，需进行钱包零值初始化获取钱包当前余额，此操作可在应用程序启动时完成，作为系统常量存在
+#若是异地卡，需判定此字段值是否系统参数【互通城市列表】中的值，是则进入异地互联互通消费流程0x17文件
+
+#获取钱包余额 若钱包余额为0，则提示充值
+00 20 00 $CPU_PIN_IDX 08 $CPU_PIN
+SET CARD_BALANCE={ 80 5C 00 02 04}
+
+#读取本地复合记录文件获取钱包透支金额
+#读取记录1 
+BUFF 00,{00 B2 01 CC 00}
+#byte[0]为卡状态标志。 对于储值票而言，0x03表示已售；需检查此标志；
+#检查透支金额 包大于0且透支金额不为0，则说明上次交易不完整，需要查明原因，并更新透支金额；钱包等于0，透支金额不为0时，只能进行充值操作。
+
+#读取记录2 
+BUFF 00,{00 B2 02 CC 00}
+
+
+#----------------------复合消费----------------------
+SET TRADE_TYPE_CAPP=09
+#交易金额 200分
+SET TRADE_MONEY=00 00 00 C8
+
+00 A4 00 00 02 3F 00/10 01
+
+00 20 00 $CPU_PIN_IDX 08 $CPU_PIN
+
+#initialize for capp purchase
+BUFF 00, { 80 50 03 02 0B 01 $TRADE_MONEY  $TERMINAL_ID 0F }
+BUFF 00,04,OLD_BLANCE
+BUFF 04,02,TRADE_SN
+BUFF 06,03,overdraft_limit
+BUFF 0B,04,CARD_RAND_4BYTE
+
+#SAM卡交易序号最右2字节
+SET SAM_TRADE_SN_R2=00 AB 
+SET SAM_TRADE_SN=00 00 00 AB
+
+SET SESS_KEY={TripDes($CARD_RAND_4BYTE  $TRADE_SN $SAM_TRADE_SN_R2 ,$CPU_DPK )}
+SET NOW={DATETIME}
+
+ 
+SET MAC1={KEY08MAC($TRADE_MONEY $TRADE_TYPE_CAPP $TERMINAL_ID $NOW ,$SESS_KEY,0000000000000000  )}
+BUFF 0,$MAC1
+BUFF 0,4 ,MAC1
+
+#update capp data cache
+80 DC 01 CC 42 01400316000000000000008d201102090839090000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+
+80dc02cc4202400000000100d7c649000003ec4d5252ad000120110105000100000000000000000000000000000000000000000000000000000000000000000000000000000000
+
+#DEBIT FOR CAPP PURCHASE
+80 54 01 00 0F $SAM_TRADE_SN $NOW $MAC1 08
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+```
